@@ -21,14 +21,14 @@
             --border-color: #3d3d38;
         }
         [data-bs-theme="light"] {
-            --app-bg: #f4f4ef;
+            --app-bg: #f8f8f2;
             --card-bg: #ffffff;
-            --input-bg: #e9e9df;
-            --text-color: #21211e;
-            --accent-gold: #b38f1d;
-            --calc-btn-bg: #dedede;
-            --calc-btn-active: #ceced5;
-            --border-color: #d1d1c7;
+            --input-bg: #f1f1eb;
+            --text-color: #1a1a17;
+            --accent-gold: #997515;
+            --calc-btn-bg: #e6e6dc;
+            --calc-btn-active: #d4d4c7;
+            --border-color: #d8d8cc;
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--app-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
         #wrapper { display: flex; width: 100%; align-items: stretch; }
@@ -36,8 +36,8 @@
         #sidebar.active { margin-left: calc(-1 * var(--sidebar-width)); }
         #sidebar .sidebar-header { padding: 25px 20px; background: var(--input-bg); border-bottom: 1px solid var(--border-color); }
         #sidebar ul.components { padding: 15px 0; }
-        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: var(--text-color); opacity: 0.8; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
-        #sidebar ul li a:hover, #sidebar ul li.active > a { opacity: 1; background: rgba(212, 175, 55, 0.1); border-left: 4px solid var(--accent-gold); }
+        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: var(--text-color); opacity: 0.85; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover, #sidebar ul li.active > a { opacity: 1; background: rgba(212, 175, 55, 0.12); border-left: 4px solid var(--accent-gold); }
         #content { width: 100%; padding: 25px; min-height: 100vh; transition: all 0.3s; background-color: var(--app-bg); }
         .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 0.75rem; background-color: var(--card-bg) !important; color: var(--text-color); }
         .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
@@ -67,13 +67,8 @@
         .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .custom-modal-content { background: var(--app-bg); border: 1px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         
-        .icon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px 0; }
-        .icon-grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 8px; transition: background 0.2s; }
-        .icon-grid-item:hover { background: rgba(212, 175, 55, 0.1); }
-        .icon-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; margin-bottom: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-
         .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
-        .account-select-row:hover { background: rgba(212, 175, 55, 0.05); }
+        .account-select-row:hover { background: rgba(212, 175, 55, 0.08); }
         
         .badge-sub { background-color: rgba(212, 175, 55, 0.15); color: var(--accent-gold); font-weight: 500; margin-right: 6px; margin-bottom: 6px; display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(212, 175, 55, 0.3); }
         @media (max-width: 768px) { #sidebar { margin-left: calc(-1 * var(--sidebar-width)); position: absolute; } #sidebar.active { margin-left: 0; } }
@@ -110,7 +105,7 @@
                 <div class="container-fluid p-0">
                     <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary border"><i class="bi bi-list fs-5"></i></button>
                     <div class="d-flex align-items-center gap-3">
-                        <span class="navbar-brand fw-bold fs-4 m-0 text-light" id="page-title">Home & Logs</span>
+                        <span class="navbar-brand fw-bold fs-4 m-0" id="page-title">Home & Logs</span>
                         <button class="btn btn-outline-warning btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill" id="theme-icon"></i> Theme</button>
                     </div>
                 </div>
@@ -133,9 +128,10 @@
                             </div>
 
                             <div class="p-3">
-                                <div class="row g-2 mb-3">
-                                    <div class="col-6">
-                                        <div class="selector-box" onclick="openAccountModal()">
+                                <!-- Dynamic Selectors based on Type -->
+                                <div class="row g-2 mb-3" id="selectors-container">
+                                    <div class="col-6" id="box-primary-account">
+                                        <div class="selector-box" onclick="openAccountModal('primary')">
                                             <div class="d-flex align-items-center gap-2 text-truncate">
                                                 <i class="bi bi-wallet2 text-warning fs-5"></i>
                                                 <span id="selected-account-label" class="text-truncate">Account</span>
@@ -143,10 +139,10 @@
                                             <i class="bi bi-chevron-right text-muted small"></i>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" id="box-secondary-category">
                                         <div class="selector-box" onclick="openCategoryModal()">
                                             <div class="d-flex align-items-center gap-2 text-truncate">
-                                                <i class="bi bi-tag text-warning fs-5" id="selected-category-icon"></i>
+                                                <i class="bi bi-tag text-warning fs-5"></i>
                                                 <span id="selected-category-label" class="text-truncate">Subcategory</span>
                                             </div>
                                             <i class="bi bi-chevron-right text-muted small"></i>
@@ -155,7 +151,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <textarea class="form-control notes-box" id="app-notes" placeholder="Add notes"></textarea>
+                                    <input type="text" class="form-control notes-box" id="app-notes" list="autosuggest-subcategories" placeholder="Subcategory / Notes (Autofill available)">
+                                    <datalist id="autosuggest-subcategories"></datalist>
                                 </div>
 
                                 <div class="calc-display mb-2" id="calc-display">0</div>
@@ -186,7 +183,7 @@
 
                             <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top">
                                 <span id="current-date-display">Jul 31, 2026</span>
-                                <span id="current-time-display">8:58 PM</span>
+                                <span id="current-time-display">10:00 PM</span>
                             </div>
                         </div>
                     </div>
@@ -201,8 +198,8 @@
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Account</th>
-                                            <th>Subcategory (Category) / Notes</th>
+                                            <th>Accounts / Transfer</th>
+                                            <th>Subcategory / Notes</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
@@ -219,21 +216,21 @@
             <div class="custom-modal-overlay" id="account-modal">
                 <div class="custom-modal-content">
                     <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-warning">Select an account</h5>
+                        <h5 class="fw-bold m-0 text-warning" id="account-modal-title">Select an account</h5>
                         <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div id="account-modal-list"></div>
                 </div>
             </div>
 
-            <!-- Subcategory Selection Modal (Linked to Categories) -->
+            <!-- Subcategory Selection Modal (Linked to Categories, No Icons) -->
             <div class="custom-modal-overlay" id="category-modal">
                 <div class="custom-modal-content">
                     <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                         <h5 class="fw-bold m-0 text-warning">Select a Subcategory</h5>
                         <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
-                    <div class="icon-grid" id="category-modal-grid"></div>
+                    <div id="category-modal-list" class="list-group list-group-flush"></div>
                 </div>
             </div>
 
@@ -248,14 +245,6 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Category Name</label>
                                     <input type="text" class="form-control" id="cat-name" placeholder="e.g. Food" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Icon (Bootstrap Icon Class)</label>
-                                    <input type="text" class="form-control" id="cat-icon" placeholder="e.g. bi-cup-hot" value="bi-tag">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Icon Background Color</label>
-                                    <input type="color" class="form-control form-control-color w-100" id="cat-color" value="#8B008B">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Linked Subcategories (Comma Separated)</label>
@@ -279,12 +268,12 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-warning fw-bold">Add Bank / Account</h4>
+                            <h4 class="mb-3 text-warning fw-bold">Add Bank / Account / RD</h4>
                             <form id="account-form">
                                 <input type="hidden" id="acc-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account Type</label>
-                                    <select class="form-select" id="acc-type" required>
+                                    <select class="form-select" id="acc-type" onchange="toggleRDLinkFields()" required>
                                         <option value="Savings">Savings Account</option>
                                         <option value="FD">Fixed Deposit (FD)</option>
                                         <option value="RD">Recurring Deposit (RD)</option>
@@ -295,12 +284,13 @@
                                     <input type="text" class="form-control" id="acc-name" placeholder="e.g. SBI, Axis, Car RD" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Icon</label>
-                                    <input type="text" class="form-control" id="acc-icon" value="bi-bank">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Current Balance</label>
+                                    <label class="form-label fw-semibold">Current Balance / Target Amt</label>
                                     <input type="number" step="0.01" class="form-control" id="acc-balance" required>
+                                </div>
+                                <!-- RD Specific Link to Bank Account -->
+                                <div class="mb-3" id="rd-link-container" style="display:none;">
+                                    <label class="form-label fw-semibold text-warning">Linked Bank Account (For Auto-Debit)</label>
+                                    <select class="form-select" id="acc-linked-bank"></select>
                                 </div>
                                 <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="acc-submit-btn">Save Account</button>
                             </form>
@@ -308,7 +298,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Accounts & Balances</h4>
+                            <h4 class="mb-3 fw-bold">Accounts, FDs & RDs</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="accounts-list"></ul>
                         </div>
                     </div>
@@ -327,7 +317,6 @@
                                     <label class="form-label fw-semibold">Asset Type</label>
                                     <select class="form-select" id="inv-type" required>
                                         <option value="Mutual Fund">Mutual Fund / SIP</option>
-                                        <option value="RD">Recurring Deposit (RD)</option>
                                         <option value="Stock">Stock</option>
                                     </select>
                                 </div>
@@ -347,7 +336,7 @@
                                     <label class="form-label fw-semibold">Auto Debit Date of Month (1-31)</label>
                                     <input type="number" min="1" max="31" class="form-control" id="inv-day" value="5" required>
                                 </div>
-                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="inv-submit-btn">Save Auto SIP/RD</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="inv-submit-btn">Save Auto SIP</button>
                             </form>
                         </div>
                     </div>
@@ -365,7 +354,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-warning fw-bold">Add Credit Card / EMI</h4>
+                            <h4 class="mb-3 text-warning fw-bold">Add Credit Card</h4>
                             <form id="card-form">
                                 <input type="hidden" id="card-id">
                                 <div class="mb-3">
@@ -380,29 +369,37 @@
                                     <label class="form-label fw-semibold">Outstanding Due</label>
                                     <input type="number" step="0.01" class="form-control" id="card-outstanding" value="0" required>
                                 </div>
-                                <hr class="border-secondary">
-                                <h6 class="text-warning">Active EMIs on Card</h6>
-                                <div class="mb-3">
-                                    <label class="form-label small">EMI Item Name</label>
-                                    <input type="text" class="form-control form-control-sm" id="card-emi-name" placeholder="e.g. iPhone EMI">
-                                </div>
-                                <div class="row g-2 mb-3">
-                                    <div class="col-6">
-                                        <label class="form-label small">Monthly EMI Amt</label>
-                                        <input type="number" step="0.01" class="form-control form-control-sm" id="card-emi-amt" placeholder="0">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small">Remaining Months</label>
-                                        <input type="number" class="form-control form-control-sm" id="card-emi-months" placeholder="0">
-                                    </div>
-                                </div>
                                 <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="card-submit-btn">Save Credit Card</button>
+                            </form>
+                        </div>
+
+                        <!-- Add EMI Linked to Card Separately -->
+                        <div class="card p-4 mt-3">
+                            <h4 class="mb-3 text-warning fw-bold">Add EMI on Card</h4>
+                            <form id="emi-form">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Select Credit Card</label>
+                                    <select class="form-select" id="emi-card-select" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">EMI Item Name</label>
+                                    <input type="text" class="form-control" id="emi-name" placeholder="e.g. iPhone EMI" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Monthly EMI Amount</label>
+                                    <input type="number" step="0.01" class="form-control" id="emi-amt" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Remaining Months</label>
+                                    <input type="number" class="form-control" id="emi-months" required>
+                                </div>
+                                <button type="submit" class="btn btn-outline-warning w-100 fw-semibold">Link EMI to Card</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Credit Cards & EMI Trackers</h4>
+                            <h4 class="mb-3 fw-bold">Credit Cards & Linked EMIs</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="cards-list"></ul>
                         </div>
                     </div>
@@ -544,36 +541,25 @@
         let dbRecurring = {};
 
         const defaultCategories = {
-            "cat_1": { name: "Aparna", icon: "bi-car-front-fill", color: "#6f42c1", sub: "Fuel, Toll, Service" },
-            "cat_2": { name: "Aravind Wedding", icon: "bi-car-front-fill", color: "#6f42c1", sub: "Suit, Transport, Gift" },
-            "cat_3": { name: "Bills", icon: "bi-receipt", color: "#212529", sub: "Electricity, Water, Internet" },
-            "cat_4": { name: "Entertainment", icon: "bi-film", color: "#6610f2", sub: "Movies, OTT, Gaming" },
-            "cat_5": { name: "Exam fee", icon: "bi-shield-check", color: "#fd7e14", sub: "Banking Exam, Civil Services" },
-            "cat_6": { name: "Food", icon: "bi-fork-knife", color: "#dc3545", sub: "Groceries, Restaurants, Fast Food" },
-            "cat_7": { name: "Fuel", icon: "bi-fuel-pump", color: "#6f42c1", sub: "Petrol, Diesel" },
-            "cat_8": { name: "GAS", icon: "bi-lightning-charge", color: "#198754", sub: "LPG Refill" },
-            "cat_9": { name: "Gift", icon: "bi-people-fill", color: "#198754", sub: "Wedding, Birthday, Anniversary" },
-            "cat_10": { name: "Grocery", icon: "bi-basket", color: "#795548", sub: "Supermarket, Vegetables" },
-            "cat_11": { name: "Health", icon: "bi-heart-pulse", color: "#ff5722", sub: "Medicines, Doctor Consultation" },
-            "cat_12": { name: "Investment", icon: "bi-piggy-bank", color: "#0d6efd", sub: "Mutual Funds, Stocks, SIP" },
-            "cat_13": { name: "Loan", icon: "bi-ticket-detailed", color: "#dc3545", sub: "Car Loan, Personal Loan" },
-            "cat_14": { name: "Shopping", icon: "bi-cart-fill", color: "#0d6efd", sub: "Clothing, Electronics" },
-            "cat_15": { name: "Travel", icon: "bi-bus-front", color: "#0d6efd", sub: "Train, Bus, Flight, Hotel" }
+            "cat_1": { name: "Food", sub: "Groceries, Restaurants, Fast Food, Coffee" },
+            "cat_2": { name: "Travel", sub: "Train, Bus, Flight, Hotel, Fuel, Toll" },
+            "cat_3": { name: "Bills", sub: "Electricity, Water, Internet, Gas, Mobile" },
+            "cat_4": { name: "Shopping", sub: "Clothing, Electronics, Home Decor" },
+            "cat_5": { name: "Entertainment", sub: "Movies, OTT, Gaming, Events" },
+            "cat_6": { name: "Health", sub: "Medicines, Doctor Consultation, Gym" },
+            "cat_7": { name: "Gift", sub: "Wedding, Birthday, Anniversary" },
+            "cat_8": { name: "Investment", sub: "Mutual Funds, Stocks, SIP, Gold" }
         };
 
         const defaultAccounts = {
-            "acc_1": { name: "Axis", type: "Savings", balance: 154.00, icon: "bi-bank" },
-            "acc_2": { name: "Axis Midcap", type: "RD", balance: 39000.00, icon: "bi-piggy-bank" },
-            "acc_3": { name: "Car RD", type: "RD", balance: 250000.00, icon: "bi-cash-stack" },
-            "acc_4": { name: "Card", type: "Savings", balance: 10601.76, icon: "bi-credit-card" },
-            "acc_5": { name: "Cash", type: "Savings", balance: 11542.00, icon: "bi-cash" },
-            "acc_6": { name: "SBI", type: "Savings", balance: 49053.61, icon: "bi-bank2" }
+            "acc_1": { name: "Axis", type: "Savings", balance: 154.00 },
+            "acc_2": { name: "SBI", type: "Savings", balance: 49053.61 },
+            "acc_3": { name: "Car RD", type: "RD", balance: 250000.00, linkedBank: "SBI" }
         };
 
         let selectedAppType = "Expense";
-        let currentSelectedAccount = "SBI";
-        let currentSelectedSubcategory = "";
-        let currentSelectedCategory = "";
+        let primaryAccount = "SBI";
+        let secondaryAccountOrCategory = "";
         let calcExpression = "0";
 
         window.toggleTheme = function() {
@@ -590,6 +576,57 @@
             if(type === 'Income') document.getElementById('type-income').classList.add('active');
             if(type === 'Expense') document.getElementById('type-expense').classList.add('active');
             if(type === 'Transfer') document.getElementById('type-transfer').classList.add('active');
+            
+            updateAppSelectorsUI();
+        }
+
+        function updateAppSelectorsUI() {
+            const boxPrimary = document.getElementById('box-primary-account');
+            const boxSecondary = document.getElementById('box-secondary-category');
+            
+            if(selectedAppType === 'Transfer') {
+                boxPrimary.className = "col-6";
+                boxSecondary.className = "col-6";
+                boxPrimary.innerHTML = `
+                    <div class="selector-box" onclick="openAccountModal('transfer_from')">
+                        <div class="d-flex align-items-center gap-2 text-truncate">
+                            <i class="bi bi-wallet2 text-warning fs-5"></i>
+                            <span id="transfer-from-label" class="text-truncate">From Account</span>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </div>
+                `;
+                boxSecondary.innerHTML = `
+                    <div class="selector-box" onclick="openAccountModal('transfer_to')">
+                        <div class="d-flex align-items-center gap-2 text-truncate">
+                            <i class="bi bi-arrow-left-right text-warning fs-5"></i>
+                            <span id="transfer-to-label" class="text-truncate">To Account</span>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </div>
+                `;
+            } else {
+                boxPrimary.className = "col-6";
+                boxSecondary.className = "col-6";
+                boxPrimary.innerHTML = `
+                    <div class="selector-box" onclick="openAccountModal('primary')">
+                        <div class="d-flex align-items-center gap-2 text-truncate">
+                            <i class="bi bi-wallet2 text-warning fs-5"></i>
+                            <span id="selected-account-label" class="text-truncate">${primaryAccount || 'Account'}</span>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </div>
+                `;
+                boxSecondary.innerHTML = `
+                    <div class="selector-box" onclick="openCategoryModal()">
+                        <div class="d-flex align-items-center gap-2 text-truncate">
+                            <i class="bi bi-tag text-warning fs-5"></i>
+                            <span id="selected-category-label" class="text-truncate">${secondaryAccountOrCategory || 'Subcategory'}</span>
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </div>
+                `;
+            }
         }
 
         window.appendCalc = function(val) {
@@ -618,18 +655,22 @@
             document.getElementById('app-notes').value = "";
         }
 
-        window.openAccountModal = function() {
+        let currentModalMode = 'primary';
+        window.openAccountModal = function(mode) {
+            currentModalMode = mode;
             const list = document.getElementById('account-modal-list');
             list.innerHTML = '';
-            const combined = {...dbAccounts, ...dbWallets};
+            const combined = {...dbAccounts, ...dbWallets, ...dbCards};
+            
+            document.getElementById('account-modal-title').innerText = mode === 'transfer_to' ? 'Transfer To Account' : (mode === 'transfer_from' ? 'Transfer From Account' : 'Select an Account');
+
             Object.values(combined).forEach(acc => {
                 list.innerHTML += `
                     <div class="account-select-row" onclick="selectAppAccount('${acc.name}')">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle" style="width:38px;height:38px;background:var(--calc-btn-bg);font-size:1.1rem;"><i class="bi ${acc.icon || 'bi-wallet2'} text-warning"></i></div>
                             <span class="fw-semibold">${acc.name}</span>
                         </div>
-                        <span class="fw-bold ${acc.balance < 0 ? 'text-danger' : 'text-success'}">Rs. ${acc.balance}</span>
+                        <span class="fw-bold text-success">${acc.balance !== undefined ? 'Rs. ' + acc.balance : (acc.outstanding ? 'Due: Rs. ' + acc.outstanding : '')}</span>
                     </div>
                 `;
             });
@@ -640,30 +681,37 @@
             document.getElementById('account-modal').style.display = 'none';
         }
 
+        let transferFromAcc = '';
+        let transferToAcc = '';
+
         window.selectAppAccount = function(name) {
-            currentSelectedAccount = name;
-            document.getElementById('selected-account-label').innerText = name;
+            if(currentModalMode === 'primary') {
+                primaryAccount = name;
+                document.getElementById('selected-account-label').innerText = name;
+            } else if(currentModalMode === 'transfer_from') {
+                transferFromAcc = name;
+                document.getElementById('transfer-from-label').innerText = name;
+            } else if(currentModalMode === 'transfer_to') {
+                transferToAcc = name;
+                document.getElementById('transfer-to-label').innerText = name;
+            }
             closeAccountModal();
         }
 
-        // Show ONLY subcategories linked to categories in modal
+        // Subcategory Selection Modal (No icons, text-only list)
         window.openCategoryModal = function() {
-            const grid = document.getElementById('category-modal-grid');
-            grid.innerHTML = '';
+            const list = document.getElementById('category-modal-list');
+            list.innerHTML = '';
             
             Object.values(dbCategories).forEach(cat => {
                 if(cat.sub && cat.sub.trim() !== '') {
                     cat.sub.split(',').forEach(sub => {
                         let trimmed = sub.trim();
                         if(trimmed) {
-                            grid.innerHTML += `
-                                <div class="icon-grid-item" onclick="selectAppSubcategory('${trimmed}', '${cat.name}', '${cat.icon || 'bi-tag'}', '${cat.color || '#6f42c1'}')">
-                                    <div class="icon-circle" style="background-color: ${cat.color || '#6f42c1'};">
-                                        <i class="bi ${cat.icon || 'bi-tag'}"></i>
-                                    </div>
-                                    <span class="small fw-semibold text-center text-truncate w-100">${trimmed}</span>
-                                    <small class="text-muted" style="font-size: 0.75rem;">(${cat.name})</small>
-                                </div>
+                            list.innerHTML += `
+                                <button type="button" class="list-group-item list-group-item-action py-2 px-3 border-secondary" onclick="selectAppSubcategory('${trimmed}', '${cat.name}')">
+                                    <span class="fw-semibold">${trimmed}</span> <small class="text-muted">(${cat.name})</small>
+                                </button>
                             `;
                         }
                     });
@@ -676,12 +724,10 @@
             document.getElementById('category-modal').style.display = 'none';
         }
 
-        window.selectAppSubcategory = function(subName, catName, icon, color) {
-            currentSelectedSubcategory = subName;
-            currentSelectedCategory = catName;
+        window.selectAppSubcategory = function(subName, catName) {
+            secondaryAccountOrCategory = subName;
             document.getElementById('selected-category-label').innerText = `${subName} (${catName})`;
-            document.getElementById('selected-category-icon').className = `bi ${icon} fs-5`;
-            document.getElementById('selected-category-icon').style.color = color;
+            document.getElementById('app-notes').value = subName;
             closeCategoryModal();
         }
 
@@ -692,18 +738,29 @@
                 return;
             }
 
-            const payload = {
+            let payload = {
                 type: selectedAppType,
                 amount: amount,
-                account: currentSelectedAccount,
-                category: currentSelectedCategory || 'General',
-                subcategory: currentSelectedSubcategory || 'General',
                 notes: document.getElementById('app-notes').value,
                 date: new Date().toISOString().split('T')[0]
             };
 
-            await push(ref(db, 'transactions'), payload);
-            await adjustAccountBalance(currentSelectedAccount, selectedAppType, amount);
+            if(selectedAppType === 'Transfer') {
+                if(!transferFromAcc || !transferToAcc || transferFromAcc === transferToAcc) {
+                    alert("Please select valid distinct 'From' and 'To' accounts for transfer.");
+                    return;
+                }
+                payload.account = `${transferFromAcc} ➔ ${transferToAcc}`;
+                payload.subcategory = 'Internal Transfer';
+                await push(ref(db, 'transactions'), payload);
+                await adjustAccountBalance(transferFromAcc, 'Expense', amount);
+                await adjustAccountBalance(transferToAcc, 'Income', amount);
+            } else {
+                payload.account = primaryAccount;
+                payload.subcategory = secondaryAccountOrCategory || document.getElementById('app-notes').value || 'General';
+                await push(ref(db, 'transactions'), payload);
+                await adjustAccountBalance(primaryAccount, selectedAppType, amount);
+            }
 
             resetAppInput();
             alert("Transaction saved successfully!");
@@ -739,7 +796,7 @@
                 'home': 'Home & Logs',
                 'master-categories': 'Categories & Linked Subcategories',
                 'master-accounts': 'Bank Accounts & Deposits',
-                'master-investments': 'Investments & Auto SIP/RD',
+                'master-investments': 'Investments & Auto SIP',
                 'master-cards': 'Credit Cards & EMIs',
                 'master-wallets': 'Cash & Digital Wallets',
                 'recurring': 'Recurring Payments',
@@ -757,6 +814,7 @@
                 } else {
                     dbCategories = snapshot.val();
                     renderCategories();
+                    populateDatalist();
                 }
             });
 
@@ -778,6 +836,7 @@
             onValue(ref(db, 'cards'), (snapshot) => {
                 dbCards = snapshot.val() || {};
                 renderCards();
+                populateCardDropdown();
             });
 
             onValue(ref(db, 'investments'), (snapshot) => {
@@ -797,13 +856,50 @@
             });
         }
 
+        function populateDatalist() {
+            const datalist = document.getElementById('autosuggest-subcategories');
+            if(!datalist) return;
+            datalist.innerHTML = '';
+            Object.values(dbCategories).forEach(cat => {
+                if(cat.sub) {
+                    cat.sub.split(',').forEach(sub => {
+                        let trimmed = sub.trim();
+                        if(trimmed) datalist.innerHTML += `<option value="${trimmed}">`;
+                    });
+                }
+            });
+        }
+
         function populateAccountDropdowns() {
             const select = document.getElementById('inv-source-account');
+            const rdSelect = document.getElementById('acc-linked-bank');
+            if(select) {
+                select.innerHTML = '';
+                Object.values(dbAccounts).forEach(acc => {
+                    if(acc.type === 'Savings') select.innerHTML += `<option value="${acc.name}">${acc.name} (Bal: ${acc.balance})</option>`;
+                });
+            }
+            if(rdSelect) {
+                rdSelect.innerHTML = '';
+                Object.values(dbAccounts).forEach(acc => {
+                    if(acc.type === 'Savings') rdSelect.innerHTML += `<option value="${acc.name}">${acc.name}</option>`;
+                });
+            }
+        }
+
+        function populateCardDropdown() {
+            const select = document.getElementById('emi-card-select');
             if(!select) return;
             select.innerHTML = '';
-            Object.values(dbAccounts).forEach(acc => {
-                select.innerHTML += `<option value="${acc.name}">${acc.name} (Bal: ${acc.balance})</option>`;
+            Object.entries(dbCards).forEach(([id, card]) => {
+                select.innerHTML += `<option value="${id}">${card.name}</option>`;
             });
+        }
+
+        window.toggleRDLinkFields = function() {
+            const type = document.getElementById('acc-type').value;
+            const container = document.getElementById('rd-link-container');
+            container.style.display = type === 'RD' ? 'block' : 'none';
         }
 
         function renderCategories() {
@@ -812,15 +908,12 @@
             Object.entries(dbCategories).forEach(([id, val]) => {
                 let subs = val.sub ? val.sub.split(',').map(s => `<span class="badge-sub">${s.trim()}</span>`).join('') : '<small class="text-muted">No subcategories</small>';
                 list.innerHTML += `<div class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="icon-circle" style="background-color: ${val.color || '#6f42c1'}; width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-tag'}"></i></div>
-                        <div>
-                            <h6 class="mb-1 fw-bold text-warning">${val.name}</h6>
-                            <div>Linked Subs: ${subs}</div>
-                        </div>
+                    <div>
+                        <h6 class="mb-1 fw-bold text-warning">${val.name}</h6>
+                        <div>Linked Subs: ${subs}</div>
                     </div>
                     <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editCategory('${id}', '${val.name}', '${val.sub || ''}', '${val.icon || ''}', '${val.color || ''}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editCategory('${id}', '${val.name}', '${val.sub || ''}')"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteData('categories', '${id}')"><i class="bi bi-trash"></i></button>
                     </div>
                 </div>`;
@@ -831,13 +924,11 @@
             const list = document.getElementById('accounts-list');
             list.innerHTML = '';
             Object.entries(dbAccounts).forEach(([id, val]) => {
+                let rdInfo = val.type === 'RD' && val.linkedBank ? `<br><small class="text-warning">Auto-debited from: ${val.linkedBank}</small>` : '';
                 list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
+                    <div><strong>${val.name}</strong> <span class="badge bg-secondary">${val.type}</span>${rdInfo}</div>
                     <div class="d-flex align-items-center gap-3">
-                        <div class="icon-circle" style="background:var(--calc-btn-bg);width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-bank'} text-warning"></i></div>
-                        <div><strong>${val.name}</strong> <span class="badge bg-secondary">${val.type}</span></div>
-                    </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="fw-bold ${val.balance < 0 ? 'text-danger' : 'text-success'}">Rs. ${val.balance}</span>
+                        <span class="fw-bold text-success">Rs. ${val.balance}</span>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteData('accounts', '${id}')"><i class="bi bi-trash"></i></button>
                     </div>
                 </li>`;
@@ -864,15 +955,30 @@
             if(!list) return;
             list.innerHTML = '';
             Object.entries(dbCards).forEach(([id, val]) => {
-                let emiDetails = val.emiName ? `<br><small class="text-warning"><i class="bi bi-credit-card-2-front"></i> EMI: ${val.emiName} - Rs. ${val.emiAmt}/mo (${val.emiMonths} mos left)</small>` : '';
+                let emiList = '';
+                if(val.emis && Array.isArray(val.emis)) {
+                    val.emis.forEach((emi, emiIndex) => {
+                        emiList += `<br><small class="text-warning"><i class="bi bi-credit-card-2-front"></i> EMI: ${emi.name} - Rs. ${emi.amt}/mo (${emi.months} mos left) <button class="btn btn-link btn-sm p-0 text-danger" onclick="deleteEmi('${id}', ${emiIndex})"><i class="bi bi-x-circle"></i></button></small>`;
+                    });
+                }
                 list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
                     <div>
                         <strong>${val.name}</strong> <span class="badge bg-danger">Due: Rs. ${val.outstanding || 0}</span>
-                        ${emiDetails}
+                        ${emiList}
                     </div>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteData('cards', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
+        }
+
+        window.deleteEmi = async function(cardId, emiIndex) {
+            if(confirm("Remove this EMI?")) {
+                let card = dbCards[cardId];
+                if(card && card.emis) {
+                    card.emis.splice(emiIndex, 1);
+                    await update(ref(db, `cards/${cardId}`), { emis: card.emis });
+                }
+            }
         }
 
         function renderWallets() {
@@ -913,7 +1019,7 @@
                     <td><span class="badge ${typeBadge}">${val.type}</span></td>
                     <td class="fw-bold">${val.amount}</td>
                     <td>${val.account}</td>
-                    <td>${val.subcategory} (${val.category})<br><small class="text-muted">${val.notes || ''}</small></td>
+                    <td>${val.subcategory}<br><small class="text-muted">${val.notes || ''}</small></td>
                     <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteData('transactions', '${id}')"><i class="bi bi-trash"></i></button></td>
                 </tr>`;
             });
@@ -925,8 +1031,6 @@
             const id = document.getElementById('cat-id').value;
             const payload = {
                 name: document.getElementById('cat-name').value,
-                icon: document.getElementById('cat-icon').value,
-                color: document.getElementById('cat-color').value,
                 sub: document.getElementById('cat-sub').value
             };
             saveEntity('categories', id, payload, 'category-form', 'cat-id', 'cat-submit-btn', 'Save Category');
@@ -935,11 +1039,12 @@
         document.getElementById('account-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('acc-id').value;
+            const type = document.getElementById('acc-type').value;
             const payload = {
                 name: document.getElementById('acc-name').value,
-                type: document.getElementById('acc-type').value,
+                type: type,
                 balance: parseFloat(document.getElementById('acc-balance').value),
-                icon: document.getElementById('acc-icon').value
+                linkedBank: type === 'RD' ? document.getElementById('acc-linked-bank').value : ''
             };
             saveEntity('accounts', id, payload, 'account-form', 'acc-id', 'acc-submit-btn', 'Save Account');
         });
@@ -954,7 +1059,7 @@
                 sourceAccount: document.getElementById('inv-source-account').value,
                 day: parseInt(document.getElementById('inv-day').value)
             };
-            saveEntity('investments', id, payload, 'investment-form', 'inv-id', 'inv-submit-btn', 'Save Auto SIP/RD');
+            saveEntity('investments', id, payload, 'investment-form', 'inv-id', 'inv-submit-btn', 'Save Auto SIP');
         });
 
         document.getElementById('card-form').addEventListener('submit', (e) => {
@@ -964,11 +1069,27 @@
                 name: document.getElementById('card-name').value,
                 limit: parseFloat(document.getElementById('card-limit').value),
                 outstanding: parseFloat(document.getElementById('card-outstanding').value),
-                emiName: document.getElementById('card-emi-name').value,
-                emiAmt: parseFloat(document.getElementById('card-emi-amt').value || 0),
-                emiMonths: parseInt(document.getElementById('card-emi-months').value || 0)
+                emis: id && dbCards[id] ? dbCards[id].emis || [] : []
             };
             saveEntity('cards', id, payload, 'card-form', 'card-id', 'card-submit-btn', 'Save Credit Card');
+        });
+
+        document.getElementById('emi-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cardId = document.getElementById('emi-card-select').value;
+            const emiObj = {
+                name: document.getElementById('emi-name').value,
+                amt: parseFloat(document.getElementById('emi-amt').value),
+                months: parseInt(document.getElementById('emi-months').value)
+            };
+            if(cardId && dbCards[cardId]) {
+                let card = dbCards[cardId];
+                if(!card.emis) card.emis = [];
+                card.emis.push(emiObj);
+                await update(ref(db, `cards/${cardId}`), { emis: card.emis });
+                document.getElementById('emi-form').reset();
+                alert("EMI successfully linked to card!");
+            }
         });
 
         document.getElementById('wallet-form').addEventListener('submit', (e) => {
@@ -1013,12 +1134,10 @@
             }
         }
 
-        window.editCategory = function(id, name, sub, icon, color) {
+        window.editCategory = function(id, name, sub) {
             document.getElementById('cat-id').value = id;
             document.getElementById('cat-name').value = name;
             document.getElementById('cat-sub').value = sub;
-            document.getElementById('cat-icon').value = icon || 'bi-tag';
-            document.getElementById('cat-color').value = color || '#8B008B';
             document.getElementById('cat-submit-btn').innerText = 'Update Category';
         }
 
