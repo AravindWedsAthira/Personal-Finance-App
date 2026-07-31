@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,22 +9,64 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        :root { --sidebar-width: 260px; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+        :root { 
+            --sidebar-width: 260px;
+            --app-bg: #2b2b27;
+            --card-bg: #363632;
+            --input-bg: #21211e;
+            --text-color: #f2f2e9;
+            --accent-gold: #d4af37;
+            --calc-btn-bg: #42423d;
+            --calc-btn-active: #52524d;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--app-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
         #wrapper { display: flex; width: 100%; align-items: stretch; }
-        #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: linear-gradient(180deg, #212529 0%, #343a40 100%); color: #fff; transition: all 0.3s; min-height: 100vh; z-index: 1000; }
+        #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: linear-gradient(180deg, #1f1f1c 0%, #2b2b27 100%); color: #fff; transition: all 0.3s; min-height: 100vh; z-index: 1000; border-right: 1px solid #3d3d38; }
         #sidebar.active { margin-left: calc(-1 * var(--sidebar-width)); }
-        #sidebar .sidebar-header { padding: 25px 20px; background: #1a1e21; border-bottom: 1px solid #2f353a; }
+        #sidebar .sidebar-header { padding: 25px 20px; background: #181815; border-bottom: 1px solid #2f2f2a; }
         #sidebar ul.components { padding: 15px 0; }
-        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: #adb5bd; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
-        #sidebar ul li a:hover, #sidebar ul li.active > a { color: #fff; background: rgba(255, 255, 255, 0.05); border-left: 4px solid #0d6efd; }
-        #content { width: 100%; padding: 25px; min-height: 100vh; transition: all 0.3s; }
-        .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05); border: none; border-radius: 0.75rem; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); }
+        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: #b5b5ad; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover, #sidebar ul li.active > a { color: var(--text-color); background: rgba(212, 175, 55, 0.1); border-left: 4px solid var(--accent-gold); }
+        #content { width: 100%; padding: 25px; min-height: 100vh; transition: all 0.3s; background-color: var(--app-bg); }
+        .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); border: 1px solid #3d3d38; border-radius: 0.75rem; background-color: var(--card-bg) !important; color: var(--text-color); }
         .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .badge-sub { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; font-weight: 500; margin-right: 4px; margin-bottom: 4px; display: inline-block; padding: 5px 10px; border-radius: 6px; }
+        
+        /* Custom App Theme Elements matching the screenshots */
+        .app-container { max-width: 480px; margin: 0 auto; background-color: var(--app-bg); border-radius: 12px; border: 1px solid #42423d; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .top-nav-bar { background-color: #21211e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d38; }
+        .type-selector { display: flex; justify-content: center; gap: 20px; background-color: #262623; padding: 12px; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid #3d3d38; }
+        .type-option { cursor: pointer; color: #9e9e94; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+        .type-option.active { color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); padding-bottom: 2px; }
+        
+        .selector-box { background-color: var(--card-bg); border: 1px solid #4a4a43; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.2s; }
+        .selector-box:hover { border-color: var(--accent-gold); }
+        
+        .notes-box { background-color: var(--input-bg); border: 1px solid #4a4a43; border-radius: 8px; padding: 12px; min-height: 85px; color: #b5b5ad; font-size: 0.95rem; }
+        
+        .calc-display { background-color: var(--input-bg); border: 1px solid #4a4a43; border-radius: 8px; padding: 12px 20px; text-align: right; font-size: 2.2rem; font-weight: bold; color: var(--accent-gold); letter-spacing: 1px; }
+        
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; background-color: #21211e; }
+        .calc-btn { background-color: var(--calc-btn-bg); border: none; border-radius: 6px; color: var(--text-color); font-size: 1.25rem; font-weight: 600; padding: 16px 0; cursor: pointer; transition: background-color 0.15s; }
+        .calc-btn:hover { background-color: var(--calc-btn-active); }
+        .calc-btn.operator { color: var(--accent-gold); font-size: 1.4rem; }
+        .calc-btn.equals { background-color: #d4af37; color: #1f1f1c; }
+        .calc-btn.equals:hover { background-color: #e5be3b; }
+
+        /* Modal Overlays for Selector Grids */
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .custom-modal-content { background: var(--app-bg); border: 1px solid #4a4a43; border-radius: 12px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        
+        .icon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px 0; }
+        .icon-grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 8px; transition: background 0.2s; }
+        .icon-grid-item:hover { background: rgba(255,255,255,0.05); }
+        .icon-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; margin-bottom: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+
+        .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #3d3d38; cursor: pointer; transition: background 0.2s; }
+        .account-select-row:hover { background: rgba(255,255,255,0.04); }
+        
+        .badge-sub { background-color: rgba(212, 175, 55, 0.1); color: var(--accent-gold); font-weight: 500; margin-right: 6px; margin-bottom: 6px; display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(212, 175, 55, 0.2); }
         @media (max-width: 768px) { #sidebar { margin-left: calc(-1 * var(--sidebar-width)); position: absolute; } #sidebar.active { margin-left: 0; } }
     </style>
 </head>
@@ -35,7 +77,7 @@
         <nav id="sidebar">
             <div class="sidebar-header d-flex justify-content-between align-items-center">
                 <div>
-                    <h4 class="m-0 fw-bold">Passbook</h4>
+                    <h4 class="m-0 fw-bold text-warning">Passbook</h4>
                     <small class="text-success"><i class="bi bi-circle-fill fs-7"></i> Realtime DB Connected</small>
                 </div>
                 <button class="btn btn-sm btn-dark d-md-none text-light" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
@@ -55,84 +97,110 @@
 
         <!-- Page Content -->
         <div id="content">
-            <nav class="navbar navbar-expand-lg rounded shadow-sm mb-4 px-4 py-3 bg-body">
+            <nav class="navbar navbar-expand-lg rounded shadow-sm mb-4 px-4 py-3 bg-card border">
                 <div class="container-fluid p-0">
                     <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary border"><i class="bi bi-list fs-5"></i></button>
                     <div class="d-flex align-items-center gap-3">
-                        <span class="navbar-brand fw-bold fs-4 m-0" id="page-title">Home & Logs</span>
-                        <button class="btn btn-outline-secondary btn-sm rounded-circle p-2 lh-1" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
-                            <i class="bi bi-moon-fill fs-6" id="darkModeIcon"></i>
-                        </button>
+                        <span class="navbar-brand fw-bold fs-4 m-0 text-light" id="page-title">Home & Logs</span>
                     </div>
                 </div>
             </nav>
 
-            <!-- 1. HOME / TRANSACTIONS -->
+            <!-- 1. HOME / APP SIMULATOR INTERFACE -->
             <div id="section-home" class="section-view active">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold"><i class="bi bi-plus-circle me-2"></i>New Transaction</h4>
-                            <form id="transaction-form">
-                                <input type="hidden" id="trans-id">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5 mb-4">
+                        <!-- App UI Card matching the uploaded screenshot -->
+                        <div class="app-container">
+                            <div class="top-nav-bar">
+                                <span class="text-warning fw-semibold" style="cursor:pointer;" onclick="resetAppInput()"><i class="bi bi-x-lg me-1"></i> CANCEL</span>
+                                <span class="text-warning fw-bold" style="cursor:pointer;" onclick="submitAppTransaction()"><i class="bi bi-check-lg me-1"></i> SAVE</span>
+                            </div>
+                            
+                            <div class="type-selector">
+                                <span class="type-option" id="type-income" onclick="setAppType('Income')">INCOME</span>
+                                <span class="type-option active" id="type-expense" onclick="setAppType('Expense')"><i class="bi bi-check-circle-fill"></i> EXPENSE</span>
+                                <span class="type-option" id="type-transfer" onclick="setAppType('Transfer')">TRANSFER</span>
+                            </div>
+
+                            <div class="p-3">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <div class="selector-box" onclick="openAccountModal()">
+                                            <div class="d-flex align-items-center gap-2 text-truncate">
+                                                <i class="bi bi-wallet2 text-warning fs-5"></i>
+                                                <span id="selected-account-label" class="text-truncate">Account</span>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted small"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="selector-box" onclick="openCategoryModal()">
+                                            <div class="d-flex align-items-center gap-2 text-truncate">
+                                                <i class="bi bi-tag text-warning fs-5" id="selected-category-icon"></i>
+                                                <span id="selected-category-label" class="text-truncate">Category</span>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted small"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Subcategory selection bar if category has subcategories -->
+                                <div id="subcategory-bar-container" class="mb-3" style="display:none;">
+                                    <div class="small text-muted mb-1 fw-semibold">Select Subcategory:</div>
+                                    <div id="subcategory-chips" class="d-flex flex-wrap gap-1"></div>
+                                </div>
+
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Type</label>
-                                    <select class="form-select" id="trans-type" required onchange="handleTransactionTypeChange()">
-                                        <option value="Expense">Expense</option>
-                                        <option value="Income">Income</option>
-                                        <option value="Transfer">Self Transfer</option>
-                                        <option value="CC_Repayment">Credit Card Repayment</option>
-                                    </select>
+                                    <textarea class="form-control notes-box" id="app-notes" placeholder="Add notes"></textarea>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Amount</label>
-                                    <input type="number" step="0.01" class="form-control" id="trans-amount" placeholder="0.00" required>
-                                </div>
-                                <div class="mb-3" id="group-trans-account">
-                                    <label class="form-label fw-semibold" id="label-trans-account">Account / Source (Payer)</label>
-                                    <select class="form-select" id="trans-account" required></select>
-                                </div>
-                                <div class="mb-3" id="group-trans-destination" style="display:none;">
-                                    <label class="form-label fw-semibold">Destination Account (Recipient)</label>
-                                    <select class="form-select" id="trans-destination"></select>
-                                </div>
-                                <div class="mb-3" id="group-trans-cc" style="display:none;">
-                                    <label class="form-label fw-semibold">Target Credit Card (Recipient of Repayment)</label>
-                                    <select class="form-select" id="trans-cc-target"></select>
-                                </div>
-                                <div class="mb-3" id="group-trans-cat">
-                                    <label class="form-label fw-semibold">Category</label>
-                                    <select class="form-select" id="trans-category" required onchange="populateSubcategories()"></select>
-                                </div>
-                                <div class="mb-3" id="group-trans-sub">
-                                    <label class="form-label fw-semibold">Subcategory</label>
-                                    <select class="form-select" id="trans-subcategory" required></select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Date</label>
-                                    <input type="date" class="form-control" id="trans-date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Notes</label>
-                                    <input type="text" class="form-control" id="trans-notes" placeholder="Optional details...">
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm" id="trans-submit-btn">Save Transaction</button>
-                            </form>
+
+                                <div class="calc-display mb-2" id="calc-display">0</div>
+                            </div>
+
+                            <!-- Calculator Pad -->
+                            <div class="calc-grid">
+                                <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+                                <button class="calc-btn" onclick="appendCalc('7')">7</button>
+                                <button class="calc-btn" onclick="appendCalc('8')">8</button>
+                                <button class="calc-btn" onclick="appendCalc('9')">9</button>
+                                
+                                <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+                                <button class="calc-btn" onclick="appendCalc('4')">4</button>
+                                <button class="calc-btn" onclick="appendCalc('5')">5</button>
+                                <button class="calc-btn" onclick="appendCalc('6')">6</button>
+                                
+                                <button class="calc-btn operator" onclick="appendCalc('*')">&times;</button>
+                                <button class="calc-btn" onclick="appendCalc('1')">1</button>
+                                <button class="calc-btn" onclick="appendCalc('2')">2</button>
+                                <button class="calc-btn" onclick="appendCalc('3')">3</button>
+                                
+                                <button class="calc-btn operator" onclick="appendCalc('/')">&divide;</button>
+                                <button class="calc-btn" onclick="appendCalc('0')">0</button>
+                                <button class="calc-btn" onclick="appendCalc('.')">.</button>
+                                <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                            </div>
+
+                            <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top border-secondary">
+                                <span id="current-date-display">Jul 31, 2026</span>
+                                <span id="current-time-display">8:58 PM</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
+
+                    <div class="col-lg-7">
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
                             <div class="table-responsive">
-                                <table class="table table-hover align-middle">
-                                    <thead class="table-light">
+                                <table class="table table-dark table-hover align-middle">
+                                    <thead>
                                         <tr>
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Source / Account</th>
-                                            <th>Category / Sub / Destination</th>
-                                            <th class="text-end">Actions</th>
+                                            <th>Account</th>
+                                            <th>Category / Sub / Notes</th>
+                                            <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="transactions-table-body"></tbody>
@@ -143,30 +211,60 @@
                 </div>
             </div>
 
+            <!-- MODALS FOR APP SELECTORS -->
+            <!-- Account Selection Modal -->
+            <div class="custom-modal-overlay" id="account-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 border-secondary">
+                        <h5 class="fw-bold m-0 text-warning">Select an account</h5>
+                        <button class="btn btn-sm btn-dark text-light" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div id="account-modal-list"></div>
+                </div>
+            </div>
+
+            <!-- Category Selection Modal -->
+            <div class="custom-modal-overlay" id="category-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 border-secondary">
+                        <h5 class="fw-bold m-0 text-warning">Select a category</h5>
+                        <button class="btn btn-sm btn-dark text-light" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div class="icon-grid" id="category-modal-grid"></div>
+                </div>
+            </div>
+
             <!-- 2. CATEGORIES & SUB-CATEGORIES -->
             <div id="section-master-categories" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Manage Categories</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 text-warning fw-bold">Manage Categories</h4>
                             <form id="category-form">
                                 <input type="hidden" id="cat-id">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Category Name (e.g. Gift)</label>
-                                    <input type="text" class="form-control" id="cat-name" placeholder="e.g. Gift" required>
+                                    <label class="form-label fw-semibold">Category Name</label>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="cat-name" placeholder="e.g. Food" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Icon (Bootstrap Icon Class)</label>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="cat-icon" placeholder="e.g. bi-cup-hot" value="bi-tag">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Icon Background Color</label>
+                                    <input type="color" class="form-control form-control-color w-100 bg-dark border-secondary" id="cat-color" value="#8B008B">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Subcategories (Comma Separated)</label>
-                                    <textarea class="form-control" id="cat-sub" rows="3" placeholder="Farewell, Wedding, Birthday, Anniversary"></textarea>
-                                    <small class="text-muted">You can add multiple subcategories separated by commas.</small>
+                                    <textarea class="form-control bg-dark text-light border-secondary" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="cat-submit-btn">Save Category</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="cat-submit-btn">Save Category</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Existing Categories & Subcategories</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light">Existing Categories & Subcategories</h4>
                             <div id="categories-list" class="list-group"></div>
                         </div>
                     </div>
@@ -177,48 +275,38 @@
             <div id="section-master-accounts" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Add Bank / Deposit</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 text-warning fw-bold">Add Bank / Account</h4>
                             <form id="account-form">
                                 <input type="hidden" id="acc-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account Type</label>
-                                    <select class="form-select" id="acc-type" onchange="toggleAccountFields()" required>
-                                        <option value="Savings">Savings Account (Default Debit)</option>
+                                    <select class="form-select bg-dark text-light border-secondary" id="acc-type" onchange="toggleAccountFields()" required>
+                                        <option value="Savings">Savings Account</option>
                                         <option value="FD">Fixed Deposit (FD)</option>
                                         <option value="RD">Recurring Deposit (RD)</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account / Scheme Name</label>
-                                    <input type="text" class="form-control" id="acc-name" placeholder="e.g. HDFC Salary / SBI FD" required>
-                                </div>
-                                <div class="mb-3" id="parent-bank-group" style="display:none;">
-                                    <label class="form-label fw-semibold">Associated Bank Account</label>
-                                    <select class="form-select" id="acc-parent"></select>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="acc-name" placeholder="e.g. SBI, Axis, Car RD" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold" id="balance-label">Current Balance / Principal Amount</label>
-                                    <input type="number" step="0.01" class="form-control" id="acc-balance" required>
+                                    <label class="form-label fw-semibold">Icon (Bootstrap Icon Class)</label>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="acc-icon" placeholder="e.g. bi-bank" value="bi-bank">
                                 </div>
-                                <div id="deposit-fields" style="display:none;">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Tenure (Months)</label>
-                                        <input type="number" class="form-control" id="acc-tenure">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-semibold">Interest Rate (%)</label>
-                                        <input type="number" step="0.01" class="form-control" id="acc-interest">
-                                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" id="balance-label">Current Balance</label>
+                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="acc-balance" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="acc-submit-btn">Save Account</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="acc-submit-btn">Save Account</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Accounts & Deposits Overview</h4>
-                            <ul class="list-group" id="accounts-list"></ul>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light">Accounts & Balances</h4>
+                            <ul class="list-group list-group-flush bg-transparent" id="accounts-list"></ul>
                         </div>
                     </div>
                 </div>
@@ -228,13 +316,13 @@
             <div id="section-master-investments" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Add Investment / SIP</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 text-warning fw-bold">Add Investment / SIP</h4>
                             <form id="investment-form">
                                 <input type="hidden" id="inv-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Asset Type</label>
-                                    <select class="form-select" id="inv-type" required>
+                                    <select class="form-select bg-dark text-light border-secondary" id="inv-type" required>
                                         <option value="Mutual Fund">Mutual Fund / SIP</option>
                                         <option value="Stock">Stock</option>
                                         <option value="PPF">PPF / EPF</option>
@@ -242,31 +330,27 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Name / Ticker</label>
-                                    <input type="text" class="form-control" id="inv-name" placeholder="e.g. Parag Parikh Flexi Cap SIP" required>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="inv-name" placeholder="e.g. Axis Midcap SIP" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Invested Amount / SIP Installment</label>
-                                    <input type="number" step="0.01" class="form-control" id="inv-amount" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Units / Quantity</label>
-                                    <input type="number" step="0.001" class="form-control" id="inv-units">
+                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="inv-amount" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Is this an active SIP?</label>
-                                    <select class="form-select" id="inv-issip">
+                                    <select class="form-select bg-dark text-light border-secondary" id="inv-issip">
                                         <option value="No">No (Lumpsum / Stock)</option>
                                         <option value="Yes">Yes (Monthly SIP)</option>
                                     </select>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="inv-submit-btn">Save Investment</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="inv-submit-btn">Save Investment</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Portfolio Assets & SIPs</h4>
-                            <ul class="list-group" id="investments-list"></ul>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light">Portfolio Assets & SIPs</h4>
+                            <ul class="list-group list-group-flush bg-transparent" id="investments-list"></ul>
                         </div>
                     </div>
                 </div>
@@ -276,30 +360,30 @@
             <div id="section-master-cards" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Add Credit Card</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 text-warning fw-bold">Add Credit Card</h4>
                             <form id="card-form">
                                 <input type="hidden" id="card-id">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Card Name / Bank</label>
-                                    <input type="text" class="form-control" id="card-name" placeholder="e.g. HDFC Regalia" required>
+                                    <label class="form-label fw-semibold">Card Name</label>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="card-name" placeholder="e.g. Joint CC" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Credit Limit</label>
-                                    <input type="number" step="0.01" class="form-control" id="card-limit" required>
+                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="card-limit" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Initial Outstanding Balance Due</label>
-                                    <input type="number" step="0.01" class="form-control" id="card-outstanding" placeholder="0.00" required>
+                                    <label class="form-label fw-semibold">Outstanding Balance Due</label>
+                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="card-outstanding" placeholder="0.00" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="card-submit-btn">Save Card</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="card-submit-btn">Save Card</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Credit Cards Portfolio & Balance Due</h4>
-                            <ul class="list-group" id="cards-list"></ul>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light">Credit Cards Portfolio</h4>
+                            <ul class="list-group list-group-flush bg-transparent" id="cards-list"></ul>
                         </div>
                     </div>
                 </div>
@@ -309,26 +393,26 @@
             <div id="section-master-wallets" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Add Wallet / Cash</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 text-warning fw-bold">Add Wallet / Cash</h4>
                             <form id="wallet-form">
                                 <input type="hidden" id="wal-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Name</label>
-                                    <input type="text" class="form-control" id="wal-name" placeholder="e.g. Physical Cash, Paytm Wallet" required>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="wal-name" placeholder="e.g. Joint Cash" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Available Balance</label>
-                                    <input type="number" step="0.01" class="form-control" id="wal-balance" required>
+                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="wal-balance" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="wal-submit-btn">Save Wallet</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="wal-submit-btn">Save Wallet</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Wallets & Cash Assets</h4>
-                            <ul class="list-group" id="wallets-list"></ul>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light">Wallets & Cash Assets</h4>
+                            <ul class="list-group list-group-flush bg-transparent" id="wallets-list"></ul>
                         </div>
                     </div>
                 </div>
@@ -338,42 +422,38 @@
             <div id="section-recurring" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Add Recurring Payment / Subscription</h4>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 text-warning fw-bold">Add Recurring Payment</h4>
                             <form id="recurring-form">
                                 <input type="hidden" id="rec-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Title / Name</label>
-                                    <input type="text" class="form-control" id="rec-name" placeholder="e.g. Netflix, Rent, Electricity Bill" required>
+                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="rec-name" placeholder="e.g. Netflix, Rent" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Amount</label>
-                                    <input type="number" step="0.01" class="form-control" id="rec-amount" required>
+                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="rec-amount" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Frequency</label>
-                                    <select class="form-select" id="rec-freq">
+                                    <select class="form-select bg-dark text-light border-secondary" id="rec-freq">
                                         <option value="Monthly">Monthly</option>
                                         <option value="Yearly">Yearly</option>
                                         <option value="Weekly">Weekly</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Source Account / Wallet / Card</label>
-                                    <select class="form-select" id="rec-account" required></select>
-                                </div>
-                                <div class="mb-3">
                                     <label class="form-label fw-semibold">Next Due Date</label>
-                                    <input type="date" class="form-control" id="rec-date" required>
+                                    <input type="date" class="form-control bg-dark text-light border-secondary" id="rec-date" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="rec-submit-btn">Save Recurring Item</button>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="rec-submit-btn">Save Recurring Item</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Active Recurring Subscriptions & Bills</h4>
-                            <ul class="list-group" id="recurring-list"></ul>
+                        <div class="card p-4 bg-card">
+                            <h4 class="mb-3 fw-bold text-light">Active Recurring Subscriptions & Bills</h4>
+                            <ul class="list-group list-group-flush bg-transparent" id="recurring-list"></ul>
                         </div>
                     </div>
                 </div>
@@ -381,86 +461,36 @@
 
             <!-- 8. ANALYTICS -->
             <div id="section-analytics" class="section-view">
-                <div class="card p-4 bg-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                        <h4 class="fw-bold m-0">Financial Analytics & Insights</h4>
-                        <div class="d-flex gap-2">
-                            <select id="analytics-timeframe" class="form-select" onchange="renderAnalytics()">
-                                <option value="monthly">Monthly</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="yearly">Yearly</option>
-                                <option value="daily">Daily</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Quick Overview Metrics -->
+                <div class="card p-4 bg-card">
+                    <h4 class="fw-bold mb-4 text-light">Financial Analytics & Insights</h4>
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm border-start border-primary border-4 text-dark">
-                                <span class="text-muted small fw-semibold">DISPOSABLE LIQUID (Savings + Cash)</span>
-                                <h3 id="metric-disposable" class="text-primary fw-bold mt-1 mb-0">0.00</h3>
+                            <div class="p-3 bg-dark rounded border border-secondary">
+                                <span class="text-muted small fw-semibold">LIQUID BALANCE</span>
+                                <h3 id="metric-disposable" class="text-warning fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm border-start border-success border-4 text-dark">
-                                <span class="text-muted small fw-semibold">TOTAL INVESTMENTS & SIP</span>
+                            <div class="p-3 bg-dark rounded border border-secondary">
+                                <span class="text-muted small fw-semibold">INVESTMENTS</span>
                                 <h3 id="metric-investments" class="text-success fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm border-start border-danger border-4 text-dark">
-                                <span class="text-muted small fw-semibold">PERIOD EXPENSES</span>
+                            <div class="p-3 bg-dark rounded border border-secondary">
+                                <span class="text-muted small fw-semibold">TOTAL EXPENSES</span>
                                 <h3 id="metric-expenses" class="text-danger fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
-                    </div>
-
-                    <h5 class="fw-bold mb-3">Category-wise Breakdown</h5>
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
-                            <thead class="table-light">
-                                <tr><th>Category</th><th>Income</th><th>Expense</th><th>Net Flow</th></tr>
-                            </thead>
-                            <tbody id="analytics-table-body"></tbody>
-                        </table>
                     </div>
                 </div>
             </div>
 
             <!-- 9. BUDGETS -->
             <div id="section-budgets" class="section-view">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 text-primary fw-bold">Set Budget</h4>
-                            <form id="budget-form">
-                                <input type="hidden" id="bud-id">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Period</label>
-                                    <select class="form-select" id="bud-period" required>
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="Yearly">Yearly</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Category</label>
-                                    <select class="form-select" id="bud-category" required></select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Target Amount</label>
-                                    <input type="number" step="0.01" class="form-control" id="bud-amount" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold" id="bud-submit-btn">Save Budget</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card p-4 bg-body">
-                            <h4 class="mb-3 fw-bold">Budget Tracking & Alerts</h4>
-                            <div id="budgets-container"></div>
-                        </div>
-                    </div>
+                <div class="card p-4 bg-card">
+                    <h4 class="mb-3 fw-bold text-light">Budget Tracking</h4>
+                    <div id="budgets-container"></div>
                 </div>
             </div>
 
@@ -493,41 +523,208 @@
         let dbTransactions = {};
         let dbRecurring = {};
 
+        // Default categories matching user's exact uploaded look
         const defaultCategories = {
-            "cat_1": { name: "Food & Dining", sub: "Groceries, Restaurants, Coffee, Fast Food" },
-            "cat_2": { name: "Bills & Utilities", sub: "Electricity, Water, Internet, Mobile, Gas" },
-            "cat_3": { name: "Transportation", sub: "Fuel, Public Transit, Cab, Maintenance" },
-            "cat_4": { name: "Shopping", sub: "Clothing, Electronics, Home Decor, Online" },
-            "cat_5": { name: "Salary / Income", sub: "Primary Salary, Freelance, Dividends, Gifts" },
-            "cat_6": { name: "Gift", sub: "Farewell, Wedding, Birthday, Anniversary, Festival" },
-            "cat_7": { name: "Entertainment", sub: "Movies, Subscriptions, Games, Outings" }
+            "cat_1": { name: "Aparna", icon: "bi-car-front-fill", color: "#6f42c1", sub: "Fuel, Toll, Service" },
+            "cat_2": { name: "Aravind Wedding", icon: "bi-car-front-fill", color: "#6f42c1", sub: "Suit, Transport, Gift" },
+            "cat_3": { name: "Bills", icon: "bi-receipt", color: "#212529", sub: "Electricity, Water, Internet" },
+            "cat_4": { name: "Entertainment", icon: "bi-film", color: "#6610f2", sub: "Movies, OTT, Gaming" },
+            "cat_5": { name: "Exam fee", icon: "bi-shield-check", color: "#fd7e14", sub: "Banking Exam, Civil Services" },
+            "cat_6": { name: "Food", icon: "bi-fork-knife", color: "#dc3545", sub: "Groceries, Restaurants, Fast Food" },
+            "cat_7": { name: "Fuel", icon: "bi-fuel-pump", color: "#6f42c1", sub: "Petrol, Diesel" },
+            "cat_8": { name: "GAS", icon: "bi-lightning-charge", color: "#198754", sub: "LPG Refill" },
+            "cat_9": { name: "Gift", icon: "bi-people-fill", color: "#198754", sub: "Wedding, Birthday, Anniversary" },
+            "cat_10": { name: "Grocery", icon: "bi-basket", color: "#795548", sub: "Supermarket, Vegetables" },
+            "cat_11": { name: "Health", icon: "bi-heart-pulse", color: "#ff5722", sub: "Medicines, Doctor Consultation" },
+            "cat_12": { name: "Investment", icon: "bi-piggy-bank", color: "#0d6efd", sub: "Mutual Funds, Stocks, SIP" },
+            "cat_13": { name: "Loan", icon: "bi-ticket-detailed", color: "#dc3545", sub: "Car Loan, Personal Loan" },
+            "cat_14": { name: "Shopping", icon: "bi-cart-fill", color: "#0d6efd", sub: "Clothing, Electronics" },
+            "cat_15": { name: "Travel", icon: "bi-bus-front", color: "#0d6efd", sub: "Train, Bus, Flight, Hotel" }
         };
 
-        // Dark Mode Logic
-        window.toggleDarkMode = function() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-bs-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
+        const defaultAccounts = {
+            "acc_1": { name: "Axis", type: "Savings", balance: 154.00, icon: "bi-bank" },
+            "acc_2": { name: "Axis Midcap", type: "RD", balance: 39000.00, icon: "bi-piggy-bank" },
+            "acc_3": { name: "Car RD", type: "RD", balance: 250000.00, icon: "bi-cash-stack" },
+            "acc_4": { name: "Card", type: "Savings", balance: 10601.76, icon: "bi-credit-card" },
+            "acc_5": { name: "Cash", type: "Savings", balance: 11542.00, icon: "bi-cash" },
+            "acc_6": { name: "IDFC for cards", type: "Savings", balance: 417.00, icon: "bi-wallet2" },
+            "acc_7": { name: "Joint CC", type: "Savings", balance: -9236.90, icon: "bi-credit-card-2-front" },
+            "acc_8": { name: "Joint Cash", type: "Savings", balance: -2307.00, icon: "bi-cash-coin" },
+            "acc_9": { name: "Joint SBI", type: "Savings", balance: 2311.78, icon: "bi-shop" },
+            "acc_10": { name: "MOD SBI", type: "Savings", balance: 14902.00, icon: "bi-piggy-bank" },
+            "acc_11": { name: "SBI", type: "Savings", balance: 49053.61, icon: "bi-bank2" }
+        };
+
+        // App state variables for transaction builder
+        let selectedAppType = "Expense";
+        let currentSelectedAccount = "SBI";
+        let currentSelectedCategory = "Food";
+        let currentSelectedSubcategory = "";
+        let calcExpression = "0";
+
+        window.setAppType = function(type) {
+            selectedAppType = type;
+            document.querySelectorAll('.type-option').forEach(el => el.classList.remove('active'));
+            if(type === 'Income') document.getElementById('type-income').classList.add('active');
+            if(type === 'Expense') document.getElementById('type-expense').classList.add('active');
+            if(type === 'Transfer') document.getElementById('type-transfer').classList.add('active');
         }
 
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('darkModeIcon');
-            if(theme === 'dark') {
-                icon.className = 'bi bi-sun-fill fs-6';
+        window.appendCalc = function(val) {
+            if(calcExpression === "0" && val !== '.') {
+                calcExpression = val;
             } else {
-                icon.className = 'bi bi-moon-fill fs-6';
+                calcExpression += val;
+            }
+            document.getElementById('calc-display').innerText = calcExpression;
+        }
+
+        window.calculateResult = function() {
+            try {
+                let res = eval(calcExpression.replace(/×/g, '*').replace(/÷/g, '/'));
+                calcExpression = parseFloat(res.toFixed(2)).toString();
+                document.getElementById('calc-display').innerText = calcExpression;
+            } catch(e) {
+                document.getElementById('calc-display').innerText = "Error";
+                calcExpression = "0";
             }
         }
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-bs-theme', savedTheme);
-        updateThemeIcon(savedTheme);
+        window.resetAppInput = function() {
+            calcExpression = "0";
+            document.getElementById('calc-display').innerText = "0";
+            document.getElementById('app-notes').value = "";
+        }
 
-        // Sidebar Collapse & Auto-Hide on Selection
+        // Modals management
+        window.openAccountModal = function() {
+            const list = document.getElementById('account-modal-list');
+            list.innerHTML = '';
+            
+            // Combine accounts and wallets for selection
+            const combined = {...dbAccounts, ...dbWallets};
+            Object.values(combined).forEach(acc => {
+                list.innerHTML += `
+                    <div class="account-select-row" onclick="selectAppAccount('${acc.name}')">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="icon-circle" style="width:38px;height:38px;background:#42423d;font-size:1.1rem;"><i class="bi ${acc.icon || 'bi-wallet2'} text-warning"></i></div>
+                            <span class="fw-semibold text-light">${acc.name}</span>
+                        </div>
+                        <span class="fw-bold ${acc.balance < 0 ? 'text-danger' : 'text-success'}">Rs. ${acc.balance}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('account-modal').style.display = 'flex';
+        }
+
+        window.closeAccountModal = function() {
+            document.getElementById('account-modal').style.display = 'none';
+        }
+
+        window.selectAppAccount = function(name) {
+            currentSelectedAccount = name;
+            document.getElementById('selected-account-label').innerText = name;
+            closeAccountModal();
+        }
+
+        window.openCategoryModal = function() {
+            const grid = document.getElementById('category-modal-grid');
+            grid.innerHTML = '';
+            
+            Object.values(dbCategories).forEach(cat => {
+                grid.innerHTML += `
+                    <div class="icon-grid-item" onclick="selectAppCategory('${cat.name}', '${cat.icon || 'bi-tag'}', '${cat.color || '#6f42c1'}', '${cat.sub || ''}')">
+                        <div class="icon-circle" style="background-color: ${cat.color || '#6f42c1'};">
+                            <i class="bi ${cat.icon || 'bi-tag'}"></i>
+                        </div>
+                        <span class="small text-light text-center fw-semibold text-truncate w-100">${cat.name}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('category-modal').style.display = 'flex';
+        }
+
+        window.closeCategoryModal = function() {
+            document.getElementById('category-modal').style.display = 'none';
+        }
+
+        window.selectAppCategory = function(name, icon, color, subs) {
+            currentSelectedCategory = name;
+            document.getElementById('selected-category-label').innerText = name;
+            document.getElementById('selected-category-icon').className = `bi ${icon} fs-5`;
+            document.getElementById('selected-category-icon').style.color = color;
+            
+            // Populate subcategory chips
+            const subBar = document.getElementById('subcategory-bar-container');
+            const subChips = document.getElementById('subcategory-chips');
+            subChips.innerHTML = '';
+            currentSelectedSubcategory = '';
+
+            if(subs && subs.trim() !== '') {
+                subBar.style.display = 'block';
+                subs.split(',').forEach(sub => {
+                    let trimmed = sub.trim();
+                    if(trimmed) {
+                        subChips.innerHTML += `<span class="badge-sub" style="cursor:pointer;" onclick="selectSubcategory('${trimmed}', this)">${trimmed}</span>`;
+                    }
+                });
+            } else {
+                subBar.style.display = 'none';
+            }
+
+            closeCategoryModal();
+        }
+
+        window.selectSubcategory = function(sub, el) {
+            document.querySelectorAll('#subcategory-chips .badge-sub').forEach(b => b.style.background = 'rgba(212, 175, 55, 0.1)');
+            el.style.background = 'rgba(212, 175, 55, 0.4)';
+            currentSelectedSubcategory = sub;
+        }
+
+        window.submitAppTransaction = async function() {
+            let amount = parseFloat(calcExpression);
+            if(isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount");
+                return;
+            }
+
+            const payload = {
+                type: selectedAppType,
+                amount: amount,
+                account: currentSelectedAccount,
+                category: currentSelectedCategory,
+                subcategory: currentSelectedSubcategory,
+                notes: document.getElementById('app-notes').value,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            await push(ref(db, 'transactions'), payload);
+            
+            // Update account balance
+            await adjustAccountBalance(currentSelectedAccount, selectedAppType, amount);
+
+            resetAppInput();
+            alert("Transaction saved successfully!");
+        }
+
+        async function adjustAccountBalance(accName, type, amount) {
+            let accRef = ref(db, 'accounts');
+            let snapshot = await get(accRef);
+            if(snapshot.exists()) {
+                let accounts = snapshot.val();
+                for(let [k, acc] of Object.entries(accounts)) {
+                    if(acc.name === accName) {
+                        let newBal = parseFloat(acc.balance);
+                        if(type === 'Expense') newBal -= amount;
+                        else if(type === 'Income') newBal += amount;
+                        await update(ref(db, `accounts/${k}`), { balance: newBal });
+                    }
+                }
+            }
+        }
+
+        // Sidebar & Navigation
         const sidebar = document.getElementById('sidebar');
         document.getElementById('sidebarCollapse').addEventListener('click', () => sidebar.classList.toggle('active'));
         document.getElementById('sidebarClose').addEventListener('click', () => sidebar.classList.remove('active'));
@@ -550,57 +747,7 @@
                 'budgets': 'Budget Management'
             };
             document.getElementById('page-title').innerText = titles[sectionId];
-
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('active');
-            }
-        }
-
-        window.toggleAccountFields = function() {
-            const type = document.getElementById('acc-type').value;
-            const isDeposit = type === 'FD' || type === 'RD';
-            document.getElementById('deposit-fields').style.display = isDeposit ? 'block' : 'none';
-            document.getElementById('parent-bank-group').style.display = isDeposit ? 'block' : 'none';
-            document.getElementById('balance-label').innerText = isDeposit ? 'Deposit Principal Amount' : 'Current Balance';
-        }
-
-        window.handleTransactionTypeChange = function() {
-            const type = document.getElementById('trans-type').value;
-            const groupAccount = document.getElementById('group-trans-account');
-            const groupDestination = document.getElementById('group-trans-destination');
-            const groupCC = document.getElementById('group-trans-cc');
-            const groupCat = document.getElementById('group-trans-cat');
-            const groupSub = document.getElementById('group-trans-sub');
-            const labelAcc = document.getElementById('label-trans-account');
-
-            if (type === 'CC_Repayment') {
-                groupAccount.style.display = 'block';
-                labelAcc.innerText = 'Pay from Bank Account / Wallet';
-                groupDestination.style.display = 'none';
-                groupCC.style.display = 'block';
-                groupCat.style.display = 'none';
-                groupSub.style.display = 'none';
-                document.getElementById('trans-category').removeAttribute('required');
-                document.getElementById('trans-subcategory').removeAttribute('required');
-            } else if (type === 'Transfer') {
-                groupAccount.style.display = 'block';
-                labelAcc.innerText = 'From Account / Wallet';
-                groupDestination.style.display = 'block';
-                groupCC.style.display = 'none';
-                groupCat.style.display = 'none';
-                groupSub.style.display = 'none';
-                document.getElementById('trans-category').removeAttribute('required');
-                document.getElementById('trans-subcategory').removeAttribute('required');
-            } else {
-                groupAccount.style.display = 'block';
-                labelAcc.innerText = 'Account / Source (Payer)';
-                groupDestination.style.display = 'none';
-                groupCC.style.display = 'none';
-                groupCat.style.display = 'block';
-                groupSub.style.display = 'block';
-                document.getElementById('trans-category').setAttribute('required', 'true');
-                document.getElementById('trans-subcategory').setAttribute('required', 'true');
-            }
+            if (window.innerWidth <= 768) sidebar.classList.remove('active');
         }
 
         function initListeners() {
@@ -610,32 +757,31 @@
                 } else {
                     dbCategories = snapshot.val();
                     renderCategories();
-                    populateCategoryDropdowns();
                 }
             });
 
             onValue(ref(db, 'accounts'), (snapshot) => {
-                dbAccounts = snapshot.val() || {};
-                renderAccounts();
-                updateSourceDropdowns();
+                if (!snapshot.exists()) {
+                    set(ref(db, 'accounts'), defaultAccounts);
+                } else {
+                    dbAccounts = snapshot.val();
+                    renderAccounts();
+                }
             });
 
             onValue(ref(db, 'wallets'), (snapshot) => {
                 dbWallets = snapshot.val() || {};
                 renderWallets();
-                updateSourceDropdowns();
             });
 
             onValue(ref(db, 'cards'), (snapshot) => {
                 dbCards = snapshot.val() || {};
                 renderCards();
-                updateSourceDropdowns();
             });
 
             onValue(ref(db, 'investments'), (snapshot) => {
                 dbInvestments = snapshot.val() || {};
-                renderGenericList('investments', dbInvestments, ['type', 'name', 'amount', 'units', 'issip']);
-                renderAnalytics();
+                renderGenericList('investments', dbInvestments, ['type', 'name', 'amount', 'issip']);
             });
 
             onValue(ref(db, 'recurring'), (snapshot) => {
@@ -648,77 +794,6 @@
                 renderTransactions();
                 renderAnalytics();
             });
-
-            onValue(ref(db, 'budgets'), (snapshot) => renderBudgets(snapshot.val() || {}));
-        }
-
-        function populateCategoryDropdowns() {
-            const transCat = document.getElementById('trans-category');
-            const budCat = document.getElementById('bud-category');
-            transCat.innerHTML = '<option value="">Select Category</option>';
-            budCat.innerHTML = '<option value="">Select Category</option>';
-
-            Object.values(dbCategories).forEach(cat => {
-                transCat.innerHTML += `<option value="${cat.name}">${cat.name}</option>`;
-                budCat.innerHTML += `<option value="${cat.name}">${cat.name}</option>`;
-            });
-            populateSubcategories();
-        }
-
-        window.populateSubcategories = function() {
-            const selectedCatName = document.getElementById('trans-category').value;
-            const subSelect = document.getElementById('trans-subcategory');
-            subSelect.innerHTML = '<option value="">Select Subcategory</option>';
-
-            const category = Object.values(dbCategories).find(c => c.name === selectedCatName);
-            if (category && category.sub) {
-                category.sub.split(',').forEach(sub => {
-                    let trimmed = sub.trim();
-                    if(trimmed) {
-                        subSelect.innerHTML += `<option value="${trimmed}">${trimmed}</option>`;
-                    }
-                });
-            }
-        }
-
-        function updateSourceDropdowns() {
-            const select = document.getElementById('trans-account');
-            const destSelect = document.getElementById('trans-destination');
-            const parentSelect = document.getElementById('acc-parent');
-            const ccTargetSelect = document.getElementById('trans-cc-target');
-            const recAccountSelect = document.getElementById('rec-account');
-            
-            select.innerHTML = '<option value="">Select Account / Source</option>';
-            destSelect.innerHTML = '<option value="">Select Destination Account</option>';
-            parentSelect.innerHTML = '<option value="">Select Associated Bank</option>';
-            ccTargetSelect.innerHTML = '<option value="">Select Credit Card</option>';
-            if(recAccountSelect) recAccountSelect.innerHTML = '<option value="">Select Source Account / Card</option>';
-
-            Object.entries(dbAccounts).forEach(([id, acc]) => {
-                if(acc.type === 'Savings') {
-                    select.innerHTML += `<option value="${acc.name} (Savings)">${acc.name} (Savings) - Bal: ${acc.balance}</option>`;
-                    destSelect.innerHTML += `<option value="${acc.name} (Savings)">${acc.name} (Savings) - Bal: ${acc.balance}</option>`;
-                    parentSelect.innerHTML += `<option value="${acc.name}">${acc.name}</option>`;
-                    if(recAccountSelect) recAccountSelect.innerHTML += `<option value="${acc.name} (Savings)">${acc.name} (Savings)</option>`;
-                } else {
-                    select.innerHTML += `<option value="${acc.name} (${acc.type})">${acc.name} (${acc.type}) - Bal: ${acc.balance}</option>`;
-                    destSelect.innerHTML += `<option value="${acc.name} (${acc.type})">${acc.name} (${acc.type}) - Bal: ${acc.balance}</option>`;
-                    if(recAccountSelect) recAccountSelect.innerHTML += `<option value="${acc.name} (${acc.type})">${acc.name} (${acc.type})</option>`;
-                }
-            });
-
-            Object.entries(dbWallets).forEach(([id, wal]) => {
-                select.innerHTML += `<option value="${wal.name} (Wallet)">${wal.name} (Wallet) - Bal: ${wal.balance}</option>`;
-                destSelect.innerHTML += `<option value="${wal.name} (Wallet)">${wal.name} (Wallet) - Bal: ${wal.balance}</option>`;
-                if(recAccountSelect) recAccountSelect.innerHTML += `<option value="${wal.name} (Wallet)">${wal.name} (Wallet)</option>`;
-            });
-
-            // Credit Cards as available expense source and recurring payment source
-            Object.entries(dbCards).forEach(([id, card]) => {
-                select.innerHTML += `<option value="${card.name} (Credit Card)">${card.name} (Credit Card) - Due: ${card.outstanding || 0}</option>`;
-                ccTargetSelect.innerHTML += `<option value="${card.name}">${card.name} (Due: ${card.outstanding || 0})</option>`;
-                if(recAccountSelect) recAccountSelect.innerHTML += `<option value="${card.name} (Credit Card)">${card.name} (Credit Card)</option>`;
-            });
         }
 
         function renderCategories() {
@@ -726,13 +801,16 @@
             list.innerHTML = '';
             Object.entries(dbCategories).forEach(([id, val]) => {
                 let subs = val.sub ? val.sub.split(',').map(s => `<span class="badge-sub">${s.trim()}</span>`).join('') : '<small class="text-muted">No subcategories</small>';
-                list.innerHTML += `<div class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
-                    <div>
-                        <h6 class="mb-1 fw-bold">${val.name}</h6>
-                        <div>${subs}</div>
+                list.innerHTML += `<div class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle" style="background-color: ${val.color || '#6f42c1'}; width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-tag'}"></i></div>
+                        <div>
+                            <h6 class="mb-1 fw-bold text-warning">${val.name}</h6>
+                            <div>${subs}</div>
+                        </div>
                     </div>
                     <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editCategory('${id}', '${val.name}', '${val.sub || ''}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editCategory('${id}', '${val.name}', '${val.sub || ''}', '${val.icon || ''}', '${val.color || ''}')"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteData('categories', '${id}')"><i class="bi bi-trash"></i></button>
                     </div>
                 </div>`;
@@ -743,12 +821,17 @@
             const list = document.getElementById('accounts-list');
             list.innerHTML = '';
             Object.entries(dbAccounts).forEach(([id, val]) => {
-                let details = val.type !== 'Savings' ? ` | Linked: ${val.parent || 'None'} | Tenure: ${val.tenure || '-'}m | Int: ${val.interest || '-'}%` : '';
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
-                    <div><strong>${val.name}</strong> <span class="badge bg-secondary">${val.type}</span><br><small class="text-muted">Balance: ${val.balance}${details}</small></div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editAccount('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('accounts', '${id}')"><i class="bi bi-trash"></i></button>
+                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle" style="background:#42423d;width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-bank'} text-warning"></i></div>
+                        <div><strong>${val.name}</strong> <span class="badge bg-secondary">${val.type}</span></div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="fw-bold ${val.balance < 0 ? 'text-danger' : 'text-success'}">Rs. ${val.balance}</span>
+                        <div>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editAccount('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteData('accounts', '${id}')"><i class="bi bi-trash"></i></button>
+                        </div>
                     </div>
                 </li>`;
             });
@@ -756,31 +839,24 @@
 
         function renderWallets() {
             const list = document.getElementById('wallets-list');
+            if(!list) return;
             list.innerHTML = '';
             Object.entries(dbWallets).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
+                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
                     <div><strong>${val.name}</strong><br><small class="text-muted">Balance: ${val.balance}</small></div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editWallet('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('wallets', '${id}')"><i class="bi bi-trash"></i></button>
-                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('wallets', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
 
         function renderCards() {
             const list = document.getElementById('cards-list');
+            if(!list) return;
             list.innerHTML = '';
             Object.entries(dbCards).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
-                    <div>
-                        <strong>${val.name}</strong> <span class="badge bg-danger">Due: ${val.outstanding || 0}</span>
-                        <br><small class="text-muted">Limit: ${val.limit}</small>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editGeneric('cards', '${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('cards', '${id}')"><i class="bi bi-trash"></i></button>
-                    </div>
+                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                    <div><strong>${val.name}</strong> <span class="badge bg-danger">Due: ${val.outstanding || 0}</span></div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('cards', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
@@ -790,16 +866,10 @@
             if(!list) return;
             list.innerHTML = '';
             Object.entries(data).forEach(([id, val]) => {
-                let info = fields.map(f => {
-                    if(f === 'issip') return `<b>SIP:</b> ${val[f] || 'No'}`;
-                    return `<b>${f}:</b> ${val[f] || '-'}`;
-                }).join(' | ');
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
+                let info = fields.map(f => `<b>${f}:</b> ${val[f] || '-'}`).join(' | ');
+                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
                     <div>${info}</div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editGeneric('${type}', '${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('${type}', '${id}')"><i class="bi bi-trash"></i></button>
-                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('${type}', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
@@ -809,192 +879,54 @@
             if(!list) return;
             list.innerHTML = '';
             Object.entries(dbRecurring).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
-                    <div>
-                        <strong>${val.name}</strong> <span class="badge bg-primary">${val.freq}</span>
-                        <br><small class="text-muted">Amount: ${val.amount} | Source: ${val.account} | Next Due: ${val.date}</small>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editRecurring('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('recurring', '${id}')"><i class="bi bi-trash"></i></button>
-                    </div>
+                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                    <div><strong>${val.name}</strong> <span class="badge bg-warning text-dark">${val.freq}</span><br><small class="text-muted">Amount: ${val.amount} | Due: ${val.date}</small></div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('recurring', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
 
         function renderTransactions() {
             const tbody = document.getElementById('transactions-table-body');
+            if(!tbody) return;
             tbody.innerHTML = '';
             Object.entries(dbTransactions).forEach(([id, val]) => {
                 let typeBadge = 'bg-danger';
                 if(val.type === 'Income') typeBadge = 'bg-success';
                 if(val.type === 'Transfer') typeBadge = 'bg-warning text-dark';
-                if(val.type === 'CC_Repayment') typeBadge = 'bg-info text-dark';
-
-                let detailsText = '';
-                if(val.type === 'CC_Repayment') {
-                    detailsText = `Repayment to <b>${val.ccTarget}</b>`;
-                } else if(val.type === 'Transfer') {
-                    detailsText = `Transfer to <b>${val.destination}</b>`;
-                } else {
-                    detailsText = `${val.category} <br><small class="text-muted">↳ ${val.subcategory || '-'}</small>`;
-                }
 
                 tbody.innerHTML += `<tr>
                     <td>${val.date}</td>
                     <td><span class="badge ${typeBadge}">${val.type}</span></td>
                     <td class="fw-bold">${val.amount}</td>
                     <td>${val.account}</td>
-                    <td>${detailsText}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editTransaction('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('transactions', '${id}')"><i class="bi bi-trash"></i></button>
-                    </td>
+                    <td>${val.category} ${val.subcategory ? ' / ' + val.subcategory : ''} <br><small class="text-muted">${val.notes || ''}</small></td>
+                    <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteData('transactions', '${id}')"><i class="bi bi-trash"></i></button></td>
                 </tr>`;
             });
         }
 
-        // Form Event Listeners with Account Balance Integration
-        document.getElementById('transaction-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('trans-id').value;
-            const type = document.getElementById('trans-type').value;
-            const amount = parseFloat(document.getElementById('trans-amount').value);
-            const sourceAccountStr = document.getElementById('trans-account').value;
-            const date = document.getElementById('trans-date').value;
-            const notes = document.getElementById('trans-notes').value;
-
-            const payload = {
-                type: type,
-                amount: amount,
-                account: sourceAccountStr,
-                date: date,
-                notes: notes,
-                category: (type === 'CC_Repayment' || type === 'Transfer') ? type : document.getElementById('trans-category').value,
-                subcategory: (type === 'CC_Repayment' || type === 'Transfer') ? type : document.getElementById('trans-subcategory').value,
-                destination: type === 'Transfer' ? document.getElementById('trans-destination').value : '',
-                ccTarget: type === 'CC_Repayment' ? document.getElementById('trans-cc-target').value : ''
-            };
-
-            // Adjust Balances automatically
-            await adjustAccountBalance(sourceAccountStr, type, amount, payload.ccTarget, payload.destination);
-
-            saveEntity('transactions', id, payload, 'transaction-form', 'trans-id', 'trans-submit-btn', 'Save Transaction');
-        });
-
-        async function adjustAccountBalance(sourceStr, type, amount, ccTarget, destinationStr) {
-            // Deduct from Source
-            if (sourceStr.includes('(Savings)')) {
-                let name = sourceStr.replace(' (Savings)', '').trim();
-                let accRef = ref(db, 'accounts');
-                let snapshot = await get(accRef);
-                if(snapshot.exists()) {
-                    let accounts = snapshot.val();
-                    for(let [k, acc] of Object.entries(accounts)) {
-                        if(acc.name === name) {
-                            let newBal = parseFloat(acc.balance);
-                            if(type === 'Expense' || type === 'CC_Repayment' || type === 'Transfer') newBal -= amount;
-                            else if(type === 'Income') newBal += amount;
-                            await update(ref(db, `accounts/${k}`), { balance: newBal });
-                        }
-                    }
-                }
-            } else if (sourceStr.includes('(Wallet)')) {
-                let name = sourceStr.replace(' (Wallet)', '').trim();
-                let walRef = ref(db, 'wallets');
-                let snapshot = await get(walRef);
-                if(snapshot.exists()) {
-                    let wallets = snapshot.val();
-                    for(let [k, wal] of Object.entries(wallets)) {
-                        if(wal.name === name) {
-                            let newBal = parseFloat(wal.balance);
-                            if(type === 'Expense' || type === 'CC_Repayment' || type === 'Transfer') newBal -= amount;
-                            else if(type === 'Income') newBal += amount;
-                            await update(ref(db, `wallets/${k}`), { balance: newBal });
-                        }
-                    }
-                }
-            } else if (sourceStr.includes('(Credit Card)')) {
-                let name = sourceStr.replace(' (Credit Card)', '').trim();
-                let cardRef = ref(db, 'cards');
-                let snapshot = await get(cardRef);
-                if(snapshot.exists()) {
-                    let cards = snapshot.val();
-                    for(let [k, card] of Object.entries(cards)) {
-                        if(card.name === name) {
-                            let newDue = parseFloat(card.outstanding || 0);
-                            if(type === 'Expense') newDue += amount;
-                            await update(ref(db, `cards/${k}`), { outstanding: newDue });
-                        }
-                    }
-                }
-            }
-
-            // If Transfer, add to Destination
-            if (type === 'Transfer' && destinationStr) {
-                if (destinationStr.includes('(Savings)')) {
-                    let name = destinationStr.replace(' (Savings)', '').trim();
-                    let accRef = ref(db, 'accounts');
-                    let snapshot = await get(accRef);
-                    if(snapshot.exists()) {
-                        let accounts = snapshot.val();
-                        for(let [k, acc] of Object.entries(accounts)) {
-                            if(acc.name === name) {
-                                let newBal = parseFloat(acc.balance) + amount;
-                                await update(ref(db, `accounts/${k}`), { balance: newBal });
-                            }
-                        }
-                    }
-                } else if (destinationStr.includes('(Wallet)')) {
-                    let name = destinationStr.replace(' (Wallet)', '').trim();
-                    let walRef = ref(db, 'wallets');
-                    let snapshot = await get(walRef);
-                    if(snapshot.exists()) {
-                        let wallets = snapshot.val();
-                        for(let [k, wal] of Object.entries(wallets)) {
-                            if(wal.name === name) {
-                                let newBal = parseFloat(wal.balance) + amount;
-                                await update(ref(db, `wallets/${k}`), { balance: newBal });
-                            }
-                        }
-                    }
-                }
-            }
-
-            // If CC Repayment, reduce due on target credit card
-            if (type === 'CC_Repayment' && ccTarget) {
-                let cardRef = ref(db, 'cards');
-                let snapshot = await get(cardRef);
-                if(snapshot.exists()) {
-                    let cards = snapshot.val();
-                    for(let [k, card] of Object.entries(cards)) {
-                        if(card.name === ccTarget) {
-                            let newDue = Math.max(0, parseFloat(card.outstanding || 0) - amount);
-                            await update(ref(db, `cards/${k}`), { outstanding: newDue });
-                        }
-                    }
-                }
-            }
-        }
-
+        // Form submissions
         document.getElementById('category-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('cat-id').value;
-            const payload = { name: document.getElementById('cat-name').value, sub: document.getElementById('cat-sub').value };
+            const payload = {
+                name: document.getElementById('cat-name').value,
+                icon: document.getElementById('cat-icon').value,
+                color: document.getElementById('cat-color').value,
+                sub: document.getElementById('cat-sub').value
+            };
             saveEntity('categories', id, payload, 'category-form', 'cat-id', 'cat-submit-btn', 'Save Category');
         });
 
         document.getElementById('account-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('acc-id').value;
-            const type = document.getElementById('acc-type').value;
             const payload = {
                 name: document.getElementById('acc-name').value,
-                type: type,
+                type: document.getElementById('acc-type').value,
                 balance: parseFloat(document.getElementById('acc-balance').value),
-                parent: type !== 'Savings' ? document.getElementById('acc-parent').value : '',
-                tenure: type !== 'Savings' ? document.getElementById('acc-tenure').value : '',
-                interest: type !== 'Savings' ? document.getElementById('acc-interest').value : ''
+                icon: document.getElementById('acc-icon').value
             };
             saveEntity('accounts', id, payload, 'account-form', 'acc-id', 'acc-submit-btn', 'Save Account');
         });
@@ -1006,7 +938,6 @@
                 type: document.getElementById('inv-type').value,
                 name: document.getElementById('inv-name').value,
                 amount: parseFloat(document.getElementById('inv-amount').value),
-                units: document.getElementById('inv-units').value,
                 issip: document.getElementById('inv-issip').value
             };
             saveEntity('investments', id, payload, 'investment-form', 'inv-id', 'inv-submit-btn', 'Save Investment');
@@ -1040,21 +971,9 @@
                 name: document.getElementById('rec-name').value,
                 amount: parseFloat(document.getElementById('rec-amount').value),
                 freq: document.getElementById('rec-freq').value,
-                account: document.getElementById('rec-account').value,
                 date: document.getElementById('rec-date').value
             };
             saveEntity('recurring', id, payload, 'recurring-form', 'rec-id', 'rec-submit-btn', 'Save Recurring Item');
-        });
-
-        document.getElementById('budget-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const id = document.getElementById('bud-id').value;
-            const payload = {
-                period: document.getElementById('bud-period').value,
-                category: document.getElementById('bud-category').value,
-                amount: parseFloat(document.getElementById('bud-amount').value)
-            };
-            saveEntity('budgets', id, payload, 'budget-form', 'bud-id', 'bud-submit-btn', 'Save Budget');
         });
 
         function saveEntity(path, id, payload, formId, hiddenId, btnId, defaultText) {
@@ -1069,7 +988,6 @@
             document.getElementById(formId).reset();
             document.getElementById(hiddenId).value = '';
             document.getElementById(btnId).innerText = defaultText;
-            if(formId === 'transaction-form') handleTransactionTypeChange();
         }
 
         window.deleteData = function(path, id) {
@@ -1078,31 +996,12 @@
             }
         }
 
-        window.editTransaction = function(id, val) {
-            document.getElementById('trans-id').value = id;
-            document.getElementById('trans-type').value = val.type;
-            handleTransactionTypeChange();
-            document.getElementById('trans-amount').value = val.amount;
-            document.getElementById('trans-account').value = val.account;
-            if(val.type === 'CC_Repayment') {
-                document.getElementById('trans-cc-target').value = val.ccTarget;
-            } else if(val.type === 'Transfer') {
-                document.getElementById('trans-destination').value = val.destination;
-            } else {
-                document.getElementById('trans-category').value = val.category;
-                populateSubcategories();
-                document.getElementById('trans-subcategory').value = val.subcategory;
-            }
-            document.getElementById('trans-date').value = val.date;
-            document.getElementById('trans-notes').value = val.notes || '';
-            document.getElementById('trans-submit-btn').innerText = 'Update Transaction';
-            switchSection('home', document.querySelector('#sidebar ul li a'));
-        }
-
-        window.editCategory = function(id, name, sub) {
+        window.editCategory = function(id, name, sub, icon, color) {
             document.getElementById('cat-id').value = id;
             document.getElementById('cat-name').value = name;
             document.getElementById('cat-sub').value = sub;
+            document.getElementById('cat-icon').value = icon || 'bi-tag';
+            document.getElementById('cat-color').value = color || '#8B008B';
             document.getElementById('cat-submit-btn').innerText = 'Update Category';
         }
 
@@ -1111,56 +1010,13 @@
             document.getElementById('acc-name').value = val.name;
             document.getElementById('acc-type').value = val.type;
             document.getElementById('acc-balance').value = val.balance;
-            toggleAccountFields();
-            if(val.type !== 'Savings') {
-                document.getElementById('acc-parent').value = val.parent || '';
-                document.getElementById('acc-tenure').value = val.tenure || '';
-                document.getElementById('acc-interest').value = val.interest || '';
-            }
+            document.getElementById('acc-icon').value = val.icon || 'bi-bank';
             document.getElementById('acc-submit-btn').innerText = 'Update Account';
         }
 
-        window.editWallet = function(id, val) {
-            document.getElementById('wal-id').value = id;
-            document.getElementById('wal-name').value = val.name;
-            document.getElementById('wal-balance').value = val.balance;
-            document.getElementById('wal-submit-btn').innerText = 'Update Wallet';
-        }
-
-        window.editRecurring = function(id, val) {
-            document.getElementById('rec-id').value = id;
-            document.getElementById('rec-name').value = val.name;
-            document.getElementById('rec-amount').value = val.amount;
-            document.getElementById('rec-freq').value = val.freq;
-            document.getElementById('rec-account').value = val.account;
-            document.getElementById('rec-date').value = val.date;
-            document.getElementById('rec-submit-btn').innerText = 'Update Recurring Item';
-        }
-
-        window.editGeneric = function(path, id, val) {
-            if(path === 'investments') {
-                document.getElementById('inv-id').value = id;
-                document.getElementById('inv-type').value = val.type;
-                document.getElementById('inv-name').value = val.name;
-                document.getElementById('inv-amount').value = val.amount;
-                document.getElementById('inv-units').value = val.units;
-                document.getElementById('inv-issip').value = val.issip || 'No';
-                document.getElementById('inv-submit-btn').innerText = 'Update Investment';
-            } else if(path === 'cards') {
-                document.getElementById('card-id').value = id;
-                document.getElementById('card-name').value = val.name;
-                document.getElementById('card-limit').value = val.limit;
-                document.getElementById('card-outstanding').value = val.outstanding;
-                document.getElementById('card-submit-btn').innerText = 'Update Card';
-            }
-        }
-
         function renderAnalytics() {
-            const timeframe = document.getElementById('analytics-timeframe').value;
-            const now = new Date();
-
             let totalDisposable = 0;
-            Object.values(dbAccounts).forEach(acc => { if(acc.type === 'Savings') totalDisposable += parseFloat(acc.balance || 0); });
+            Object.values(dbAccounts).forEach(acc => { totalDisposable += parseFloat(acc.balance || 0); });
             Object.values(dbWallets).forEach(wal => { totalDisposable += parseFloat(wal.balance || 0); });
             document.getElementById('metric-disposable').innerText = totalDisposable.toFixed(2);
 
@@ -1168,79 +1024,11 @@
             Object.values(dbInvestments).forEach(inv => { totalInvestments += parseFloat(inv.amount || 0); });
             document.getElementById('metric-investments').innerText = totalInvestments.toFixed(2);
 
-            let catSummary = {};
             let periodExpenses = 0;
-
             Object.values(dbTransactions).forEach(t => {
-                const tDate = new Date(t.date);
-                let match = true;
-
-                if (timeframe === 'monthly') {
-                    match = tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
-                } else if (timeframe === 'yearly') {
-                    match = tDate.getFullYear() === now.getFullYear();
-                } else if (timeframe === 'daily') {
-                    match = tDate.toDateString() === now.toDateString();
-                } else if (timeframe === 'weekly') {
-                    const diffTime = Math.abs(now - tDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    match = diffDays <= 7;
-                }
-
-                if (match) {
-                    if (t.type === 'Expense') {
-                        if (!catSummary[t.category]) catSummary[t.category] = { income: 0, expense: 0 };
-                        catSummary[t.category].expense += parseFloat(t.amount);
-                        periodExpenses += parseFloat(t.amount);
-                    } else if (t.type === 'Income') {
-                        if (!catSummary[t.category]) catSummary[t.category] = { income: 0, expense: 0 };
-                        catSummary[t.category].income += parseFloat(t.amount);
-                    }
-                }
+                if(t.type === 'Expense') periodExpenses += parseFloat(t.amount || 0);
             });
-
             document.getElementById('metric-expenses').innerText = periodExpenses.toFixed(2);
-
-            const tbody = document.getElementById('analytics-table-body');
-            tbody.innerHTML = '';
-            Object.entries(catSummary).forEach(([cat, data]) => {
-                let net = data.income - data.expense;
-                tbody.innerHTML += `<tr>
-                    <td><strong>${cat}</strong></td>
-                    <td class="text-success">${data.income.toFixed(2)}</td>
-                    <td class="text-danger">${data.expense.toFixed(2)}</td>
-                    <td class="fw-bold ${net >= 0 ? 'text-success' : 'text-danger'}">${net.toFixed(2)}</td>
-                </tr>`;
-            });
-        }
-
-        function renderBudgets(budgets) {
-            const container = document.getElementById('budgets-container');
-            container.innerHTML = '';
-            
-            let catSpend = {};
-            Object.values(dbTransactions).forEach(t => {
-                if(t.type === 'Expense') {
-                    catSpend[t.category] = (catSpend[t.category] || 0) + parseFloat(t.amount);
-                }
-            });
-
-            Object.entries(budgets).forEach(([id, b]) => {
-                let spent = catSpend[b.category] || 0;
-                let pct = Math.min((spent / b.amount) * 100, 100);
-                let color = pct > 90 ? 'danger' : (pct > 75 ? 'warning' : 'success');
-                container.innerHTML += `
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span><strong>${b.category}</strong> (${b.period})</span>
-                            <span>Spent: <b>${spent.toFixed(2)}</b> / Target: ${b.amount}</span>
-                        </div>
-                        <div class="progress" style="height: 12px;">
-                            <div class="progress-bar bg-${color}" role="progressbar" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
-                `;
-            });
         }
 
         initListeners();
