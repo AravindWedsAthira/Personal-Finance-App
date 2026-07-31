@@ -80,11 +80,11 @@
     </div>
   </div>
 
-  <!-- MAIN APP CONTAINER -->
-  <div id="app-container" class="hidden min-h-screen flex flex-col md:flex-row relative">
+  <!-- MAIN APP CONTAINER (Using flex-row so sidebar and content sit side-by-side) -->
+  <div id="app-container" class="hidden min-h-screen flex flex-row relative overflow-x-hidden">
     
     <!-- Collapsible Sidebar Navigation -->
-    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 p-6 flex flex-col justify-between border-r border-slate-800 transition-all duration-300 z-20">
+    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 p-6 flex flex-col justify-between border-r border-slate-800 transition-all duration-300 shrink-0 z-20 min-h-screen">
       <div>
         <div class="flex items-center justify-between mb-8 px-2">
           <div class="flex items-center gap-3">
@@ -125,8 +125,8 @@
       </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen flex flex-col">
+    <!-- Main Content Area filling available space -->
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen flex flex-col min-w-0">
       <!-- Top Bar with Sidebar Collapse Toggle -->
       <div class="flex items-center mb-6">
         <button onclick="toggleSidebar()" class="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 shadow-sm transition flex items-center gap-2">
@@ -427,7 +427,7 @@
       e.preventDefault();
       const name = document.getElementById('cat-name').value.trim();
       const type = document.getElementById('cat-type').value;
-      if (!name) return;
+      if (!name || !window.currentUser) return;
 
       const uid = window.currentUser.uid;
       const { ref, push } = window.fbMethods;
@@ -444,7 +444,7 @@
       const name = document.getElementById('acc-name').value.trim();
       const type = document.getElementById('acc-type').value;
       const balance = parseFloat(document.getElementById('acc-balance').value) || 0;
-      if (!name) return;
+      if (!name || !window.currentUser) return;
 
       const uid = window.currentUser.uid;
       const { ref, push } = window.fbMethods;
@@ -466,7 +466,7 @@
       const notes = document.getElementById('tx-notes').value;
       const date = new Date().toISOString().split('T')[0];
 
-      if (!amount || !category || !account) return;
+      if (!amount || !category || !account || !window.currentUser) return;
 
       const uid = window.currentUser.uid;
       const { ref, push } = window.fbMethods;
@@ -483,7 +483,7 @@
       e.preventDefault();
       const category = document.getElementById('budget-category').value;
       const limit = parseFloat(document.getElementById('budget-limit').value);
-      if (!category || !limit) return;
+      if (!category || !limit || !window.currentUser) return;
 
       const uid = window.currentUser.uid;
       const { ref, push } = window.fbMethods;
@@ -496,6 +496,7 @@
 
     // Deletion Helpers
     function deleteItem(path, id) {
+      if (!window.currentUser) return;
       const uid = window.currentUser.uid;
       const { ref, remove } = window.fbMethods;
       remove(ref(window.firebaseDb, `users/${uid}/${path}/${id}`));
