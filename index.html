@@ -8,21 +8,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js for Visualizations -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Firebase App & Database Modular SDKs -->
+  <!-- Firebase App, Auth & Realtime Database Modular SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // FIXME: Replace with your actual Firebase Project Configuration
+    // Your actual Firebase Project Configuration (passbook-229d7)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
+      authDomain: "passbook-229d7.firebaseapp.com",
+      databaseURL: "https://passbook-229d7-default-rtdb.firebaseio.com",
+      projectId: "passbook-229d7",
+      storageBucket: "passbook-229d7.firebasestorage.app",
+      messagingSenderId: "1020688201249",
+      appId: "1:1020688201249:web:57d42542d59471f303d560"
     };
 
     // Initialize Firebase
@@ -30,6 +30,7 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    // Attach to global window scope for app functions
     window.firebaseAuth = auth;
     window.firebaseDb = db;
     window.fbMethods = { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, ref, set, push, onValue };
@@ -197,7 +198,7 @@
     let transactionsData = [];
     let chartInstance = null;
 
-    // Check Firebase Auth status on load
+    // Check Firebase Auth status on page load
     window.addEventListener('DOMContentLoaded', () => {
       const checkAuth = setInterval(() => {
         if (window.firebaseAuth) {
@@ -267,7 +268,7 @@
       });
     }
 
-    // Add Transaction
+    // Add Transaction Handler
     async function addTransaction(e) {
       e.preventDefault();
       if (!currentUser) return;
@@ -293,7 +294,7 @@
       e.target.reset();
     }
 
-    // Dashboard Calculations & Charting
+    // Dashboard Calculations & Charts
     function updateDashboard() {
       let income = 0;
       let expense = 0;
@@ -334,7 +335,7 @@
       });
     }
 
-    // Render Transactions Table
+    // Render Transactions List Table
     function renderTransactionsTable() {
       const tbody = document.getElementById('transaction-list-body');
       if (transactionsData.length === 0) {
