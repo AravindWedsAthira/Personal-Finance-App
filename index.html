@@ -1,394 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Personal Finance Dashboard & Manager</title>
-  <!-- Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js for Visualizations -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Firebase App, Auth & Realtime Database Modular SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    // Firebase Project Configuration (Updated with correct regional database URL)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
-      authDomain: "passbook-229d7.firebaseapp.com",
-      databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "passbook-229d7",
-      storageBucket: "passbook-229d7.firebasestorage.app",
-      messagingSenderId: "1020688201249",
-      appId: "1:1020688201249:web:57d42542d59471f303d560"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    // Attach to window scope for global access
-    window.firebaseAuth = auth;
-    window.firebaseDb = db;
-    window.fbMethods = { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, ref, set, push, onValue, remove, update };
-
-    // Auth State Listener & Real-time Data Sync
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("auth-container").classList.add("hidden");
-        document.getElementById("app-container").classList.remove("hidden");
-        window.currentUser = user;
-        initRealtimeListeners(user.uid);
-      } else {
-        document.getElementById("auth-container").classList.remove("hidden");
-        document.getElementById("app-container").classList.add("hidden");
-        window.currentUser = null;
-      }
-    });
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passbook - Personal Finance Manager</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-blue-500 selection:text-white">
+<body>
 
-  <!-- AUTH CONTAINER -->
-  <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950">
-    <div class="bg-white/95 backdrop-blur p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-100">
-      <div class="text-center mb-8">
-        <div class="inline-flex p-3 bg-blue-50 text-blue-600 rounded-xl mb-3 shadow-inner">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <!-- Navigation / Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Passbook Finance</a>
+            <div id="auth-status" class="text-light"></div>
         </div>
-        <h2 class="text-2xl font-bold text-slate-900">Personal Finance Tracker</h2>
-        <p class="text-sm text-slate-500 mt-1">Manage budgets, transactions, & accounts securely</p>
-      </div>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Email Address</label>
-          <input type="email" id="auth-email" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white outline-none transition" placeholder="you@example.com" />
+    </nav>
+
+    <div class="container">
+
+        <!-- Authentication Section (Hidden once logged in) -->
+        <div id="auth-section" class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h3 class="mb-3 text-center">Login / Register</h3>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button id="login-btn" class="btn btn-primary w-100 mb-2">Login</button>
+                    <button id="register-btn" class="btn btn-secondary w-100">Register</button>
+                </div>
+            </div>
         </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
-          <input type="password" id="auth-password" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:bg-white outline-none transition" placeholder="••••••••" />
+
+        <!-- Main Dashboard (Visible only when logged in) -->
+        <div id="dashboard-section" style="display: none;">
+            
+            <div class="row">
+                <!-- Management Columns -->
+                <div class="col-md-4">
+                    <!-- Accounts Card -->
+                    <div class="card p-3">
+                        <h4>Accounts</h4>
+                        <form id="account-form">
+                            <input type="hidden" id="account-id">
+                            <div class="mb-2">
+                                <input type="text" class="form-control" id="account-name" placeholder="Account Name (e.g. Bank, Cash)" required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100" id="account-submit-btn">Add Account</button>
+                        </form>
+                        <ul id="accounts-list" class="list-group mt-3"></ul>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Categories Card -->
+                    <div class="card p-3">
+                        <h4>Categories</h4>
+                        <form id="category-form">
+                            <input type="hidden" id="category-id">
+                            <div class="mb-2">
+                                <input type="text" class="form-control" id="category-name" placeholder="Category Name (e.g. Food)" required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100" id="category-submit-btn">Add Category</button>
+                        </form>
+                        <ul id="categories-list" class="list-group mt-3"></ul>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Transactions / Expenses Card -->
+                    <div class="card p-3">
+                        <h4>Transactions</h4>
+                        <form id="transaction-form">
+                            <input type="hidden" id="transaction-id">
+                            <div class="mb-2">
+                                <input type="number" class="form-control" id="trans-amount" placeholder="Amount" required>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-control" id="trans-type" required>
+                                    <option value="Expense">Expense</option>
+                                    <option value="Income">Income</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-control" id="trans-account" required>
+                                    <option value="">Select Account</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-control" id="trans-category" required>
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <input type="date" class="form-control" id="trans-date" required>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100" id="trans-submit-btn">Add Transaction</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Log Table -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card p-3">
+                        <h4>Expense Logs</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Account</th>
+                                        <th>Category</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-table-body">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </div>
         </div>
-        <div class="flex gap-3 pt-2">
-          <button onclick="handleLogin()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-[0.98] transition">Log In</button>
-          <button onclick="handleSignup()" class="flex-1 bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold hover:bg-slate-200 active:scale-[0.98] transition">Sign Up</button>
-        </div>
-        <p id="auth-error" class="text-rose-500 text-sm text-center font-medium bg-rose-50 p-3 rounded-xl hidden"></p>
-      </div>
+
     </div>
-  </div>
 
-  <!-- MAIN APP CONTAINER -->
-  <div id="app-container" class="hidden min-h-screen flex flex-row relative overflow-x-hidden">
-    
-    <!-- Collapsible Sidebar Navigation -->
-    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 p-6 flex flex-col justify-between border-r border-slate-800 transition-all duration-300 shrink-0 z-20 min-h-screen">
-      <div>
-        <div class="flex items-center justify-between mb-8 px-2">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-blue-600 text-white rounded-lg">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-            </div>
-            <span class="text-lg font-bold text-white tracking-wide sidebar-label">Passbook Pro</span>
-          </div>
-        </div>
-        <nav class="space-y-1.5 font-medium text-sm">
-          <button onclick="showTab('dashboard')" id="nav-dashboard" class="w-full text-left py-2.5 px-4 rounded-xl transition flex items-center gap-3 bg-blue-600 text-white shadow-lg shadow-blue-600/20">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-            <span class="sidebar-label">Dashboard</span>
-          </button>
-          <button onclick="showTab('transactions')" id="nav-transactions" class="w-full text-left py-2.5 px-4 rounded-xl transition flex items-center gap-3 hover:bg-slate-800 hover:text-white">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-            <span class="sidebar-label">Transactions</span>
-          </button>
-          <button onclick="showTab('accounts')" id="nav-accounts" class="w-full text-left py-2.5 px-4 rounded-xl transition flex items-center gap-3 hover:bg-slate-800 hover:text-white">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-            <span class="sidebar-label">Accounts & Loans</span>
-          </button>
-          <button onclick="showTab('categories')" id="nav-categories" class="w-full text-left py-2.5 px-4 rounded-xl transition flex items-center gap-3 hover:bg-slate-800 hover:text-white">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-            <span class="sidebar-label">Categories</span>
-          </button>
-        </nav>
-      </div>
-      <div class="pt-6 border-t border-slate-800 space-y-3">
-        <button onclick="handleLogout()" class="w-full bg-rose-500/10 text-rose-400 border border-rose-500/20 py-2.5 px-4 rounded-xl font-semibold hover:bg-rose-500 hover:text-white transition flex items-center justify-center gap-2">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          <span class="sidebar-label">Logout</span>
-        </button>
-      </div>
-    </aside>
+    <!-- Firebase SDK Setup & Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-6 md:p-10 overflow-y-auto max-h-screen flex flex-col min-w-0">
-      <div class="flex items-center mb-6">
-        <button onclick="toggleSidebar()" class="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 shadow-sm transition flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-          <span class="text-xs font-bold uppercase tracking-wider">Menu</span>
-        </button>
-      </div>
+        // Your web app's Firebase configuration ( pulled from your project settings )
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeV2ddLzeq1c4bOCKZyYhSVqefMlKTcU",
+            authDomain: "passbook-229d7.firebaseapp.com",
+            databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "passbook-229d7",
+            storageBucket: "passbook-229d7.appspot.com",
+            messagingSenderId: "1020688201249",
+            appId: "1:1020688201249:web:57d47547d594/1f303d560"
+        };
 
-      <!-- DASHBOARD TAB -->
-      <section id="tab-dashboard" class="tab-content space-y-8">
-        <div>
-          <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Financial Dashboard</h2>
-          <p class="text-sm text-slate-500 mt-1">Overview of your income, expenses, and net savings.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Income</p>
-              <p id="total-income" class="text-3xl font-black text-emerald-600 mt-1">₹0.00</p>
-            </div>
-          </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Expenses</p>
-              <p id="total-expense" class="text-3xl font-black text-rose-600 mt-1">₹0.00</p>
-            </div>
-          </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Net Balance</p>
-              <p id="net-balance" class="text-3xl font-black text-blue-600 mt-1">₹0.00</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
 
-      <!-- TRANSACTIONS TAB -->
-      <section id="tab-transactions" class="tab-content space-y-8 hidden">
-        <div>
-          <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Transactions Log</h2>
-          <p class="text-sm text-slate-500 mt-1">Record and review your daily financial activities.</p>
-        </div>
-        <form onsubmit="addTransaction(event)" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Type</label>
-            <select id="tx-type" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none">
-              <option value="expense">Expense (-)</option>
-              <option value="income">Income (+)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Amount (₹)</label>
-            <input type="number" id="tx-amount" step="0.01" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="0.00" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Category Name</label>
-            <input type="text" id="tx-category" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="e.g. Food, Salary" />
-          </div>
-          <button type="submit" class="md:col-span-3 bg-blue-600 text-white py-3 rounded-xl font-semibold shadow-lg hover:bg-blue-700 transition">Save Transaction</button>
-        </form>
+        let currentUser = null;
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <div class="p-6 border-b border-slate-100"><h3 class="text-lg font-bold text-slate-900">Transaction History</h3></div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="bg-slate-50 border-b border-slate-100 text-slate-400 text-xs font-bold uppercase">
-                  <th class="p-4">Type</th>
-                  <th class="p-4">Category</th>
-                  <th class="p-4 text-right">Amount</th>
-                  <th class="p-4 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody id="transaction-list-body" class="divide-y divide-slate-100 text-sm">
-                <tr><td colspan="4" class="p-6 text-center text-slate-400">No records found.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+        // Elements
+        const authSection = document.getElementById('auth-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const authStatus = document.getElementById('auth-status');
 
-      <!-- ACCOUNTS & LOANS TAB -->
-      <section id="tab-accounts" class="tab-content space-y-8 hidden">
-        <div>
-          <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Accounts & Loans</h2>
-          <p class="text-sm text-slate-500 mt-1">Manage savings accounts and balances.</p>
-        </div>
-        <form onsubmit="addAccount(event)" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Account Name</label>
-            <input type="text" id="acc-name" placeholder="e.g. SBI Savings" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Current Balance (₹)</label>
-            <input type="number" id="acc-balance" step="0.01" value="0" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" />
-          </div>
-          <button type="submit" class="md:col-span-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold shadow-lg hover:bg-emerald-700 transition">Add Account</button>
-        </form>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <h3 class="text-lg font-bold text-slate-900 mb-4">Configured Accounts</h3>
-          <div id="accounts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-      </section>
-
-      <!-- CATEGORIES TAB -->
-      <section id="tab-categories" class="tab-content space-y-8 hidden">
-        <div>
-          <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Manage Categories</h2>
-          <p class="text-sm text-slate-500 mt-1">Organize your inflows and outflows.</p>
-        </div>
-        <form onsubmit="addCategory(event)" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4 items-end">
-          <div class="flex-1">
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Category Name</label>
-            <input type="text" id="cat-name" placeholder="e.g. Groceries" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none" />
-          </div>
-          <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition">Add Category</button>
-        </form>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <h3 class="text-lg font-bold text-slate-900 mb-4">Existing Categories</h3>
-          <ul id="categories-list" class="space-y-2"></ul>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- Application Logic Script -->
-  <script>
-    // Tab Switching Helper
-    function showTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.getElementById('tab-' + tabId).classList.remove('hidden');
-      
-      document.querySelectorAll('aside nav button').forEach(btn => btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-600/20'));
-      const activeBtn = document.getElementById('nav-' + tabId);
-      if(activeBtn) activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-600/20');
-    }
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('w-64');
-      sidebar.classList.toggle('w-20');
-      document.querySelectorAll('.sidebar-label').forEach(el => el.classList.toggle('hidden'));
-    }
-
-    // Auth Actions
-    async function handleLogin() {
-      const email = document.getElementById('auth-email').value;
-      const pass = document.getElementById('auth-password').value;
-      const errEl = document.getElementById('auth-error');
-      try {
-        await window.fbMethods.signInWithEmailAndPassword(window.firebaseAuth, email, pass);
-        errEl.classList.add('hidden');
-      } catch (err) {
-        errEl.innerText = err.message;
-        errEl.classList.remove('hidden');
-      }
-    }
-
-    async function handleSignup() {
-      const email = document.getElementById('auth-email').value;
-      const pass = document.getElementById('auth-password').value;
-      const errEl = document.getElementById('auth-error');
-      try {
-        await window.fbMethods.createUserWithEmailAndPassword(window.firebaseAuth, email, pass);
-        errEl.classList.add('hidden');
-      } catch (err) {
-        errEl.innerText = err.message;
-        errEl.classList.remove('hidden');
-      }
-    }
-
-    async function handleLogout() {
-      await window.fbMethods.signOut(window.firebaseAuth);
-    }
-
-    // Database Actions & Real-time Listeners
-    function initRealtimeListeners(uid) {
-      const db = window.firebaseDb;
-      const { ref, onValue } = window.fbMethods;
-
-      // Listen to Categories
-      onValue(ref(db, `users/${uid}/categories`), (snapshot) => {
-        const data = snapshot.val() || {};
-        const listEl = document.getElementById('categories-list');
-        listEl.innerHTML = '';
-        Object.entries(data).forEach(([id, cat]) => {
-          listEl.innerHTML += `<li class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center"><span>${cat.name}</span><button onclick="deleteItem('categories', '${id}')" class="text-rose-500 hover:text-rose-700 text-xs font-bold">Delete</button></li>`;
+        // Auth State Listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                authSection.style.display = 'none';
+                dashboardSection.style.display = 'block';
+                authStatus.innerText = `Logged in as: ${user.email}`;
+                loadUserData(user.uid);
+            } else {
+                currentUser = null;
+                authSection.style.display = 'block';
+                dashboardSection.style.display = 'none';
+                authStatus.innerText = '';
+            }
         });
-      });
 
-      // Listen to Accounts
-      onValue(ref(db, `users/${uid}/accounts`), (snapshot) => {
-        const data = snapshot.val() || {};
-        const listEl = document.getElementById('accounts-list');
-        listEl.innerHTML = '';
-        Object.entries(data).forEach(([id, acc]) => {
-          listEl.innerHTML += `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center"><div><p class="font-bold text-slate-900">${acc.name}</p><p class="text-sm text-emerald-600 font-semibold">₹${Number(acc.balance).toFixed(2)}</p></div><button onclick="deleteItem('accounts', '${id}')" class="text-rose-500 hover:text-rose-700 text-xs font-bold">Delete</button></div>`;
+        // Login / Register Handlers
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
         });
-      });
 
-      // Listen to Transactions
-      onValue(ref(db, `users/${uid}/transactions`), (snapshot) => {
-        const data = snapshot.val() || {};
-        const tbody = document.getElementById('transaction-list-body');
-        tbody.innerHTML = '';
-        let totalInc = 0, totalExp = 0;
+        document.getElementById('register-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            createUserWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
+        });
 
-        const entries = Object.entries(data);
-        if (entries.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No records found.</td></tr>`;
-        } else {
-          entries.forEach(([id, tx]) => {
-            if (tx.type === 'income') totalInc += Number(tx.amount);
-            else totalExp += Number(tx.amount);
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth);
+        });
 
-            tbody.innerHTML += `
-              <tr class="border-b border-slate-100 hover:bg-slate-50/50">
-                <td class="p-4 font-medium uppercase text-xs ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">${tx.type}</td>
-                <td class="p-4 text-slate-700">${tx.category}</td>
-                <td class="p-4 text-right font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">₹${Number(tx.amount).toFixed(2)}</td>
-                <td class="p-4 text-center"><button onclick="deleteItem('transactions', '${id}')" class="text-rose-500 hover:text-rose-700 text-xs font-bold">Delete</button></td>
-              </tr>`;
-          });
+        // Load data dynamically per user
+        function loadUserData(uid) {
+            // Accounts
+            const accountsRef = ref(db, `users/${uid}/accounts`);
+            onValue(accountsRef, (snapshot) => {
+                const data = snapshot.val();
+                const list = document.getElementById('accounts-list');
+                const select = document.getElementById('trans-account');
+                list.innerHTML = '';
+                select.innerHTML = '<option value="">Select Account</option>';
+                
+                if (data) {
+                    Object.entries(data).forEach(([id, val]) => {
+                        list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${val.name}
+                            <div>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editAccount('${id}', '${val.name}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteData('accounts', '${id}')">Delete</button>
+                            </div>
+                        </li>`;
+                        select.innerHTML += `<option value="${val.name}">${val.name}</option>`;
+                    });
+                }
+            });
+
+            // Categories
+            const categoriesRef = ref(db, `users/${uid}/categories`);
+            onValue(categoriesRef, (snapshot) => {
+                const data = snapshot.val();
+                const list = document.getElementById('categories-list');
+                const select = document.getElementById('trans-category');
+                list.innerHTML = '';
+                select.innerHTML = '<option value="">Select Category</option>';
+                
+                if (data) {
+                    Object.entries(data).forEach(([id, val]) => {
+                        list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${val.name}
+                            <div>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editCategory('${id}', '${val.name}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteData('categories', '${id}')">Delete</button>
+                            </div>
+                        </li>`;
+                        select.innerHTML += `<option value="${val.name}">${val.name}</option>`;
+                    });
+                }
+            });
+
+            // Transactions
+            const transRef = ref(db, `users/${uid}/transactions`);
+            onValue(transRef, (snapshot) => {
+                const data = snapshot.val();
+                const tbody = document.getElementById('transactions-table-body');
+                tbody.innerHTML = '';
+                
+                if (data) {
+                    Object.entries(data).forEach(([id, val]) => {
+                        tbody.innerHTML += `<tr>
+                            <td>${val.date}</td>
+                            <td>${val.type}</td>
+                            <td>${val.amount}</td>
+                            <td>${val.account}</td>
+                            <td>${val.category}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editTransaction('${id}', '${val.amount}', '${val.type}', '${val.account}', '${val.category}', '${val.date}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteData('transactions', '${id}')">Delete</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            });
         }
 
-        document.getElementById('total-income').innerText = `₹${totalInc.toFixed(2)}`;
-        document.getElementById('total-expense').innerText = `₹${totalExp.toFixed(2)}`;
-        document.getElementById('net-balance').innerText = `₹${(totalInc - totalExp).toFixed(2)}`;
-      });
-    }
+        // Add / Edit Account Form
+        document.getElementById('account-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('account-id').value;
+            const name = document.getElementById('account-name').value;
+            const accountRef = ref(db, `users/${currentUser.uid}/accounts`);
 
-    async function addCategory(e) {
-      e.preventDefault();
-      const name = document.getElementById('cat-name').value;
-      const db = window.firebaseDb;
-      const { ref, push } = window.fbMethods;
-      await push(ref(db, `users/${window.currentUser.uid}/categories`), { name });
-      e.target.reset();
-    }
+            if (id) {
+                update(ref(db, `users/${currentUser.uid}/accounts/${id}`), { name }).then(() => {
+                    resetAccountForm();
+                });
+            } else {
+                push(accountRef, { name }).then(() => {
+                    resetAccountForm();
+                });
+            }
+        });
 
-    async function addAccount(e) {
-      e.preventDefault();
-      const name = document.getElementById('acc-name').value;
-      const balance = document.getElementById('acc-balance').value;
-      const db = window.firebaseDb;
-      const { ref, push } = window.fbMethods;
-      await push(ref(db, `users/${window.currentUser.uid}/accounts`), { name, balance });
-      e.target.reset();
-    }
+        window.editAccount = (id, name) => {
+            document.getElementById('account-id').value = id;
+            document.getElementById('account-name').value = name;
+            document.getElementById('account-submit-btn').innerText = 'Update Account';
+        };
 
-    async function addTransaction(e) {
-      e.preventDefault();
-      const type = document.getElementById('tx-type').value;
-      const amount = document.getElementById('tx-amount').value;
-      const category = document.getElementById('tx-category').value;
-      const db = window.firebaseDb;
-      const { ref, push } = window.fbMethods;
-      await push(ref(db, `users/${window.currentUser.uid}/transactions`), { type, amount, category });
-      e.target.reset();
-    }
+        function resetAccountForm() {
+            document.getElementById('account-id').value = '';
+            document.getElementById('account-name').value = '';
+            document.getElementById('account-submit-btn').innerText = 'Add Account';
+        }
 
-    async function deleteItem(pathKey, id) {
-      const db = window.firebaseDb;
-      const { ref, remove } = window.fbMethods;
-      await remove(ref(db, `users/${window.currentUser.uid}/${pathKey}/${id}`));
-    }
-  </script>
+        // Add / Edit Category Form
+        document.getElementById('category-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('category-id').value;
+            const name = document.getElementById('category-name').value;
+            const catRef = ref(db, `users/${currentUser.uid}/categories`);
+
+            if (id) {
+                update(ref(db, `users/${currentUser.uid}/categories/${id}`), { name }).then(() => {
+                    resetCategoryForm();
+                });
+            } else {
+                push(catRef, { name }).then(() => {
+                    resetCategoryForm();
+                });
+            }
+        });
+
+        window.editCategory = (id, name) => {
+            document.getElementById('category-id').value = id;
+            document.getElementById('category-name').value = name;
+            document.getElementById('category-submit-btn').innerText = 'Update Category';
+        };
+
+        function resetCategoryForm() {
+            document.getElementById('category-id').value = '';
+            document.getElementById('category-name').value = '';
+            document.getElementById('category-submit-btn').innerText = 'Add Category';
+        }
+
+        // Add / Edit Transaction Form
+        document.getElementById('transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('transaction-id').value;
+            const amount = document.getElementById('trans-amount').value;
+            const type = document.getElementById('trans-type').value;
+            const account = document.getElementById('trans-account').value;
+            const category = document.getElementById('trans-category').value;
+            const date = document.getElementById('trans-date').value;
+            const transRef = ref(db, `users/${currentUser.uid}/transactions`);
+
+            const payload = { amount, type, account, category, date };
+
+            if (id) {
+                update(ref(db, `users/${currentUser.uid}/transactions/${id}`), payload).then(() => {
+                    resetTransForm();
+                });
+            } else {
+                push(transRef, payload).then(() => {
+                    resetTransForm();
+                });
+            }
+        });
+
+        window.editTransaction = (id, amount, type, account, category, date) => {
+            document.getElementById('transaction-id').value = id;
+            document.getElementById('trans-amount').value = amount;
+            document.getElementById('trans-type').value = type;
+            document.getElementById('trans-account').value = account;
+            document.getElementById('trans-category').value = category;
+            document.getElementById('trans-date').value = date;
+            document.getElementById('trans-submit-btn').innerText = 'Update Transaction';
+        };
+
+        function resetTransForm() {
+            document.getElementById('transaction-id').value = '';
+            document.getElementById('transaction-form').reset();
+            document.getElementById('trans-submit-btn').innerText = 'Add Transaction';
+        }
+
+        // Global Delete Function
+        window.deleteData = (type, id) => {
+            if (confirm("Are you sure you want to delete this item?")) {
+                remove(ref(db, `users/${currentUser.uid}/${type}/${id}`));
+            }
+        };
+    </script>
 </body>
 </html>
