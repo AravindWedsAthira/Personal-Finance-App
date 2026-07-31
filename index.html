@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root { --sidebar-width: 260px; }
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
         #wrapper { display: flex; width: 100%; align-items: stretch; }
         #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: linear-gradient(180deg, #212529 0%, #343a40 100%); color: #fff; transition: all 0.3s; min-height: 100vh; z-index: 1000; }
         #sidebar.active { margin-left: calc(-1 * var(--sidebar-width)); }
@@ -24,7 +24,7 @@
         .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .badge-sub { background-color: #e9ecef; color: #495057; font-weight: 500; margin-right: 4px; margin-bottom: 4px; display: inline-block; padding: 5px 10px; border-radius: 6px; }
+        .badge-sub { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; font-weight: 500; margin-right: 4px; margin-bottom: 4px; display: inline-block; padding: 5px 10px; border-radius: 6px; }
         @media (max-width: 768px) { #sidebar { margin-left: calc(-1 * var(--sidebar-width)); position: absolute; } #sidebar.active { margin-left: 0; } }
     </style>
 </head>
@@ -54,10 +54,15 @@
 
         <!-- Page Content -->
         <div id="content">
-            <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4 px-4 py-3">
+            <nav class="navbar navbar-expand-lg rounded shadow-sm mb-4 px-4 py-3 bg-body">
                 <div class="container-fluid p-0">
-                    <button type="button" id="sidebarCollapse" class="btn btn-light border"><i class="bi bi-list fs-5"></i></button>
-                    <span class="navbar-brand ms-3 fw-bold text-dark fs-4" id="page-title">Home & Logs</span>
+                    <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary border"><i class="bi bi-list fs-5"></i></button>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="navbar-brand fw-bold fs-4 m-0" id="page-title">Home & Logs</span>
+                        <button class="btn btn-outline-secondary btn-sm rounded-circle p-2 lh-1" id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+                            <i class="bi bi-moon-fill fs-6" id="darkModeIcon"></i>
+                        </button>
+                    </div>
                 </div>
             </nav>
 
@@ -65,30 +70,35 @@
             <div id="section-home" class="section-view active">
                 <div class="row">
                     <div class="col-lg-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold"><i class="bi bi-plus-circle me-2"></i>New Transaction</h4>
                             <form id="transaction-form">
                                 <input type="hidden" id="trans-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Type</label>
-                                    <select class="form-select" id="trans-type" required onchange="populateSubcategories()">
+                                    <select class="form-select" id="trans-type" required onchange="handleTransactionTypeChange()">
                                         <option value="Expense">Expense</option>
                                         <option value="Income">Income</option>
+                                        <option value="CC_Repayment">Credit Card Repayment</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Amount</label>
                                     <input type="number" step="0.01" class="form-control" id="trans-amount" placeholder="0.00" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Account / Source</label>
+                                <div class="mb-3" id="group-trans-account">
+                                    <label class="form-label fw-semibold" id="label-trans-account">Account / Source (Payer)</label>
                                     <select class="form-select" id="trans-account" required></select>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" id="group-trans-cc" style="display:none;">
+                                    <label class="form-label fw-semibold">Target Credit Card (Recipient of Repayment)</label>
+                                    <select class="form-select" id="trans-cc-target"></select>
+                                </div>
+                                <div class="mb-3" id="group-trans-cat">
                                     <label class="form-label fw-semibold">Category</label>
                                     <select class="form-select" id="trans-category" required onchange="populateSubcategories()"></select>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" id="group-trans-sub">
                                     <label class="form-label fw-semibold">Subcategory</label>
                                     <select class="form-select" id="trans-subcategory" required></select>
                                 </div>
@@ -105,8 +115,8 @@
                         </div>
                     </div>
                     <div class="col-lg-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead class="table-light">
@@ -114,7 +124,7 @@
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Account</th>
+                                            <th>Source / Account</th>
                                             <th>Category / Sub</th>
                                             <th class="text-end">Actions</th>
                                         </tr>
@@ -131,25 +141,25 @@
             <div id="section-master-categories" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold">Manage Categories</h4>
                             <form id="category-form">
                                 <input type="hidden" id="cat-id">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Category Name</label>
-                                    <input type="text" class="form-control" id="cat-name" placeholder="e.g. Food, Bills" required>
+                                    <label class="form-label fw-semibold">Category Name (e.g. Gift)</label>
+                                    <input type="text" class="form-control" id="cat-name" placeholder="e.g. Gift" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Subcategories (Comma Separated)</label>
-                                    <textarea class="form-control" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Snacks"></textarea>
+                                    <textarea class="form-control" id="cat-sub" rows="3" placeholder="Farewell, Wedding, Birthday"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 fw-semibold" id="cat-submit-btn">Save Category</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold">Existing Categories & Subcategories</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold">Existing Categories & Subcategories</h4>
                             <div id="categories-list" class="list-group"></div>
                         </div>
                     </div>
@@ -160,7 +170,7 @@
             <div id="section-master-accounts" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold">Add Bank / Deposit</h4>
                             <form id="account-form">
                                 <input type="hidden" id="acc-id">
@@ -181,7 +191,7 @@
                                     <select class="form-select" id="acc-parent"></select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold" id="balance-label">Balance / Principal Amount</label>
+                                    <label class="form-label fw-semibold" id="balance-label">Current Balance / Principal Amount</label>
                                     <input type="number" step="0.01" class="form-control" id="acc-balance" required>
                                 </div>
                                 <div id="deposit-fields" style="display:none;">
@@ -199,8 +209,8 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold">Accounts & Deposits Overview</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold">Accounts & Deposits Overview</h4>
                             <ul class="list-group" id="accounts-list"></ul>
                         </div>
                     </div>
@@ -211,7 +221,7 @@
             <div id="section-master-investments" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold">Add Investment</h4>
                             <form id="investment-form">
                                 <input type="hidden" id="inv-id">
@@ -239,8 +249,8 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold">Portfolio Assets</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold">Portfolio Assets</h4>
                             <ul class="list-group" id="investments-list"></ul>
                         </div>
                     </div>
@@ -251,7 +261,7 @@
             <div id="section-master-cards" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold">Add Credit Card</h4>
                             <form id="card-form">
                                 <input type="hidden" id="card-id">
@@ -264,16 +274,16 @@
                                     <input type="number" step="0.01" class="form-control" id="card-limit" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Outstanding Balance</label>
-                                    <input type="number" step="0.01" class="form-control" id="card-outstanding" required>
+                                    <label class="form-label fw-semibold">Initial Outstanding Balance Due</label>
+                                    <input type="number" step="0.01" class="form-control" id="card-outstanding" placeholder="0.00" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 fw-semibold" id="card-submit-btn">Save Card</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold">Credit Cards Portfolio</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold">Credit Cards Portfolio & Balance Due</h4>
                             <ul class="list-group" id="cards-list"></ul>
                         </div>
                     </div>
@@ -284,7 +294,7 @@
             <div id="section-master-wallets" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold">Add Wallet / Cash</h4>
                             <form id="wallet-form">
                                 <input type="hidden" id="wal-id">
@@ -301,8 +311,8 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold">Wallets & Cash Assets</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold">Wallets & Cash Assets</h4>
                             <ul class="list-group" id="wallets-list"></ul>
                         </div>
                     </div>
@@ -311,9 +321,9 @@
 
             <!-- 7. ANALYTICS -->
             <div id="section-analytics" class="section-view">
-                <div class="card p-4">
+                <div class="card p-4 bg-body">
                     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                        <h4 class="text-dark fw-bold m-0">Financial Analytics & Insights</h4>
+                        <h4 class="fw-bold m-0">Financial Analytics & Insights</h4>
                         <div class="d-flex gap-2">
                             <select id="analytics-timeframe" class="form-select" onchange="renderAnalytics()">
                                 <option value="monthly">Monthly</option>
@@ -327,19 +337,19 @@
                     <!-- Quick Overview Metrics -->
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm border-start border-primary border-4">
+                            <div class="p-3 bg-light rounded shadow-sm border-start border-primary border-4 text-dark">
                                 <span class="text-muted small fw-semibold">DISPOSABLE INCOME (Savings + Cash)</span>
                                 <h3 id="metric-disposable" class="text-primary fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm border-start border-success border-4">
+                            <div class="p-3 bg-light rounded shadow-sm border-start border-success border-4 text-dark">
                                 <span class="text-muted small fw-semibold">TOTAL INVESTMENTS</span>
                                 <h3 id="metric-investments" class="text-success fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-light rounded shadow-sm border-start border-danger border-4">
+                            <div class="p-3 bg-light rounded shadow-sm border-start border-danger border-4 text-dark">
                                 <span class="text-muted small fw-semibold">PERIOD EXPENSES</span>
                                 <h3 id="metric-expenses" class="text-danger fw-bold mt-1 mb-0">0.00</h3>
                             </div>
@@ -362,7 +372,7 @@
             <div id="section-budgets" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4">
+                        <div class="card p-4 bg-body">
                             <h4 class="mb-3 text-primary fw-bold">Set Budget</h4>
                             <form id="budget-form">
                                 <input type="hidden" id="bud-id">
@@ -386,8 +396,8 @@
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-dark fw-bold">Budget Tracking & Alerts</h4>
+                        <div class="card p-4 bg-body">
+                            <h4 class="mb-3 fw-bold">Budget Tracking & Alerts</h4>
                             <div id="budgets-container"></div>
                         </div>
                     </div>
@@ -400,7 +410,7 @@
     <!-- Firebase SDKs & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, remove, onValue, update, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, remove, onValue, update, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeV2ddLzeq1c4bOCKZyYhSVqefMlKTcU",
@@ -418,18 +428,43 @@
         let dbCategories = {};
         let dbAccounts = {};
         let dbWallets = {};
+        let dbCards = {};
         let dbInvestments = {};
         let dbTransactions = {};
 
-        // Default Common Categories Seed Data
         const defaultCategories = {
             "cat_1": { name: "Food & Dining", sub: "Groceries, Restaurants, Coffee, Fast Food" },
             "cat_2": { name: "Bills & Utilities", sub: "Electricity, Water, Internet, Mobile, Gas" },
             "cat_3": { name: "Transportation", sub: "Fuel, Public Transit, Cab, Maintenance" },
             "cat_4": { name: "Shopping", sub: "Clothing, Electronics, Home Decor, Online" },
             "cat_5": { name: "Salary / Income", sub: "Primary Salary, Freelance, Dividends, Gifts" },
-            "cat_6": { name: "Entertainment", sub: "Movies, Subscriptions, Games, Outings" }
+            "cat_6": { name: "Gift", sub: "Farewell, Wedding, Birthday, Anniversary, Festival" },
+            "cat_7": { name: "Entertainment", sub: "Movies, Subscriptions, Games, Outings" }
         };
+
+        // Dark Mode Logic
+        window.toggleDarkMode = function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('darkModeIcon');
+            if(theme === 'dark') {
+                icon.className = 'bi bi-sun-fill fs-6';
+            } else {
+                icon.className = 'bi bi-moon-fill fs-6';
+            }
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        updateThemeIcon(savedTheme);
 
         // Sidebar Collapse & Auto-Hide on Selection
         const sidebar = document.getElementById('sidebar');
@@ -454,7 +489,6 @@
             };
             document.getElementById('page-title').innerText = titles[sectionId];
 
-            // Auto hide sidebar on mobile/selection for responsiveness
             if (window.innerWidth <= 768) {
                 sidebar.classList.remove('active');
             }
@@ -468,7 +502,33 @@
             document.getElementById('balance-label').innerText = isDeposit ? 'Deposit Principal Amount' : 'Current Balance';
         }
 
-        // Initialize Firebase listeners and auto-populate default categories if empty
+        window.handleTransactionTypeChange = function() {
+            const type = document.getElementById('trans-type').value;
+            const groupAccount = document.getElementById('group-trans-account');
+            const groupCC = document.getElementById('group-trans-cc');
+            const groupCat = document.getElementById('group-trans-cat');
+            const groupSub = document.getElementById('group-trans-sub');
+            const labelAcc = document.getElementById('label-trans-account');
+
+            if (type === 'CC_Repayment') {
+                groupAccount.style.display = 'block';
+                labelAcc.innerText = 'Pay from Bank Account / Wallet';
+                groupCC.style.display = 'block';
+                groupCat.style.display = 'none';
+                groupSub.style.display = 'none';
+                document.getElementById('trans-category').removeAttribute('required');
+                document.getElementById('trans-subcategory').removeAttribute('required');
+            } else {
+                groupAccount.style.display = 'block';
+                labelAcc.innerText = 'Account / Source (Payer)';
+                groupCC.style.display = 'none';
+                groupCat.style.display = 'block';
+                groupSub.style.display = 'block';
+                document.getElementById('trans-category').setAttribute('required', 'true');
+                document.getElementById('trans-subcategory').setAttribute('required', 'true');
+            }
+        }
+
         function initListeners() {
             onValue(ref(db, 'categories'), (snapshot) => {
                 if (!snapshot.exists()) {
@@ -492,13 +552,17 @@
                 updateSourceDropdowns();
             });
 
+            onValue(ref(db, 'cards'), (snapshot) => {
+                dbCards = snapshot.val() || {};
+                renderCards();
+                updateSourceDropdowns();
+            });
+
             onValue(ref(db, 'investments'), (snapshot) => {
                 dbInvestments = snapshot.val() || {};
                 renderGenericList('investments', dbInvestments, ['type', 'name', 'amount', 'units']);
                 renderAnalytics();
             });
-
-            onValue(ref(db, 'cards'), (snapshot) => renderGenericList('cards', snapshot.val() || {}, ['name', 'limit', 'outstanding']));
 
             onValue(ref(db, 'transactions'), (snapshot) => {
                 dbTransactions = snapshot.val() || {};
@@ -541,10 +605,13 @@
         function updateSourceDropdowns() {
             const select = document.getElementById('trans-account');
             const parentSelect = document.getElementById('acc-parent');
+            const ccTargetSelect = document.getElementById('trans-cc-target');
+            
             select.innerHTML = '<option value="">Select Account / Source</option>';
             parentSelect.innerHTML = '<option value="">Select Associated Bank</option>';
+            ccTargetSelect.innerHTML = '<option value="">Select Credit Card</option>';
 
-            Object.values(dbAccounts).forEach(acc => {
+            Object.entries(dbAccounts).forEach(([id, acc]) => {
                 if(acc.type === 'Savings') {
                     select.innerHTML += `<option value="${acc.name} (Savings)">${acc.name} (Savings) - Bal: ${acc.balance}</option>`;
                     parentSelect.innerHTML += `<option value="${acc.name}">${acc.name}</option>`;
@@ -553,8 +620,14 @@
                 }
             });
 
-            Object.values(dbWallets).forEach(wal => {
+            Object.entries(dbWallets).forEach(([id, wal]) => {
                 select.innerHTML += `<option value="${wal.name} (Wallet)">${wal.name} (Wallet) - Bal: ${wal.balance}</option>`;
+            });
+
+            // Credit Cards as available expense source
+            Object.entries(dbCards).forEach(([id, card]) => {
+                select.innerHTML += `<option value="${card.name} (Credit Card)">${card.name} (Credit Card) - Due: ${card.outstanding || 0}</option>`;
+                ccTargetSelect.innerHTML += `<option value="${card.name}">${card.name} (Due: ${card.outstanding || 0})</option>`;
             });
         }
 
@@ -563,7 +636,7 @@
             list.innerHTML = '';
             Object.entries(dbCategories).forEach(([id, val]) => {
                 let subs = val.sub ? val.sub.split(',').map(s => `<span class="badge-sub">${s.trim()}</span>`).join('') : '<small class="text-muted">No subcategories</small>';
-                list.innerHTML += `<div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                list.innerHTML += `<div class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
                     <div>
                         <h6 class="mb-1 fw-bold">${val.name}</h6>
                         <div>${subs}</div>
@@ -581,7 +654,7 @@
             list.innerHTML = '';
             Object.entries(dbAccounts).forEach(([id, val]) => {
                 let details = val.type !== 'Savings' ? ` | Linked: ${val.parent || 'None'} | Tenure: ${val.tenure || '-'}m | Int: ${val.interest || '-'}%` : '';
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
                     <div><strong>${val.name}</strong> <span class="badge bg-secondary">${val.type}</span><br><small class="text-muted">Balance: ${val.balance}${details}</small></div>
                     <div>
                         <button class="btn btn-sm btn-outline-warning me-1" onclick="editAccount('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
@@ -595,11 +668,28 @@
             const list = document.getElementById('wallets-list');
             list.innerHTML = '';
             Object.entries(dbWallets).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
                     <div><strong>${val.name}</strong><br><small class="text-muted">Balance: ${val.balance}</small></div>
                     <div>
                         <button class="btn btn-sm btn-outline-warning me-1" onclick="editWallet('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteData('wallets', '${id}')"><i class="bi bi-trash"></i></button>
+                    </div>
+                </li>`;
+            });
+        }
+
+        function renderCards() {
+            const list = document.getElementById('cards-list');
+            list.innerHTML = '';
+            Object.entries(dbCards).forEach(([id, val]) => {
+                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
+                    <div>
+                        <strong>${val.name}</strong> <span class="badge bg-danger">Due: ${val.outstanding || 0}</span>
+                        <br><small class="text-muted">Limit: ${val.limit}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editGeneric('cards', '${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('cards', '${id}')"><i class="bi bi-trash"></i></button>
                     </div>
                 </li>`;
             });
@@ -611,7 +701,7 @@
             list.innerHTML = '';
             Object.entries(data).forEach(([id, val]) => {
                 let info = fields.map(f => `<b>${f}:</b> ${val[f] || '-'}`).join(' | ');
-                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center py-3 bg-body">
                     <div>${info}</div>
                     <div>
                         <button class="btn btn-sm btn-outline-warning me-1" onclick="editGeneric('${type}', '${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
@@ -625,12 +715,18 @@
             const tbody = document.getElementById('transactions-table-body');
             tbody.innerHTML = '';
             Object.entries(dbTransactions).forEach(([id, val]) => {
+                let typeBadge = 'bg-danger';
+                if(val.type === 'Income') typeBadge = 'bg-success';
+                if(val.type === 'CC_Repayment') typeBadge = 'bg-info text-dark';
+
+                let catSubText = val.type === 'CC_Repayment' ? `Repayment to <b>${val.ccTarget}</b>` : `${val.category} <br><small class="text-muted">↳ ${val.subcategory || '-'}</small>`;
+
                 tbody.innerHTML += `<tr>
                     <td>${val.date}</td>
-                    <td><span class="badge bg-${val.type === 'Income' ? 'success' : 'danger'}">${val.type}</span></td>
+                    <td><span class="badge ${typeBadge}">${val.type}</span></td>
                     <td class="fw-bold">${val.amount}</td>
                     <td>${val.account}</td>
-                    <td>${val.category} <br><small class="text-muted">↳ ${val.subcategory || '-'}</small></td>
+                    <td>${catSubText}</td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-outline-warning me-1" onclick="editTransaction('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteData('transactions', '${id}')"><i class="bi bi-trash"></i></button>
@@ -639,21 +735,98 @@
             });
         }
 
-        // Form Event Listeners
-        document.getElementById('transaction-form').addEventListener('submit', (e) => {
+        // Form Event Listeners with Account Balance Integration
+        document.getElementById('transaction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('trans-id').value;
+            const type = document.getElementById('trans-type').value;
+            const amount = parseFloat(document.getElementById('trans-amount').value);
+            const sourceAccountStr = document.getElementById('trans-account').value;
+            const date = document.getElementById('trans-date').value;
+            const notes = document.getElementById('trans-notes').value;
+
             const payload = {
-                type: document.getElementById('trans-type').value,
-                amount: parseFloat(document.getElementById('trans-amount').value),
-                account: document.getElementById('trans-account').value,
-                category: document.getElementById('trans-category').value,
-                subcategory: document.getElementById('trans-subcategory').value,
-                date: document.getElementById('trans-date').value,
-                notes: document.getElementById('trans-notes').value
+                type: type,
+                amount: amount,
+                account: sourceAccountStr,
+                date: date,
+                notes: notes,
+                category: type === 'CC_Repayment' ? 'Repayment' : document.getElementById('trans-category').value,
+                subcategory: type === 'CC_Repayment' ? 'Credit Card' : document.getElementById('trans-subcategory').value,
+                ccTarget: type === 'CC_Repayment' ? document.getElementById('trans-cc-target').value : ''
             };
+
+            // Deduct / Adjust Balances automatically
+            await adjustAccountBalance(sourceAccountStr, type, amount, payload.ccTarget);
+
             saveEntity('transactions', id, payload, 'transaction-form', 'trans-id', 'trans-submit-btn', 'Save Transaction');
         });
+
+        async function adjustAccountBalance(sourceStr, type, amount, ccTarget) {
+            // Helper to parse name and type from string like "HDFC (Savings)" or "Regalia (Credit Card)"
+            if (sourceStr.includes('(Savings)')) {
+                let name = sourceStr.replace(' (Savings)', '').trim();
+                let accRef = ref(db, 'accounts');
+                let snapshot = await get(accRef);
+                if(snapshot.exists()) {
+                    let accounts = snapshot.val();
+                    for(let [k, acc] of Object.entries(accounts)) {
+                        if(acc.name === name) {
+                            let newBal = parseFloat(acc.balance);
+                            if(type === 'Expense') newBal -= amount;
+                            else if(type === 'Income') newBal += amount;
+                            else if(type === 'CC_Repayment') newBal -= amount; // paying from bank reduces bank balance
+                            await update(ref(db, `accounts/${k}`), { balance: newBal });
+                        }
+                    }
+                }
+            } else if (sourceStr.includes('(Wallet)')) {
+                let name = sourceStr.replace(' (Wallet)', '').trim();
+                let walRef = ref(db, 'wallets');
+                let snapshot = await get(walRef);
+                if(snapshot.exists()) {
+                    let wallets = snapshot.val();
+                    for(let [k, wal] of Object.entries(wallets)) {
+                        if(wal.name === name) {
+                            let newBal = parseFloat(wal.balance);
+                            if(type === 'Expense') newBal -= amount;
+                            else if(type === 'Income') newBal += amount;
+                            else if(type === 'CC_Repayment') newBal -= amount;
+                            await update(ref(db, `wallets/${k}`), { balance: newBal });
+                        }
+                    }
+                }
+            } else if (sourceStr.includes('(Credit Card)')) {
+                let name = sourceStr.replace(' (Credit Card)', '').trim();
+                let cardRef = ref(db, 'cards');
+                let snapshot = await get(cardRef);
+                if(snapshot.exists()) {
+                    let cards = snapshot.val();
+                    for(let [k, card] of Object.entries(cards)) {
+                        if(card.name === name) {
+                            let newDue = parseFloat(card.outstanding || 0);
+                            if(type === 'Expense') newDue += amount; // spending via CC increases due
+                            await update(ref(db, `cards/${k}`), { outstanding: newDue });
+                        }
+                    }
+                }
+            }
+
+            // If it's a CC Repayment, reduce the due on target credit card
+            if (type === 'CC_Repayment' && ccTarget) {
+                let cardRef = ref(db, 'cards');
+                let snapshot = await get(cardRef);
+                if(snapshot.exists()) {
+                    let cards = snapshot.val();
+                    for(let [k, card] of Object.entries(cards)) {
+                        if(card.name === ccTarget) {
+                            let newDue = Math.max(0, parseFloat(card.outstanding || 0) - amount);
+                            await update(ref(db, `cards/${k}`), { outstanding: newDue });
+                        }
+                    }
+                }
+            }
+        }
 
         document.getElementById('category-form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -733,6 +906,7 @@
             document.getElementById(formId).reset();
             document.getElementById(hiddenId).value = '';
             document.getElementById(btnId).innerText = defaultText;
+            if(formId === 'transaction-form') handleTransactionTypeChange();
         }
 
         window.deleteData = function(path, id) {
@@ -744,11 +918,16 @@
         window.editTransaction = function(id, val) {
             document.getElementById('trans-id').value = id;
             document.getElementById('trans-type').value = val.type;
+            handleTransactionTypeChange();
             document.getElementById('trans-amount').value = val.amount;
             document.getElementById('trans-account').value = val.account;
-            document.getElementById('trans-category').value = val.category;
-            populateSubcategories();
-            document.getElementById('trans-subcategory').value = val.subcategory;
+            if(val.type === 'CC_Repayment') {
+                document.getElementById('trans-cc-target').value = val.ccTarget;
+            } else {
+                document.getElementById('trans-category').value = val.category;
+                populateSubcategories();
+                document.getElementById('trans-subcategory').value = val.subcategory;
+            }
             document.getElementById('trans-date').value = val.date;
             document.getElementById('trans-notes').value = val.notes || '';
             document.getElementById('trans-submit-btn').innerText = 'Update Transaction';
@@ -836,7 +1015,7 @@
                     if (!catSummary[t.category]) catSummary[t.category] = { income: 0, expense: 0 };
                     if (t.type === 'Income') {
                         catSummary[t.category].income += parseFloat(t.amount);
-                    } else {
+                    } else if (t.type === 'Expense') {
                         catSummary[t.category].expense += parseFloat(t.amount);
                         periodExpenses += parseFloat(t.amount);
                     }
