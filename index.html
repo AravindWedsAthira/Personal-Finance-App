@@ -17,33 +17,13 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Passbook Finance</a>
-            <div id="auth-status" class="text-light"></div>
+            <span class="text-light">Local Development Mode</span>
         </div>
     </nav>
 
     <div class="container">
-
-        <!-- Authentication Section (Hidden once logged in) -->
-        <div id="auth-section" class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card p-4">
-                    <h3 class="mb-3 text-center">Login / Register</h3>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" required>
-                    </div>
-                    <button id="login-btn" class="btn btn-primary w-100 mb-2">Login</button>
-                    <button id="register-btn" class="btn btn-secondary w-100">Register</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Dashboard (Visible only when logged in) -->
-        <div id="dashboard-section" style="display: none;">
+        <!-- Main Dashboard (Directly Visible) -->
+        <div id="dashboard-section">
             
             <div class="row">
                 <!-- Management Columns -->
@@ -137,20 +117,15 @@
                 </div>
             </div>
 
-            <div class="text-center mt-3">
-                <button id="logout-btn" class="btn btn-danger">Logout</button>
-            </div>
         </div>
-
     </div>
 
     <!-- Firebase SDK Setup & Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set, push, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your web app's Firebase configuration ( pulled from your project settings )
+        // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDeV2ddLzeq1c4bOCKZyYhSVqefMlKTcU",
             authDomain: "passbook-229d7.firebaseapp.com",
@@ -161,56 +136,14 @@
             appId: "1:1020688201249:web:57d47547d594/1f303d560"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase Database (Auth completely bypassed)
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUser = null;
-
-        // Elements
-        const authSection = document.getElementById('auth-section');
-        const dashboardSection = document.getElementById('dashboard-section');
-        const authStatus = document.getElementById('auth-status');
-
-        // Auth State Listener
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                authSection.style.display = 'none';
-                dashboardSection.style.display = 'block';
-                authStatus.innerText = `Logged in as: ${user.email}`;
-                loadUserData(user.uid);
-            } else {
-                currentUser = null;
-                authSection.style.display = 'block';
-                dashboardSection.style.display = 'none';
-                authStatus.innerText = '';
-            }
-        });
-
-        // Login / Register Handlers
-        document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
-        });
-
-        document.getElementById('register-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            createUserWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth);
-        });
-
-        // Load data dynamically per user
-        function loadUserData(uid) {
+        // Load data immediately from root nodes
+        function loadData() {
             // Accounts
-            const accountsRef = ref(db, `users/${uid}/accounts`);
-            onValue(accountsRef, (snapshot) => {
+            onValue(ref(db, 'accounts'), (snapshot) => {
                 const data = snapshot.val();
                 const list = document.getElementById('accounts-list');
                 const select = document.getElementById('trans-account');
@@ -232,8 +165,7 @@
             });
 
             // Categories
-            const categoriesRef = ref(db, `users/${uid}/categories`);
-            onValue(categoriesRef, (snapshot) => {
+            onValue(ref(db, 'categories'), (snapshot) => {
                 const data = snapshot.val();
                 const list = document.getElementById('categories-list');
                 const select = document.getElementById('trans-category');
@@ -255,8 +187,7 @@
             });
 
             // Transactions
-            const transRef = ref(db, `users/${uid}/transactions`);
-            onValue(transRef, (snapshot) => {
+            onValue(ref(db, 'transactions'), (snapshot) => {
                 const data = snapshot.val();
                 const tbody = document.getElementById('transactions-table-body');
                 tbody.innerHTML = '';
@@ -284,16 +215,11 @@
             e.preventDefault();
             const id = document.getElementById('account-id').value;
             const name = document.getElementById('account-name').value;
-            const accountRef = ref(db, `users/${currentUser.uid}/accounts`);
 
             if (id) {
-                update(ref(db, `users/${currentUser.uid}/accounts/${id}`), { name }).then(() => {
-                    resetAccountForm();
-                });
+                update(ref(db, `accounts/${id}`), { name }).then(() => resetAccountForm());
             } else {
-                push(accountRef, { name }).then(() => {
-                    resetAccountForm();
-                });
+                push(ref(db, 'accounts'), { name }).then(() => resetAccountForm());
             }
         });
 
@@ -314,16 +240,11 @@
             e.preventDefault();
             const id = document.getElementById('category-id').value;
             const name = document.getElementById('category-name').value;
-            const catRef = ref(db, `users/${currentUser.uid}/categories`);
 
             if (id) {
-                update(ref(db, `users/${currentUser.uid}/categories/${id}`), { name }).then(() => {
-                    resetCategoryForm();
-                });
+                update(ref(db, `categories/${id}`), { name }).then(() => resetCategoryForm());
             } else {
-                push(catRef, { name }).then(() => {
-                    resetCategoryForm();
-                });
+                push(ref(db, 'categories'), { name }).then(() => resetCategoryForm());
             }
         });
 
@@ -348,18 +269,13 @@
             const account = document.getElementById('trans-account').value;
             const category = document.getElementById('trans-category').value;
             const date = document.getElementById('trans-date').value;
-            const transRef = ref(db, `users/${currentUser.uid}/transactions`);
 
             const payload = { amount, type, account, category, date };
 
             if (id) {
-                update(ref(db, `users/${currentUser.uid}/transactions/${id}`), payload).then(() => {
-                    resetTransForm();
-                });
+                update(ref(db, `transactions/${id}`), payload).then(() => resetTransForm());
             } else {
-                push(transRef, payload).then(() => {
-                    resetTransForm();
-                });
+                push(ref(db, 'transactions'), payload).then(() => resetTransForm());
             }
         });
 
@@ -382,9 +298,12 @@
         // Global Delete Function
         window.deleteData = (type, id) => {
             if (confirm("Are you sure you want to delete this item?")) {
-                remove(ref(db, `users/${currentUser.uid}/${type}/${id}`));
+                remove(ref(db, `${type}/${id}`));
             }
         };
+
+        // Initialize execution
+        loadData();
     </script>
 </body>
 </html>
