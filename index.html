@@ -18,55 +18,64 @@
             --accent-gold: #d4af37;
             --calc-btn-bg: #42423d;
             --calc-btn-active: #52524d;
+            --border-color: #3d3d38;
+        }
+        [data-bs-theme="light"] {
+            --app-bg: #f4f4ef;
+            --card-bg: #ffffff;
+            --input-bg: #e9e9df;
+            --text-color: #21211e;
+            --accent-gold: #b38f1d;
+            --calc-btn-bg: #dedede;
+            --calc-btn-active: #ceced5;
+            --border-color: #d1d1c7;
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--app-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
         #wrapper { display: flex; width: 100%; align-items: stretch; }
-        #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: linear-gradient(180deg, #1f1f1c 0%, #2b2b27 100%); color: #fff; transition: all 0.3s; min-height: 100vh; z-index: 1000; border-right: 1px solid #3d3d38; }
+        #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: var(--card-bg); color: var(--text-color); transition: all 0.3s; min-height: 100vh; z-index: 1000; border-right: 1px solid var(--border-color); }
         #sidebar.active { margin-left: calc(-1 * var(--sidebar-width)); }
-        #sidebar .sidebar-header { padding: 25px 20px; background: #181815; border-bottom: 1px solid #2f2f2a; }
+        #sidebar .sidebar-header { padding: 25px 20px; background: var(--input-bg); border-bottom: 1px solid var(--border-color); }
         #sidebar ul.components { padding: 15px 0; }
-        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: #b5b5ad; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
-        #sidebar ul li a:hover, #sidebar ul li.active > a { color: var(--text-color); background: rgba(212, 175, 55, 0.1); border-left: 4px solid var(--accent-gold); }
+        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: var(--text-color); opacity: 0.8; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover, #sidebar ul li.active > a { opacity: 1; background: rgba(212, 175, 55, 0.1); border-left: 4px solid var(--accent-gold); }
         #content { width: 100%; padding: 25px; min-height: 100vh; transition: all 0.3s; background-color: var(--app-bg); }
-        .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); border: 1px solid #3d3d38; border-radius: 0.75rem; background-color: var(--card-bg) !important; color: var(--text-color); }
+        .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 0.75rem; background-color: var(--card-bg) !important; color: var(--text-color); }
         .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom App Theme Elements matching the screenshots */
-        .app-container { max-width: 480px; margin: 0 auto; background-color: var(--app-bg); border-radius: 12px; border: 1px solid #42423d; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .top-nav-bar { background-color: #21211e; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d38; }
-        .type-selector { display: flex; justify-content: center; gap: 20px; background-color: #262623; padding: 12px; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid #3d3d38; }
-        .type-option { cursor: pointer; color: #9e9e94; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
-        .type-option.active { color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); padding-bottom: 2px; }
+        /* Custom App Theme Elements */
+        .app-container { max-width: 480px; margin: 0 auto; background-color: var(--app-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .top-nav-bar { background-color: var(--input-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .type-selector { display: flex; justify-content: center; gap: 20px; background-color: var(--card-bg); padding: 12px; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
+        .type-option { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; display: flex; align-items: center; gap: 6px; }
+        .type-option.active { opacity: 1; color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); padding-bottom: 2px; }
         
-        .selector-box { background-color: var(--card-bg); border: 1px solid #4a4a43; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.2s; }
+        .selector-box { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.2s; }
         .selector-box:hover { border-color: var(--accent-gold); }
         
-        .notes-box { background-color: var(--input-bg); border: 1px solid #4a4a43; border-radius: 8px; padding: 12px; min-height: 85px; color: #b5b5ad; font-size: 0.95rem; }
+        .notes-box { background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; min-height: 85px; color: var(--text-color); font-size: 0.95rem; }
+        .calc-display { background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 20px; text-align: right; font-size: 2.2rem; font-weight: bold; color: var(--accent-gold); letter-spacing: 1px; }
         
-        .calc-display { background-color: var(--input-bg); border: 1px solid #4a4a43; border-radius: 8px; padding: 12px 20px; text-align: right; font-size: 2.2rem; font-weight: bold; color: var(--accent-gold); letter-spacing: 1px; }
-        
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; background-color: #21211e; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; background-color: var(--input-bg); }
         .calc-btn { background-color: var(--calc-btn-bg); border: none; border-radius: 6px; color: var(--text-color); font-size: 1.25rem; font-weight: 600; padding: 16px 0; cursor: pointer; transition: background-color 0.15s; }
         .calc-btn:hover { background-color: var(--calc-btn-active); }
         .calc-btn.operator { color: var(--accent-gold); font-size: 1.4rem; }
-        .calc-btn.equals { background-color: #d4af37; color: #1f1f1c; }
-        .calc-btn.equals:hover { background-color: #e5be3b; }
+        .calc-btn.equals { background-color: var(--accent-gold); color: #fff; }
 
         /* Modal Overlays for Selector Grids */
-        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .custom-modal-content { background: var(--app-bg); border: 1px solid #4a4a43; border-radius: 12px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .custom-modal-content { background: var(--app-bg); border: 1px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         
         .icon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 10px 0; }
         .icon-grid-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 8px; transition: background 0.2s; }
-        .icon-grid-item:hover { background: rgba(255,255,255,0.05); }
-        .icon-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; margin-bottom: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .icon-grid-item:hover { background: rgba(212, 175, 55, 0.1); }
+        .icon-circle { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; margin-bottom: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
-        .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #3d3d38; cursor: pointer; transition: background 0.2s; }
-        .account-select-row:hover { background: rgba(255,255,255,0.04); }
+        .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
+        .account-select-row:hover { background: rgba(212, 175, 55, 0.05); }
         
-        .badge-sub { background-color: rgba(212, 175, 55, 0.1); color: var(--accent-gold); font-weight: 500; margin-right: 6px; margin-bottom: 6px; display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(212, 175, 55, 0.2); }
+        .badge-sub { background-color: rgba(212, 175, 55, 0.15); color: var(--accent-gold); font-weight: 500; margin-right: 6px; margin-bottom: 6px; display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(212, 175, 55, 0.3); }
         @media (max-width: 768px) { #sidebar { margin-left: calc(-1 * var(--sidebar-width)); position: absolute; } #sidebar.active { margin-left: 0; } }
     </style>
 </head>
@@ -80,14 +89,14 @@
                     <h4 class="m-0 fw-bold text-warning">Passbook</h4>
                     <small class="text-success"><i class="bi bi-circle-fill fs-7"></i> Realtime DB Connected</small>
                 </div>
-                <button class="btn btn-sm btn-dark d-md-none text-light" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
+                <button class="btn btn-sm btn-outline-secondary d-md-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
             </div>
             <ul class="list-unstyled components">
                 <li class="active"><a href="#" onclick="switchSection('home', this)"><i class="bi bi-house-door me-3"></i> Home & Logs</a></li>
-                <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Subs</a></li>
-                <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Bank & Deposits</a></li>
-                <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Investments & SIP</a></li>
-                <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Credit Cards</a></li>
+                <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Linked Subs</a></li>
+                <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Bank Accounts & Deposits</a></li>
+                <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Investments & Auto SIP/RD</a></li>
+                <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Credit Cards & EMIs</a></li>
                 <li><a href="#" onclick="switchSection('master-wallets', this)"><i class="bi bi-cash-coin me-3"></i> Cash & Wallets</a></li>
                 <li><a href="#" onclick="switchSection('recurring', this)"><i class="bi bi-arrow-repeat me-3"></i> Recurring Payments</a></li>
                 <li><a href="#" onclick="switchSection('analytics', this)"><i class="bi bi-bar-chart-line me-3"></i> Analytics</a></li>
@@ -102,6 +111,7 @@
                     <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary border"><i class="bi bi-list fs-5"></i></button>
                     <div class="d-flex align-items-center gap-3">
                         <span class="navbar-brand fw-bold fs-4 m-0 text-light" id="page-title">Home & Logs</span>
+                        <button class="btn btn-outline-warning btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill" id="theme-icon"></i> Theme</button>
                     </div>
                 </div>
             </nav>
@@ -110,7 +120,6 @@
             <div id="section-home" class="section-view active">
                 <div class="row justify-content-center">
                     <div class="col-lg-5 mb-4">
-                        <!-- App UI Card matching the uploaded screenshot -->
                         <div class="app-container">
                             <div class="top-nav-bar">
                                 <span class="text-warning fw-semibold" style="cursor:pointer;" onclick="resetAppInput()"><i class="bi bi-x-lg me-1"></i> CANCEL</span>
@@ -138,17 +147,11 @@
                                         <div class="selector-box" onclick="openCategoryModal()">
                                             <div class="d-flex align-items-center gap-2 text-truncate">
                                                 <i class="bi bi-tag text-warning fs-5" id="selected-category-icon"></i>
-                                                <span id="selected-category-label" class="text-truncate">Category</span>
+                                                <span id="selected-category-label" class="text-truncate">Subcategory</span>
                                             </div>
                                             <i class="bi bi-chevron-right text-muted small"></i>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Subcategory selection bar if category has subcategories -->
-                                <div id="subcategory-bar-container" class="mb-3" style="display:none;">
-                                    <div class="small text-muted mb-1 fw-semibold">Select Subcategory:</div>
-                                    <div id="subcategory-chips" class="d-flex flex-wrap gap-1"></div>
                                 </div>
 
                                 <div class="mb-3">
@@ -181,7 +184,7 @@
                                 <button class="calc-btn equals" onclick="calculateResult()">=</button>
                             </div>
 
-                            <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top border-secondary">
+                            <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top">
                                 <span id="current-date-display">Jul 31, 2026</span>
                                 <span id="current-time-display">8:58 PM</span>
                             </div>
@@ -189,17 +192,17 @@
                     </div>
 
                     <div class="col-lg-7">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
                             <div class="table-responsive">
-                                <table class="table table-dark table-hover align-middle">
+                                <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount</th>
                                             <th>Account</th>
-                                            <th>Category / Sub / Notes</th>
+                                            <th>Subcategory (Category) / Notes</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
@@ -215,20 +218,20 @@
             <!-- Account Selection Modal -->
             <div class="custom-modal-overlay" id="account-modal">
                 <div class="custom-modal-content">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 border-secondary">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
                         <h5 class="fw-bold m-0 text-warning">Select an account</h5>
-                        <button class="btn btn-sm btn-dark text-light" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div id="account-modal-list"></div>
                 </div>
             </div>
 
-            <!-- Category Selection Modal -->
+            <!-- Subcategory Selection Modal (Linked to Categories) -->
             <div class="custom-modal-overlay" id="category-modal">
                 <div class="custom-modal-content">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2 border-secondary">
-                        <h5 class="fw-bold m-0 text-warning">Select a category</h5>
-                        <button class="btn btn-sm btn-dark text-light" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-warning">Select a Subcategory</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div class="icon-grid" id="category-modal-grid"></div>
                 </div>
@@ -238,33 +241,33 @@
             <div id="section-master-categories" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-card">
+                        <div class="card p-4">
                             <h4 class="mb-3 text-warning fw-bold">Manage Categories</h4>
                             <form id="category-form">
                                 <input type="hidden" id="cat-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Category Name</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="cat-name" placeholder="e.g. Food" required>
+                                    <input type="text" class="form-control" id="cat-name" placeholder="e.g. Food" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Icon (Bootstrap Icon Class)</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="cat-icon" placeholder="e.g. bi-cup-hot" value="bi-tag">
+                                    <input type="text" class="form-control" id="cat-icon" placeholder="e.g. bi-cup-hot" value="bi-tag">
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Icon Background Color</label>
-                                    <input type="color" class="form-control form-control-color w-100 bg-dark border-secondary" id="cat-color" value="#8B008B">
+                                    <input type="color" class="form-control form-control-color w-100" id="cat-color" value="#8B008B">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Subcategories (Comma Separated)</label>
-                                    <textarea class="form-control bg-dark text-light border-secondary" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
+                                    <label class="form-label fw-semibold">Linked Subcategories (Comma Separated)</label>
+                                    <textarea class="form-control" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="cat-submit-btn">Save Category</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light">Existing Categories & Subcategories</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold">Linked Categories & Subcategories</h4>
                             <div id="categories-list" class="list-group"></div>
                         </div>
                     </div>
@@ -275,13 +278,13 @@
             <div id="section-master-accounts" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-card">
+                        <div class="card p-4">
                             <h4 class="mb-3 text-warning fw-bold">Add Bank / Account</h4>
                             <form id="account-form">
                                 <input type="hidden" id="acc-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account Type</label>
-                                    <select class="form-select bg-dark text-light border-secondary" id="acc-type" onchange="toggleAccountFields()" required>
+                                    <select class="form-select" id="acc-type" required>
                                         <option value="Savings">Savings Account</option>
                                         <option value="FD">Fixed Deposit (FD)</option>
                                         <option value="RD">Recurring Deposit (RD)</option>
@@ -289,100 +292,117 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account / Scheme Name</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="acc-name" placeholder="e.g. SBI, Axis, Car RD" required>
+                                    <input type="text" class="form-control" id="acc-name" placeholder="e.g. SBI, Axis, Car RD" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Icon (Bootstrap Icon Class)</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="acc-icon" placeholder="e.g. bi-bank" value="bi-bank">
+                                    <label class="form-label fw-semibold">Icon</label>
+                                    <input type="text" class="form-control" id="acc-icon" value="bi-bank">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold" id="balance-label">Current Balance</label>
-                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="acc-balance" required>
+                                    <label class="form-label fw-semibold">Current Balance</label>
+                                    <input type="number" step="0.01" class="form-control" id="acc-balance" required>
                                 </div>
                                 <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="acc-submit-btn">Save Account</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light">Accounts & Balances</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold">Accounts & Balances</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="accounts-list"></ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. INVESTMENTS & SIP -->
+            <!-- 4. INVESTMENTS & AUTO SIP/RD -->
             <div id="section-master-investments" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 text-warning fw-bold">Add Investment / SIP</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-warning fw-bold">Add Investment / Auto SIP</h4>
                             <form id="investment-form">
                                 <input type="hidden" id="inv-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Asset Type</label>
-                                    <select class="form-select bg-dark text-light border-secondary" id="inv-type" required>
+                                    <select class="form-select" id="inv-type" required>
                                         <option value="Mutual Fund">Mutual Fund / SIP</option>
+                                        <option value="RD">Recurring Deposit (RD)</option>
                                         <option value="Stock">Stock</option>
-                                        <option value="PPF">PPF / EPF</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Name / Ticker</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="inv-name" placeholder="e.g. Axis Midcap SIP" required>
+                                    <label class="form-label fw-semibold">Name</label>
+                                    <input type="text" class="form-control" id="inv-name" placeholder="e.g. Axis Midcap SIP" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Invested Amount / SIP Installment</label>
-                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="inv-amount" required>
+                                    <label class="form-label fw-semibold">Installment Amount</label>
+                                    <input type="number" step="0.01" class="form-control" id="inv-amount" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Is this an active SIP?</label>
-                                    <select class="form-select bg-dark text-light border-secondary" id="inv-issip">
-                                        <option value="No">No (Lumpsum / Stock)</option>
-                                        <option value="Yes">Yes (Monthly SIP)</option>
-                                    </select>
+                                    <label class="form-label fw-semibold">Debit Source Account</label>
+                                    <select class="form-select" id="inv-source-account" required></select>
                                 </div>
-                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="inv-submit-btn">Save Investment</button>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Auto Debit Date of Month (1-31)</label>
+                                    <input type="number" min="1" max="31" class="form-control" id="inv-day" value="5" required>
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="inv-submit-btn">Save Auto SIP/RD</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light">Portfolio Assets & SIPs</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold">Active Auto-Debited Investments & SIPs</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="investments-list"></ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. CREDIT CARDS -->
+            <!-- 5. CREDIT CARDS & EMIS -->
             <div id="section-master-cards" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 text-warning fw-bold">Add Credit Card</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-warning fw-bold">Add Credit Card / EMI</h4>
                             <form id="card-form">
                                 <input type="hidden" id="card-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Card Name</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="card-name" placeholder="e.g. Joint CC" required>
+                                    <input type="text" class="form-control" id="card-name" placeholder="e.g. HDFC Regalia" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Credit Limit</label>
-                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="card-limit" required>
+                                    <input type="number" step="0.01" class="form-control" id="card-limit" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Outstanding Balance Due</label>
-                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="card-outstanding" placeholder="0.00" required>
+                                    <label class="form-label fw-semibold">Outstanding Due</label>
+                                    <input type="number" step="0.01" class="form-control" id="card-outstanding" value="0" required>
                                 </div>
-                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="card-submit-btn">Save Card</button>
+                                <hr class="border-secondary">
+                                <h6 class="text-warning">Active EMIs on Card</h6>
+                                <div class="mb-3">
+                                    <label class="form-label small">EMI Item Name</label>
+                                    <input type="text" class="form-control form-control-sm" id="card-emi-name" placeholder="e.g. iPhone EMI">
+                                </div>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label small">Monthly EMI Amt</label>
+                                        <input type="number" step="0.01" class="form-control form-control-sm" id="card-emi-amt" placeholder="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small">Remaining Months</label>
+                                        <input type="number" class="form-control form-control-sm" id="card-emi-months" placeholder="0">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="card-submit-btn">Save Credit Card</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light">Credit Cards Portfolio</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold">Credit Cards & EMI Trackers</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="cards-list"></ul>
                         </div>
                     </div>
@@ -393,25 +413,25 @@
             <div id="section-master-wallets" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-card">
+                        <div class="card p-4">
                             <h4 class="mb-3 text-warning fw-bold">Add Wallet / Cash</h4>
                             <form id="wallet-form">
                                 <input type="hidden" id="wal-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Name</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="wal-name" placeholder="e.g. Joint Cash" required>
+                                    <input type="text" class="form-control" id="wal-name" placeholder="e.g. Joint Cash" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Available Balance</label>
-                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="wal-balance" required>
+                                    <input type="number" step="0.01" class="form-control" id="wal-balance" required>
                                 </div>
                                 <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="wal-submit-btn">Save Wallet</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light">Wallets & Cash Assets</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold">Wallets & Cash Assets</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="wallets-list"></ul>
                         </div>
                     </div>
@@ -422,21 +442,21 @@
             <div id="section-recurring" class="section-view">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="card p-4 bg-card">
+                        <div class="card p-4">
                             <h4 class="mb-3 text-warning fw-bold">Add Recurring Payment</h4>
                             <form id="recurring-form">
                                 <input type="hidden" id="rec-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Title / Name</label>
-                                    <input type="text" class="form-control bg-dark text-light border-secondary" id="rec-name" placeholder="e.g. Netflix, Rent" required>
+                                    <input type="text" class="form-control" id="rec-name" placeholder="e.g. Netflix, Rent" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Amount</label>
-                                    <input type="number" step="0.01" class="form-control bg-dark text-light border-secondary" id="rec-amount" required>
+                                    <input type="number" step="0.01" class="form-control" id="rec-amount" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Frequency</label>
-                                    <select class="form-select bg-dark text-light border-secondary" id="rec-freq">
+                                    <select class="form-select" id="rec-freq">
                                         <option value="Monthly">Monthly</option>
                                         <option value="Yearly">Yearly</option>
                                         <option value="Weekly">Weekly</option>
@@ -444,15 +464,15 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Next Due Date</label>
-                                    <input type="date" class="form-control bg-dark text-light border-secondary" id="rec-date" required>
+                                    <input type="date" class="form-control" id="rec-date" required>
                                 </div>
                                 <button type="submit" class="btn btn-warning w-100 fw-semibold text-dark" id="rec-submit-btn">Save Recurring Item</button>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="card p-4 bg-card">
-                            <h4 class="mb-3 fw-bold text-light">Active Recurring Subscriptions & Bills</h4>
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold">Active Recurring Subscriptions & Bills</h4>
                             <ul class="list-group list-group-flush bg-transparent" id="recurring-list"></ul>
                         </div>
                     </div>
@@ -461,23 +481,23 @@
 
             <!-- 8. ANALYTICS -->
             <div id="section-analytics" class="section-view">
-                <div class="card p-4 bg-card">
-                    <h4 class="fw-bold mb-4 text-light">Financial Analytics & Insights</h4>
+                <div class="card p-4">
+                    <h4 class="fw-bold mb-4">Financial Analytics & Insights</h4>
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
-                            <div class="p-3 bg-dark rounded border border-secondary">
+                            <div class="p-3 bg-input rounded border">
                                 <span class="text-muted small fw-semibold">LIQUID BALANCE</span>
                                 <h3 id="metric-disposable" class="text-warning fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-dark rounded border border-secondary">
+                            <div class="p-3 bg-input rounded border">
                                 <span class="text-muted small fw-semibold">INVESTMENTS</span>
                                 <h3 id="metric-investments" class="text-success fw-bold mt-1 mb-0">0.00</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="p-3 bg-dark rounded border border-secondary">
+                            <div class="p-3 bg-input rounded border">
                                 <span class="text-muted small fw-semibold">TOTAL EXPENSES</span>
                                 <h3 id="metric-expenses" class="text-danger fw-bold mt-1 mb-0">0.00</h3>
                             </div>
@@ -488,8 +508,8 @@
 
             <!-- 9. BUDGETS -->
             <div id="section-budgets" class="section-view">
-                <div class="card p-4 bg-card">
-                    <h4 class="mb-3 fw-bold text-light">Budget Tracking</h4>
+                <div class="card p-4">
+                    <h4 class="mb-3 fw-bold">Budget Tracking</h4>
                     <div id="budgets-container"></div>
                 </div>
             </div>
@@ -523,7 +543,6 @@
         let dbTransactions = {};
         let dbRecurring = {};
 
-        // Default categories matching user's exact uploaded look
         const defaultCategories = {
             "cat_1": { name: "Aparna", icon: "bi-car-front-fill", color: "#6f42c1", sub: "Fuel, Toll, Service" },
             "cat_2": { name: "Aravind Wedding", icon: "bi-car-front-fill", color: "#6f42c1", sub: "Suit, Transport, Gift" },
@@ -548,20 +567,22 @@
             "acc_3": { name: "Car RD", type: "RD", balance: 250000.00, icon: "bi-cash-stack" },
             "acc_4": { name: "Card", type: "Savings", balance: 10601.76, icon: "bi-credit-card" },
             "acc_5": { name: "Cash", type: "Savings", balance: 11542.00, icon: "bi-cash" },
-            "acc_6": { name: "IDFC for cards", type: "Savings", balance: 417.00, icon: "bi-wallet2" },
-            "acc_7": { name: "Joint CC", type: "Savings", balance: -9236.90, icon: "bi-credit-card-2-front" },
-            "acc_8": { name: "Joint Cash", type: "Savings", balance: -2307.00, icon: "bi-cash-coin" },
-            "acc_9": { name: "Joint SBI", type: "Savings", balance: 2311.78, icon: "bi-shop" },
-            "acc_10": { name: "MOD SBI", type: "Savings", balance: 14902.00, icon: "bi-piggy-bank" },
-            "acc_11": { name: "SBI", type: "Savings", balance: 49053.61, icon: "bi-bank2" }
+            "acc_6": { name: "SBI", type: "Savings", balance: 49053.61, icon: "bi-bank2" }
         };
 
-        // App state variables for transaction builder
         let selectedAppType = "Expense";
         let currentSelectedAccount = "SBI";
-        let currentSelectedCategory = "Food";
         let currentSelectedSubcategory = "";
+        let currentSelectedCategory = "";
         let calcExpression = "0";
+
+        window.toggleTheme = function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', newTheme);
+            document.getElementById('theme-icon').className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+        }
 
         window.setAppType = function(type) {
             selectedAppType = type;
@@ -597,19 +618,16 @@
             document.getElementById('app-notes').value = "";
         }
 
-        // Modals management
         window.openAccountModal = function() {
             const list = document.getElementById('account-modal-list');
             list.innerHTML = '';
-            
-            // Combine accounts and wallets for selection
             const combined = {...dbAccounts, ...dbWallets};
             Object.values(combined).forEach(acc => {
                 list.innerHTML += `
                     <div class="account-select-row" onclick="selectAppAccount('${acc.name}')">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-circle" style="width:38px;height:38px;background:#42423d;font-size:1.1rem;"><i class="bi ${acc.icon || 'bi-wallet2'} text-warning"></i></div>
-                            <span class="fw-semibold text-light">${acc.name}</span>
+                            <div class="icon-circle" style="width:38px;height:38px;background:var(--calc-btn-bg);font-size:1.1rem;"><i class="bi ${acc.icon || 'bi-wallet2'} text-warning"></i></div>
+                            <span class="fw-semibold">${acc.name}</span>
                         </div>
                         <span class="fw-bold ${acc.balance < 0 ? 'text-danger' : 'text-success'}">Rs. ${acc.balance}</span>
                     </div>
@@ -628,19 +646,28 @@
             closeAccountModal();
         }
 
+        // Show ONLY subcategories linked to categories in modal
         window.openCategoryModal = function() {
             const grid = document.getElementById('category-modal-grid');
             grid.innerHTML = '';
             
             Object.values(dbCategories).forEach(cat => {
-                grid.innerHTML += `
-                    <div class="icon-grid-item" onclick="selectAppCategory('${cat.name}', '${cat.icon || 'bi-tag'}', '${cat.color || '#6f42c1'}', '${cat.sub || ''}')">
-                        <div class="icon-circle" style="background-color: ${cat.color || '#6f42c1'};">
-                            <i class="bi ${cat.icon || 'bi-tag'}"></i>
-                        </div>
-                        <span class="small text-light text-center fw-semibold text-truncate w-100">${cat.name}</span>
-                    </div>
-                `;
+                if(cat.sub && cat.sub.trim() !== '') {
+                    cat.sub.split(',').forEach(sub => {
+                        let trimmed = sub.trim();
+                        if(trimmed) {
+                            grid.innerHTML += `
+                                <div class="icon-grid-item" onclick="selectAppSubcategory('${trimmed}', '${cat.name}', '${cat.icon || 'bi-tag'}', '${cat.color || '#6f42c1'}')">
+                                    <div class="icon-circle" style="background-color: ${cat.color || '#6f42c1'};">
+                                        <i class="bi ${cat.icon || 'bi-tag'}"></i>
+                                    </div>
+                                    <span class="small fw-semibold text-center text-truncate w-100">${trimmed}</span>
+                                    <small class="text-muted" style="font-size: 0.75rem;">(${cat.name})</small>
+                                </div>
+                            `;
+                        }
+                    });
+                }
             });
             document.getElementById('category-modal').style.display = 'flex';
         }
@@ -649,37 +676,13 @@
             document.getElementById('category-modal').style.display = 'none';
         }
 
-        window.selectAppCategory = function(name, icon, color, subs) {
-            currentSelectedCategory = name;
-            document.getElementById('selected-category-label').innerText = name;
+        window.selectAppSubcategory = function(subName, catName, icon, color) {
+            currentSelectedSubcategory = subName;
+            currentSelectedCategory = catName;
+            document.getElementById('selected-category-label').innerText = `${subName} (${catName})`;
             document.getElementById('selected-category-icon').className = `bi ${icon} fs-5`;
             document.getElementById('selected-category-icon').style.color = color;
-            
-            // Populate subcategory chips
-            const subBar = document.getElementById('subcategory-bar-container');
-            const subChips = document.getElementById('subcategory-chips');
-            subChips.innerHTML = '';
-            currentSelectedSubcategory = '';
-
-            if(subs && subs.trim() !== '') {
-                subBar.style.display = 'block';
-                subs.split(',').forEach(sub => {
-                    let trimmed = sub.trim();
-                    if(trimmed) {
-                        subChips.innerHTML += `<span class="badge-sub" style="cursor:pointer;" onclick="selectSubcategory('${trimmed}', this)">${trimmed}</span>`;
-                    }
-                });
-            } else {
-                subBar.style.display = 'none';
-            }
-
             closeCategoryModal();
-        }
-
-        window.selectSubcategory = function(sub, el) {
-            document.querySelectorAll('#subcategory-chips .badge-sub').forEach(b => b.style.background = 'rgba(212, 175, 55, 0.1)');
-            el.style.background = 'rgba(212, 175, 55, 0.4)';
-            currentSelectedSubcategory = sub;
         }
 
         window.submitAppTransaction = async function() {
@@ -693,15 +696,13 @@
                 type: selectedAppType,
                 amount: amount,
                 account: currentSelectedAccount,
-                category: currentSelectedCategory,
-                subcategory: currentSelectedSubcategory,
+                category: currentSelectedCategory || 'General',
+                subcategory: currentSelectedSubcategory || 'General',
                 notes: document.getElementById('app-notes').value,
                 date: new Date().toISOString().split('T')[0]
             };
 
             await push(ref(db, 'transactions'), payload);
-            
-            // Update account balance
             await adjustAccountBalance(currentSelectedAccount, selectedAppType, amount);
 
             resetAppInput();
@@ -724,7 +725,6 @@
             }
         }
 
-        // Sidebar & Navigation
         const sidebar = document.getElementById('sidebar');
         document.getElementById('sidebarCollapse').addEventListener('click', () => sidebar.classList.toggle('active'));
         document.getElementById('sidebarClose').addEventListener('click', () => sidebar.classList.remove('active'));
@@ -737,12 +737,12 @@
             
             const titles = {
                 'home': 'Home & Logs',
-                'master-categories': 'Categories & Subcategories',
+                'master-categories': 'Categories & Linked Subcategories',
                 'master-accounts': 'Bank Accounts & Deposits',
-                'master-investments': 'Investments & SIP Portfolio',
-                'master-cards': 'Credit Cards',
+                'master-investments': 'Investments & Auto SIP/RD',
+                'master-cards': 'Credit Cards & EMIs',
                 'master-wallets': 'Cash & Digital Wallets',
-                'recurring': 'Recurring Payments & Subscriptions',
+                'recurring': 'Recurring Payments',
                 'analytics': 'Financial Analytics',
                 'budgets': 'Budget Management'
             };
@@ -766,6 +766,7 @@
                 } else {
                     dbAccounts = snapshot.val();
                     renderAccounts();
+                    populateAccountDropdowns();
                 }
             });
 
@@ -781,7 +782,7 @@
 
             onValue(ref(db, 'investments'), (snapshot) => {
                 dbInvestments = snapshot.val() || {};
-                renderGenericList('investments', dbInvestments, ['type', 'name', 'amount', 'issip']);
+                renderInvestments();
             });
 
             onValue(ref(db, 'recurring'), (snapshot) => {
@@ -796,17 +797,26 @@
             });
         }
 
+        function populateAccountDropdowns() {
+            const select = document.getElementById('inv-source-account');
+            if(!select) return;
+            select.innerHTML = '';
+            Object.values(dbAccounts).forEach(acc => {
+                select.innerHTML += `<option value="${acc.name}">${acc.name} (Bal: ${acc.balance})</option>`;
+            });
+        }
+
         function renderCategories() {
             const list = document.getElementById('categories-list');
             list.innerHTML = '';
             Object.entries(dbCategories).forEach(([id, val]) => {
                 let subs = val.sub ? val.sub.split(',').map(s => `<span class="badge-sub">${s.trim()}</span>`).join('') : '<small class="text-muted">No subcategories</small>';
-                list.innerHTML += `<div class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                list.innerHTML += `<div class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
                     <div class="d-flex align-items-center gap-3">
                         <div class="icon-circle" style="background-color: ${val.color || '#6f42c1'}; width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-tag'}"></i></div>
                         <div>
                             <h6 class="mb-1 fw-bold text-warning">${val.name}</h6>
-                            <div>${subs}</div>
+                            <div>Linked Subs: ${subs}</div>
                         </div>
                     </div>
                     <div>
@@ -821,30 +831,30 @@
             const list = document.getElementById('accounts-list');
             list.innerHTML = '';
             Object.entries(dbAccounts).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="icon-circle" style="background:#42423d;width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-bank'} text-warning"></i></div>
+                        <div class="icon-circle" style="background:var(--calc-btn-bg);width:40px;height:40px;font-size:1.1rem;"><i class="bi ${val.icon || 'bi-bank'} text-warning"></i></div>
                         <div><strong>${val.name}</strong> <span class="badge bg-secondary">${val.type}</span></div>
                     </div>
                     <div class="d-flex align-items-center gap-3">
                         <span class="fw-bold ${val.balance < 0 ? 'text-danger' : 'text-success'}">Rs. ${val.balance}</span>
-                        <div>
-                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editAccount('${id}', ${JSON.stringify(val).replace(/"/g, '&quot;')})"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteData('accounts', '${id}')"><i class="bi bi-trash"></i></button>
-                        </div>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteData('accounts', '${id}')"><i class="bi bi-trash"></i></button>
                     </div>
                 </li>`;
             });
         }
 
-        function renderWallets() {
-            const list = document.getElementById('wallets-list');
+        function renderInvestments() {
+            const list = document.getElementById('investments-list');
             if(!list) return;
             list.innerHTML = '';
-            Object.entries(dbWallets).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
-                    <div><strong>${val.name}</strong><br><small class="text-muted">Balance: ${val.balance}</small></div>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('wallets', '${id}')"><i class="bi bi-trash"></i></button>
+            Object.entries(dbInvestments).forEach(([id, val]) => {
+                list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <strong>${val.name}</strong> <span class="badge bg-warning text-dark">${val.type}</span><br>
+                        <small class="text-muted">Auto-debit Amt: Rs. ${val.amount} from <strong>${val.sourceAccount}</strong> on Day ${val.day} of every month</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('investments', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
@@ -854,22 +864,25 @@
             if(!list) return;
             list.innerHTML = '';
             Object.entries(dbCards).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
-                    <div><strong>${val.name}</strong> <span class="badge bg-danger">Due: ${val.outstanding || 0}</span></div>
+                let emiDetails = val.emiName ? `<br><small class="text-warning"><i class="bi bi-credit-card-2-front"></i> EMI: ${val.emiName} - Rs. ${val.emiAmt}/mo (${val.emiMonths} mos left)</small>` : '';
+                list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <strong>${val.name}</strong> <span class="badge bg-danger">Due: Rs. ${val.outstanding || 0}</span>
+                        ${emiDetails}
+                    </div>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteData('cards', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
 
-        function renderGenericList(type, data, fields) {
-            const list = document.getElementById(`${type}-list`);
+        function renderWallets() {
+            const list = document.getElementById('wallets-list');
             if(!list) return;
             list.innerHTML = '';
-            Object.entries(data).forEach(([id, val]) => {
-                let info = fields.map(f => `<b>${f}:</b> ${val[f] || '-'}`).join(' | ');
-                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
-                    <div>${info}</div>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('${type}', '${id}')"><i class="bi bi-trash"></i></button>
+            Object.entries(dbWallets).forEach(([id, val]) => {
+                list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
+                    <div><strong>${val.name}</strong><br><small class="text-muted">Balance: ${val.balance}</small></div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteData('wallets', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
             });
         }
@@ -879,7 +892,7 @@
             if(!list) return;
             list.innerHTML = '';
             Object.entries(dbRecurring).forEach(([id, val]) => {
-                list.innerHTML += `<li class="list-group-item bg-dark border-secondary d-flex justify-content-between align-items-center py-3 text-light">
+                list.innerHTML += `<li class="list-group-item border-secondary d-flex justify-content-between align-items-center py-3">
                     <div><strong>${val.name}</strong> <span class="badge bg-warning text-dark">${val.freq}</span><br><small class="text-muted">Amount: ${val.amount} | Due: ${val.date}</small></div>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteData('recurring', '${id}')"><i class="bi bi-trash"></i></button>
                 </li>`;
@@ -900,13 +913,13 @@
                     <td><span class="badge ${typeBadge}">${val.type}</span></td>
                     <td class="fw-bold">${val.amount}</td>
                     <td>${val.account}</td>
-                    <td>${val.category} ${val.subcategory ? ' / ' + val.subcategory : ''} <br><small class="text-muted">${val.notes || ''}</small></td>
+                    <td>${val.subcategory} (${val.category})<br><small class="text-muted">${val.notes || ''}</small></td>
                     <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteData('transactions', '${id}')"><i class="bi bi-trash"></i></button></td>
                 </tr>`;
             });
         }
 
-        // Form submissions
+        // Form bindings
         document.getElementById('category-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('cat-id').value;
@@ -938,9 +951,10 @@
                 type: document.getElementById('inv-type').value,
                 name: document.getElementById('inv-name').value,
                 amount: parseFloat(document.getElementById('inv-amount').value),
-                issip: document.getElementById('inv-issip').value
+                sourceAccount: document.getElementById('inv-source-account').value,
+                day: parseInt(document.getElementById('inv-day').value)
             };
-            saveEntity('investments', id, payload, 'investment-form', 'inv-id', 'inv-submit-btn', 'Save Investment');
+            saveEntity('investments', id, payload, 'investment-form', 'inv-id', 'inv-submit-btn', 'Save Auto SIP/RD');
         });
 
         document.getElementById('card-form').addEventListener('submit', (e) => {
@@ -949,9 +963,12 @@
             const payload = {
                 name: document.getElementById('card-name').value,
                 limit: parseFloat(document.getElementById('card-limit').value),
-                outstanding: parseFloat(document.getElementById('card-outstanding').value)
+                outstanding: parseFloat(document.getElementById('card-outstanding').value),
+                emiName: document.getElementById('card-emi-name').value,
+                emiAmt: parseFloat(document.getElementById('card-emi-amt').value || 0),
+                emiMonths: parseInt(document.getElementById('card-emi-months').value || 0)
             };
-            saveEntity('cards', id, payload, 'card-form', 'card-id', 'card-submit-btn', 'Save Card');
+            saveEntity('cards', id, payload, 'card-form', 'card-id', 'card-submit-btn', 'Save Credit Card');
         });
 
         document.getElementById('wallet-form').addEventListener('submit', (e) => {
@@ -1003,15 +1020,6 @@
             document.getElementById('cat-icon').value = icon || 'bi-tag';
             document.getElementById('cat-color').value = color || '#8B008B';
             document.getElementById('cat-submit-btn').innerText = 'Update Category';
-        }
-
-        window.editAccount = function(id, val) {
-            document.getElementById('acc-id').value = id;
-            document.getElementById('acc-name').value = val.name;
-            document.getElementById('acc-type').value = val.type;
-            document.getElementById('acc-balance').value = val.balance;
-            document.getElementById('acc-icon').value = val.icon || 'bi-bank';
-            document.getElementById('acc-submit-btn').innerText = 'Update Account';
         }
 
         function renderAnalytics() {
