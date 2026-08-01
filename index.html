@@ -12,8 +12,13 @@
       appId: "1:1020688201249:web:57d42542d59471f303d560"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    let app, db;
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+    } catch (e) {
+        console.error("Firebase Initialization Error:", e);
+    }
 
     let appState = {
         theme: 'dark',
@@ -54,50 +59,71 @@
         ]
     };
 
-    const stateRef = ref(db, 'passbook_state');
     let isSyncingFromDB = false;
 
-    // Realtime Database Sync Listener
-    onValue(stateRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            isSyncingFromDB = true;
-            appState = data;
-            if(!appState.recurring) appState.recurring = [];
-            document.documentElement.setAttribute('data-bs-theme', appState.theme || 'dark');
-            renderAll();
-            isSyncingFromDB = false;
-            document.getElementById('db-status').innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Realtime DB Connected';
-        } else {
-            syncToFirebase();
-        }
-    }, (error) => {
-        document.getElementById('db-status').innerHTML = '<i class="bi bi-exclamation-circle-fill fs-7 text-danger"></i> DB Sync Failed';
-        console.error(error);
-    });
+    if (db) {
+        const stateRef = ref(db, 'passbook_state');
+        onValue(stateRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                isSyncingFromDB = true;
+                appState = { ...appState, ...data };
+                // Ensure arrays are never undefined from partial DB states
+                if(!appState.categories) appState.categories = [];
+                if(!appState.accounts) appState.accounts = [];
+                if(!appState.investments) appState.investments = [];
+                if(!appState.cards) appState.cards = [];
+                if(!appState.wallets) appState.wallets = [];
+                if(!appState.recurring) appState.recurring = [];
+                if(!appState.transactions) appState.transactions = [];
+                if(!appState.budgets) appState.budgets = [];
 
-    function syncToFirebase() {
-        // Immediately render locally to prevent UI lag
-        renderAll();
-        // Push state to Firebase server
-        set(stateRef, appState).catch((err) => console.error("Firebase write error:", err));
+                document.documentElement.setAttribute('data-bs-theme', appState.theme || 'dark');
+                renderAll();
+                isSyncingFromDB = false;
+                const statusEl = document.getElementById('db-status');
+                if(statusEl) statusEl.innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Realtime DB Connected';
+            } else {
+                syncToFirebase();
+            }
+        }, (error) => {
+            const statusEl = document.getElementById('db-status');
+            if(statusEl) statusEl.innerHTML = '<i class="bi bi-exclamation-circle-fill fs-7 text-danger"></i> DB Sync Failed';
+            console.error(error);
+        });
     }
 
-    // Navigation & UI Toggle
-    document.getElementById('sidebarCollapse').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('active');
+    function syncToFirebase() {
+        renderAll();
+        if (db && !isSyncingFromDB) {
+            set(ref(db, 'passbook_state'), appState).catch((err) => console.error("Firebase write error:", err));
+        }
+    }
+
+    // Event Listeners setup with safety checks
+    const sidebarCollapse = document.getElementById('sidebarCollapse');
+    if(sidebarCollapse) sidebarCollapse.addEventListener('click', () => {
+        document.getElementById('sidebar')?.classList.toggle('active');
     });
-    document.getElementById('sidebarClose').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.remove('active');
+
+    const sidebarClose = document.getElementById('sidebarClose');
+    if(sidebarClose) sidebarClose.addEventListener('click', () => {
+        document.getElementById('sidebar')?.classList.remove('active');
     });
 
     window.switchSection = function(sectionId, el) {
         document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-        document.getElementById('section-' + sectionId).classList.add('active');
+        const target = document.getElementById('section-' + sectionId);
+        if(target) target.classList.add('active');
+        
         document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
-        if(el) el.parentElement.classList.add('active');
-        document.getElementById('page-title').innerText = document.getElementById('section-' + sectionId).querySelector('h4').innerText;
-        if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('active');
+        if(el && el.parentElement) el.parentElement.classList.add('active');
+        
+        const titleEl = document.getElementById('page-title');
+        const targetTitle = target?.querySelector('h4')?.innerText;
+        if(titleEl && targetTitle) titleEl.innerText = targetTitle;
+
+        if(window.innerWidth < 768) document.getElementById('sidebar')?.classList.remove('active');
         renderAll();
     }
 
@@ -105,114 +131,156 @@
         appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-bs-theme', appState.theme);
         const icon = document.getElementById('theme-icon');
-        icon.className = appState.theme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+        if(icon) icon.className = appState.theme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
         syncToFirebase();
     }
 
-    // App Simulator Logic
     window.setAppType = function(type) {
         appState.type = type;
         ['income', 'expense', 'transfer'].forEach(t => {
-            document.getElementById('type-' + t).classList.remove('active');
-            document.getElementById('type-' + t).innerHTML = t.toUpperCase();
+            const btn = document.getElementById('type-' + t);
+            if(btn) {
+                btn.classList.remove('active');
+                btn.innerHTML = t.toUpperCase();
+            }
         });
         const activeEl = document.getElementById('type-' + type.toLowerCase());
-        activeEl.classList.add('active');
-        activeEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${type.toUpperCase()}`;
+        if(activeEl) {
+            activeEl.classList.add('active');
+            activeEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${type.toUpperCase()}`;
+        }
         
         const selectorsContainer = document.getElementById('selectors-container');
-        if(type === 'Transfer') {
-            selectorsContainer.innerHTML = `
-                <div class="col-6"><div class="selector-box" onclick="openAccountModal('source')"><span id="selected-source-label" class="text-truncate">From A/c</span><i class="bi bi-chevron-right text-muted small"></i></div></div>
-                <div class="col-6"><div class="selector-box" onclick="openAccountModal('destination')"><span id="selected-dest-label" class="text-truncate">To A/c</span><i class="bi bi-chevron-right text-muted small"></i></div></div>
-            `;
-        } else {
-            selectorsContainer.innerHTML = `
-                <div class="col-6"><div class="selector-box" onclick="openAccountModal('primary')"><div class="d-flex align-items-center gap-2 text-truncate"><i class="bi bi-wallet2 text-primary fs-5"></i><span id="selected-account-label" class="text-truncate">Account</span></div><i class="bi bi-chevron-right text-muted small"></i></div></div>
-                <div class="col-6"><div class="selector-box" onclick="openCategoryModal()"><div class="d-flex align-items-center gap-2 text-truncate"><i class="bi bi-tag text-primary fs-5"></i><span id="selected-category-label" class="text-truncate">Subcategory</span></div><i class="bi bi-chevron-right text-muted small"></i></div></div>
-            `;
+        if(selectorsContainer) {
+            if(type === 'Transfer') {
+                selectorsContainer.innerHTML = `
+                    <div class="col-6"><div class="selector-box" onclick="openAccountModal('source')"><span id="selected-source-label" class="text-truncate">From A/c</span><i class="bi bi-chevron-right text-muted small"></i></div></div>
+                    <div class="col-6"><div class="selector-box" onclick="openAccountModal('destination')"><span id="selected-dest-label" class="text-truncate">To A/c</span><i class="bi bi-chevron-right text-muted small"></i></div></div>
+                `;
+            } else {
+                selectorsContainer.innerHTML = `
+                    <div class="col-6"><div class="selector-box" onclick="openAccountModal('primary')"><div class="d-flex align-items-center gap-2 text-truncate"><i class="bi bi-wallet2 text-primary fs-5"></i><span id="selected-account-label" class="text-truncate">Account</span></div><i class="bi bi-chevron-right text-muted small"></i></div></div>
+                    <div class="col-6"><div class="selector-box" onclick="openCategoryModal()"><div class="d-flex align-items-center gap-2 text-truncate"><i class="bi bi-tag text-primary fs-5"></i><span id="selected-category-label" class="text-truncate">Subcategory</span></div><i class="bi bi-chevron-right text-muted small"></i></div></div>
+                `;
+            }
         }
     }
 
     window.appendCalc = function(val) {
         if(appState.calcInput === '0' && val !== '.') appState.calcInput = val;
         else appState.calcInput += val;
-        document.getElementById('calc-display').innerText = appState.calcInput;
+        const display = document.getElementById('calc-display');
+        if(display) display.innerText = appState.calcInput;
     }
 
     window.calculateResult = function() {
         try {
             let res = eval(appState.calcInput);
             appState.calcInput = String(res);
-            document.getElementById('calc-display').innerText = appState.calcInput;
+            const display = document.getElementById('calc-display');
+            if(display) display.innerText = appState.calcInput;
         } catch(e) {
-            document.getElementById('calc-display').innerText = 'Error';
+            const display = document.getElementById('calc-display');
+            if(display) display.innerText = 'Error';
             appState.calcInput = '0';
         }
     }
 
     window.resetAppInput = function() {
         appState.calcInput = '0';
-        document.getElementById('calc-display').innerText = '0';
-        document.getElementById('app-notes').value = '';
+        const display = document.getElementById('calc-display');
+        if(display) display.innerText = '0';
+        const notes = document.getElementById('app-notes');
+        if(notes) notes.value = '';
     }
 
-    // Modals
     let activeAccountModalMode = 'primary';
     window.openAccountModal = function(mode) {
         activeAccountModalMode = mode;
-        document.getElementById('account-modal-title').innerText = mode === 'source' ? 'Select Source Account' : (mode === 'destination' ? 'Select Destination Account' : 'Select Account / Wallet / Card');
+        const titleEl = document.getElementById('account-modal-title');
+        if(titleEl) titleEl.innerText = mode === 'source' ? 'Select Source Account' : (mode === 'destination' ? 'Select Destination Account' : 'Select Account / Wallet / Card');
+        
         let listHTML = '';
-        appState.accounts.forEach(acc => {
+        (appState.accounts || []).forEach(acc => {
             listHTML += `<div class="account-select-row" onclick="selectAccount('${acc.name}')"><span>${acc.name} (${acc.type})</span><span class="text-primary fw-bold">₹${acc.balance}</span></div>`;
         });
-        appState.wallets.forEach(w => {
+        (appState.wallets || []).forEach(w => {
             listHTML += `<div class="account-select-row" onclick="selectAccount('${w.name}')"><span>${w.name} (Wallet)</span><span class="text-primary fw-bold">₹${w.balance}</span></div>`;
         });
-        appState.cards.forEach(c => {
+        (appState.cards || []).forEach(c => {
             listHTML += `<div class="account-select-row" onclick="selectAccount('${c.name}')"><span>${c.name} (Credit Card)</span><span class="text-danger fw-bold">Due: ₹${c.due}</span></div>`;
         });
-        document.getElementById('account-modal-list').innerHTML = listHTML;
-        document.getElementById('account-modal').style.display = 'flex';
+        
+        const modalList = document.getElementById('account-modal-list');
+        if(modalList) modalList.innerHTML = listHTML;
+        const modal = document.getElementById('account-modal');
+        if(modal) modal.style.display = 'flex';
     }
-    window.closeAccountModal = function() { document.getElementById('account-modal').style.display = 'none'; }
+    window.closeAccountModal = function() { 
+        const modal = document.getElementById('account-modal');
+        if(modal) modal.style.display = 'none'; 
+    }
     window.selectAccount = function(name) {
-        if(activeAccountModalMode === 'source') document.getElementById('selected-source-label').innerText = name;
-        else if(activeAccountModalMode === 'destination') document.getElementById('selected-dest-label').innerText = name;
-        else document.getElementById('selected-account-label').innerText = name;
+        if(activeAccountModalMode === 'source') {
+            const el = document.getElementById('selected-source-label');
+            if(el) el.innerText = name;
+        } else if(activeAccountModalMode === 'destination') {
+            const el = document.getElementById('selected-dest-label');
+            if(el) el.innerText = name;
+        } else {
+            const el = document.getElementById('selected-account-label');
+            if(el) el.innerText = name;
+        }
         closeAccountModal();
     }
 
     window.openCategoryModal = function() {
         let listHTML = '';
-        appState.categories.forEach(cat => {
+        (appState.categories || []).forEach(cat => {
             listHTML += `<div class="p-2 fw-bold text-primary border-bottom">${cat.name}</div>`;
-            cat.subs.forEach(sub => {
+            (cat.subs || []).forEach(sub => {
                 listHTML += `<button type="button" class="list-group-item list-group-item-action ps-4" onclick="selectCategory('${sub}')">${sub}</button>`;
             });
         });
-        document.getElementById('category-modal-list').innerHTML = listHTML;
-        document.getElementById('category-modal').style.display = 'flex';
+        const modalList = document.getElementById('category-modal-list');
+        if(modalList) modalList.innerHTML = listHTML;
+        const modal = document.getElementById('category-modal');
+        if(modal) modal.style.display = 'flex';
     }
-    window.closeCategoryModal = function() { document.getElementById('category-modal').style.display = 'none'; }
+    window.closeCategoryModal = function() { 
+        const modal = document.getElementById('category-modal');
+        if(modal) modal.style.display = 'none'; 
+    }
     window.selectCategory = function(sub) {
-        document.getElementById('selected-category-label').innerText = sub;
-        document.getElementById('app-notes').value = sub;
+        const label = document.getElementById('selected-category-label');
+        if(label) label.innerText = sub;
+        const notes = document.getElementById('app-notes');
+        if(notes) notes.value = sub;
         closeCategoryModal();
     }
 
     window.submitAppTransaction = function() {
         let amt = parseFloat(appState.calcInput);
         if(isNaN(amt) || amt <= 0) { alert('Enter valid amount'); return; }
-        let accountName = appState.type === 'Transfer' ? (document.getElementById('selected-source-label')?.innerText + ' -> ' + document.getElementById('selected-dest-label')?.innerText) : document.getElementById('selected-account-label')?.innerText;
-        let subcat = document.getElementById('app-notes').value || 'General';
+        
+        let accountName = 'Default Account';
+        if(appState.type === 'Transfer') {
+            const src = document.getElementById('selected-source-label')?.innerText || 'Source';
+            const dst = document.getElementById('selected-dest-label')?.innerText || 'Destination';
+            accountName = `${src} -> ${dst}`;
+        } else {
+            accountName = document.getElementById('selected-account-label')?.innerText || 'Account';
+        }
+        
+        let subcat = document.getElementById('app-notes')?.value || 'General';
 
+        if(!appState.transactions) appState.transactions = [];
         appState.transactions.unshift({
             id: Date.now(),
             date: new Date().toISOString().split('T')[0],
             type: appState.type,
             amount: amt,
-            account: accountName || 'Default Account',
+            account: accountName,
             category: subcat
         });
         resetAppInput();
@@ -220,110 +288,130 @@
         alert('Transaction saved successfully!');
     }
 
-    // Master CRUD Actions
-    document.getElementById('category-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let id = document.getElementById('cat-id').value;
-        let name = document.getElementById('cat-name').value;
-        let subs = document.getElementById('cat-sub').value.split(',').map(s => s.trim()).filter(s => s);
-        if(id) {
-            let cat = appState.categories.find(c => c.id == id);
-            cat.name = name; cat.subs = subs;
-        } else {
-            appState.categories.push({ id: Date.now(), name, subs });
-        }
-        resetCategoryForm();
-        syncToFirebase();
-    });
+    // Master Form Event Submissions with Null-checks
+    const catForm = document.getElementById('category-form');
+    if(catForm) {
+        catForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('cat-id')?.value;
+            let name = document.getElementById('cat-name')?.value;
+            let subs = (document.getElementById('cat-sub')?.value || '').split(',').map(s => s.trim()).filter(s => s);
+            
+            if(!appState.categories) appState.categories = [];
+            if(id) {
+                let cat = appState.categories.find(c => c.id == id);
+                if(cat) { cat.name = name; cat.subs = subs; }
+            } else {
+                appState.categories.push({ id: Date.now(), name, subs });
+            }
+            resetCategoryForm();
+            syncToFirebase();
+        });
+    }
 
     window.editCategory = function(id) {
-        let cat = appState.categories.find(c => c.id == id);
+        let cat = (appState.categories || []).find(c => c.id == id);
+        if(!cat) return;
         document.getElementById('cat-id').value = cat.id;
         document.getElementById('cat-name').value = cat.name;
-        document.getElementById('cat-sub').value = cat.subs.join(', ');
+        document.getElementById('cat-sub').value = (cat.subs || []).join(', ');
         document.getElementById('cat-form-title').innerText = 'Edit Category';
         document.getElementById('cat-submit-btn').innerText = 'Update Category';
         document.getElementById('cat-cancel-edit').style.display = 'block';
     }
     window.resetCategoryForm = function() {
-        document.getElementById('category-form').reset();
-        document.getElementById('cat-id').value = '';
-        document.getElementById('cat-form-title').innerText = 'Manage Categories';
-        document.getElementById('cat-submit-btn').innerText = 'Save Category';
-        document.getElementById('cat-cancel-edit').style.display = 'none';
+        catForm?.reset();
+        if(document.getElementById('cat-id')) document.getElementById('cat-id').value = '';
+        if(document.getElementById('cat-form-title')) document.getElementById('cat-form-title').innerText = 'Manage Categories';
+        if(document.getElementById('cat-submit-btn')) document.getElementById('cat-submit-btn').innerText = 'Save Category';
+        if(document.getElementById('cat-cancel-edit')) document.getElementById('cat-cancel-edit').style.display = 'none';
     }
     window.deleteCategory = function(id) {
-        appState.categories = appState.categories.filter(c => c.id != id);
+        appState.categories = (appState.categories || []).filter(c => c.id != id);
         syncToFirebase();
     }
 
     window.toggleDepositLinkFields = function() {
-        let type = document.getElementById('acc-type').value;
-        document.getElementById('deposit-link-group').style.display = (type === 'RD' || type === 'FD') ? 'block' : 'none';
+        let type = document.getElementById('acc-type')?.value;
+        let group = document.getElementById('deposit-link-group');
+        if(group) group.style.display = (type === 'RD' || type === 'FD') ? 'block' : 'none';
     }
-    document.getElementById('account-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let id = document.getElementById('acc-id').value;
-        let type = document.getElementById('acc-type').value;
-        let name = document.getElementById('acc-name').value;
-        let balance = parseFloat(document.getElementById('acc-balance').value);
-        let source = (type === 'RD' || type === 'FD') ? document.getElementById('acc-linked-source').value : '';
 
-        if(id) {
-            let acc = appState.accounts.find(a => a.id == id);
-            acc.type = type; acc.name = name; acc.balance = balance; acc.source = source;
-        } else {
-            appState.accounts.push({ id: Date.now(), type, name, balance, source });
-        }
-        resetAccountForm();
-        syncToFirebase();
-    });
+    const accForm = document.getElementById('account-form');
+    if(accForm) {
+        accForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('acc-id')?.value;
+            let type = document.getElementById('acc-type')?.value;
+            let name = document.getElementById('acc-name')?.value;
+            let balance = parseFloat(document.getElementById('acc-balance')?.value || 0);
+            let source = (type === 'RD' || type === 'FD') ? document.getElementById('acc-linked-source')?.value : '';
+
+            if(!appState.accounts) appState.accounts = [];
+            if(id) {
+                let acc = appState.accounts.find(a => a.id == id);
+                if(acc) { acc.type = type; acc.name = name; acc.balance = balance; acc.source = source; }
+            } else {
+                appState.accounts.push({ id: Date.now(), type, name, balance, source });
+            }
+            resetAccountForm();
+            syncToFirebase();
+        });
+    }
 
     window.editAccount = function(id) {
-        let acc = appState.accounts.find(a => a.id == id);
+        let acc = (appState.accounts || []).find(a => a.id == id);
+        if(!acc) return;
         document.getElementById('acc-id').value = acc.id;
         document.getElementById('acc-type').value = acc.type;
         document.getElementById('acc-name').value = acc.name;
         document.getElementById('acc-balance').value = acc.balance;
-        document.getElementById('acc-linked-source').value = acc.source || '';
+        const linkedSource = document.getElementById('acc-linked-source');
+        if(linkedSource) linkedSource.value = acc.source || '';
         toggleDepositLinkFields();
         document.getElementById('acc-form-title').innerText = 'Edit Bank / Deposit';
         document.getElementById('acc-submit-btn').innerText = 'Update Account';
         document.getElementById('acc-cancel-edit').style.display = 'block';
     }
     window.resetAccountForm = function() {
-        document.getElementById('account-form').reset();
-        document.getElementById('acc-id').value = '';
-        document.getElementById('deposit-link-group').style.display = 'none';
-        document.getElementById('acc-form-title').innerText = 'Add Bank / Account / RD / FD';
-        document.getElementById('acc-submit-btn').innerText = 'Save Account';
-        document.getElementById('acc-cancel-edit').style.display = 'none';
+        accForm?.reset();
+        if(document.getElementById('acc-id')) document.getElementById('acc-id').value = '';
+        const group = document.getElementById('deposit-link-group');
+        if(group) group.style.display = 'none';
+        if(document.getElementById('acc-form-title')) document.getElementById('acc-form-title').innerText = 'Add Bank / Account / RD / FD';
+        if(document.getElementById('acc-submit-btn')) document.getElementById('acc-submit-btn').innerText = 'Save Account';
+        if(document.getElementById('acc-cancel-edit')) document.getElementById('acc-cancel-edit').style.display = 'none';
     }
     window.deleteAccount = function(id) {
-        appState.accounts = appState.accounts.filter(a => a.id != id);
+        appState.accounts = (appState.accounts || []).filter(a => a.id != id);
         syncToFirebase();
     }
 
-    document.getElementById('investment-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let id = document.getElementById('inv-id').value;
-        let type = document.getElementById('inv-type').value;
-        let name = document.getElementById('inv-name').value;
-        let category = document.getElementById('inv-category').value;
-        let amount = parseFloat(document.getElementById('inv-amount').value);
+    const invForm = document.getElementById('investment-form');
+    if(invForm) {
+        invForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('inv-id')?.value;
+            let type = document.getElementById('inv-type')?.value;
+            let name = document.getElementById('inv-name')?.value;
+            let category = document.getElementById('inv-category')?.value;
+            let amount = parseFloat(document.getElementById('inv-amount')?.value || 0);
 
-        if(id) {
-            let inv = appState.investments.find(i => i.id == id);
-            inv.type = type; inv.name = name; inv.category = category; inv.amount = amount;
-        } else {
-            appState.investments.push({ id: Date.now(), type, name, category, amount });
-        }
-        resetInvestmentForm();
-        syncToFirebase();
-    });
+            if(!appState.investments) appState.investments = [];
+            if(id) {
+                let inv = appState.investments.find(i => i.id == id);
+                if(inv) { inv.type = type; inv.name = name; inv.category = category; inv.amount = amount; }
+            } else {
+                appState.investments.push({ id: Date.now(), type, name, category, amount });
+            }
+            resetInvestmentForm();
+            syncToFirebase();
+        });
+    }
 
     window.editInvestment = function(id) {
-        let inv = appState.investments.find(i => i.id == id);
+        let inv = (appState.investments || []).find(i => i.id == id);
+        if(!inv) return;
         document.getElementById('inv-id').value = inv.id;
         document.getElementById('inv-type').value = inv.type;
         document.getElementById('inv-name').value = inv.name;
@@ -334,38 +422,43 @@
         document.getElementById('inv-cancel-edit').style.display = 'block';
     }
     window.resetInvestmentForm = function() {
-        document.getElementById('investment-form').reset();
-        document.getElementById('inv-id').value = '';
-        document.getElementById('inv-form-title').innerText = 'Add Investment';
-        document.getElementById('inv-submit-btn').innerText = 'Save Investment';
-        document.getElementById('inv-cancel-edit').style.display = 'none';
+        invForm?.reset();
+        if(document.getElementById('inv-id')) document.getElementById('inv-id').value = '';
+        if(document.getElementById('inv-form-title')) document.getElementById('inv-form-title').innerText = 'Add Investment';
+        if(document.getElementById('inv-submit-btn')) document.getElementById('inv-submit-btn').innerText = 'Save Investment';
+        if(document.getElementById('inv-cancel-edit')) document.getElementById('inv-cancel-edit').style.display = 'none';
     }
     window.deleteInvestment = function(id) {
-        appState.investments = appState.investments.filter(i => i.id != id);
+        appState.investments = (appState.investments || []).filter(i => i.id != id);
         syncToFirebase();
     }
 
-    document.getElementById('card-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let id = document.getElementById('card-id').value;
-        let name = document.getElementById('card-name').value;
-        let limit = parseFloat(document.getElementById('card-limit').value);
-        let due = parseFloat(document.getElementById('card-due').value);
-        let duedate = document.getElementById('card-duedate').value;
-        let emis = document.getElementById('card-emis').value;
+    const cardForm = document.getElementById('card-form');
+    if(cardForm) {
+        cardForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('card-id')?.value;
+            let name = document.getElementById('card-name')?.value;
+            let limit = parseFloat(document.getElementById('card-limit')?.value || 0);
+            let due = parseFloat(document.getElementById('card-due')?.value || 0);
+            let duedate = document.getElementById('card-duedate')?.value;
+            let emis = document.getElementById('card-emis')?.value;
 
-        if(id) {
-            let card = appState.cards.find(c => c.id == id);
-            card.name = name; card.limit = limit; card.due = due; card.duedate = duedate; card.emis = emis;
-        } else {
-            appState.cards.push({ id: Date.now(), name, limit, due, duedate, emis });
-        }
-        resetCardForm();
-        syncToFirebase();
-    });
+            if(!appState.cards) appState.cards = [];
+            if(id) {
+                let card = appState.cards.find(c => c.id == id);
+                if(card) { card.name = name; card.limit = limit; card.due = due; card.duedate = duedate; card.emis = emis; }
+            } else {
+                appState.cards.push({ id: Date.now(), name, limit, due, duedate, emis });
+            }
+            resetCardForm();
+            syncToFirebase();
+        });
+    }
 
     window.editCard = function(id) {
-        let card = appState.cards.find(c => c.id == id);
+        let card = (appState.cards || []).find(c => c.id == id);
+        if(!card) return;
         document.getElementById('card-id').value = card.id;
         document.getElementById('card-name').value = card.name;
         document.getElementById('card-limit').value = card.limit;
@@ -377,35 +470,40 @@
         document.getElementById('card-cancel-edit').style.display = 'block';
     }
     window.resetCardForm = function() {
-        document.getElementById('card-form').reset();
-        document.getElementById('card-id').value = '';
-        document.getElementById('card-form-title').innerText = 'Add Credit Card / EMI';
-        document.getElementById('card-submit-btn').innerText = 'Save Card';
-        document.getElementById('card-cancel-edit').style.display = 'none';
+        cardForm?.reset();
+        if(document.getElementById('card-id')) document.getElementById('card-id').value = '';
+        if(document.getElementById('card-form-title')) document.getElementById('card-form-title').innerText = 'Add Credit Card / EMI';
+        if(document.getElementById('card-submit-btn')) document.getElementById('card-submit-btn').innerText = 'Save Card';
+        if(document.getElementById('card-cancel-edit')) document.getElementById('card-cancel-edit').style.display = 'none';
     }
     window.deleteCard = function(id) {
-        appState.cards = appState.cards.filter(c => c.id != id);
+        appState.cards = (appState.cards || []).filter(c => c.id != id);
         syncToFirebase();
     }
 
-    document.getElementById('wallet-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let id = document.getElementById('wallet-id').value;
-        let name = document.getElementById('wallet-name').value;
-        let balance = parseFloat(document.getElementById('wallet-balance').value);
+    const walletForm = document.getElementById('wallet-form');
+    if(walletForm) {
+        walletForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('wallet-id')?.value;
+            let name = document.getElementById('wallet-name')?.value;
+            let balance = parseFloat(document.getElementById('wallet-balance')?.value || 0);
 
-        if(id) {
-            let w = appState.wallets.find(x => x.id == id);
-            w.name = name; w.balance = balance;
-        } else {
-            appState.wallets.push({ id: Date.now(), name, balance });
-        }
-        resetWalletForm();
-        syncToFirebase();
-    });
+            if(!appState.wallets) appState.wallets = [];
+            if(id) {
+                let w = appState.wallets.find(x => x.id == id);
+                if(w) { w.name = name; w.balance = balance; }
+            } else {
+                appState.wallets.push({ id: Date.now(), name, balance });
+            }
+            resetWalletForm();
+            syncToFirebase();
+        });
+    }
 
     window.editWallet = function(id) {
-        let w = appState.wallets.find(x => x.id == id);
+        let w = (appState.wallets || []).find(x => x.id == id);
+        if(!w) return;
         document.getElementById('wallet-id').value = w.id;
         document.getElementById('wallet-name').value = w.name;
         document.getElementById('wallet-balance').value = w.balance;
@@ -414,39 +512,42 @@
         document.getElementById('wallet-cancel-edit').style.display = 'block';
     }
     window.resetWalletForm = function() {
-        document.getElementById('wallet-form').reset();
-        document.getElementById('wallet-id').value = '';
-        document.getElementById('wallet-form-title').innerText = 'Add Cash / Wallet';
-        document.getElementById('wallet-submit-btn').innerText = 'Save Wallet';
-        document.getElementById('wallet-cancel-edit').style.display = 'none';
+        walletForm?.reset();
+        if(document.getElementById('wallet-id')) document.getElementById('wallet-id').value = '';
+        if(document.getElementById('wallet-form-title')) document.getElementById('wallet-form-title').innerText = 'Add Cash / Wallet';
+        if(document.getElementById('wallet-submit-btn')) document.getElementById('wallet-submit-btn').innerText = 'Save Wallet';
+        if(document.getElementById('wallet-cancel-edit')) document.getElementById('wallet-cancel-edit').style.display = 'none';
     }
     window.deleteWallet = function(id) {
-        appState.wallets = appState.wallets.filter(w => w.id != id);
+        appState.wallets = (appState.wallets || []).filter(w => w.id != id);
         syncToFirebase();
     }
 
-    document.getElementById('recurring-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let id = document.getElementById('rec-id').value;
-        let name = document.getElementById('rec-name').value;
-        let freq = document.getElementById('rec-freq').value;
-        let amount = parseFloat(document.getElementById('rec-amount').value);
-        let source = document.getElementById('rec-source').value;
+    const recForm = document.getElementById('recurring-form');
+    if(recForm) {
+        recForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('rec-id')?.value;
+            let name = document.getElementById('rec-name')?.value;
+            let freq = document.getElementById('rec-freq')?.value;
+            let amount = parseFloat(document.getElementById('rec-amount')?.value || 0);
+            let source = document.getElementById('rec-source')?.value;
 
-        if(!appState.recurring) appState.recurring = [];
-
-        if(id) {
-            let rec = appState.recurring.find(r => r.id == id);
-            rec.name = name; rec.freq = freq; rec.amount = amount; rec.source = source;
-        } else {
-            appState.recurring.push({ id: Date.now(), name, freq, amount, source });
-        }
-        resetRecurringForm();
-        syncToFirebase();
-    });
+            if(!appState.recurring) appState.recurring = [];
+            if(id) {
+                let rec = appState.recurring.find(r => r.id == id);
+                if(rec) { rec.name = name; rec.freq = freq; rec.amount = amount; rec.source = source; }
+            } else {
+                appState.recurring.push({ id: Date.now(), name, freq, amount, source });
+            }
+            resetRecurringForm();
+            syncToFirebase();
+        });
+    }
 
     window.editRecurring = function(id) {
-        let rec = appState.recurring.find(r => r.id == id);
+        let rec = (appState.recurring || []).find(r => r.id == id);
+        if(!rec) return;
         document.getElementById('rec-id').value = rec.id;
         document.getElementById('rec-name').value = rec.name;
         document.getElementById('rec-freq').value = rec.freq;
@@ -457,157 +558,170 @@
         document.getElementById('rec-cancel-edit').style.display = 'block';
     }
     window.resetRecurringForm = function() {
-        document.getElementById('recurring-form').reset();
-        document.getElementById('rec-id').value = '';
-        document.getElementById('rec-form-title').innerText = 'Add Recurring Payment';
-        document.getElementById('rec-submit-btn').innerText = 'Save Recurring';
-        document.getElementById('rec-cancel-edit').style.display = 'none';
+        recForm?.reset();
+        if(document.getElementById('rec-id')) document.getElementById('rec-id').value = '';
+        if(document.getElementById('rec-form-title')) document.getElementById('rec-form-title').innerText = 'Add Recurring Payment';
+        if(document.getElementById('rec-submit-btn')) document.getElementById('rec-submit-btn').innerText = 'Save Recurring';
+        if(document.getElementById('rec-cancel-edit')) document.getElementById('rec-cancel-edit').style.display = 'none';
     }
     window.deleteRecurring = function(id) {
-        appState.recurring = appState.recurring.filter(r => r.id != id);
+        appState.recurring = (appState.recurring || []).filter(r => r.id != id);
         syncToFirebase();
     }
 
     window.deleteTransaction = function(id) {
-        appState.transactions = appState.transactions.filter(t => t.id != id);
+        appState.transactions = (appState.transactions || []).filter(t => t.id != id);
         syncToFirebase();
     }
 
-    document.getElementById('budget-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        let category = document.getElementById('budget-category').value;
-        let period = document.getElementById('budget-period').value;
-        let limit = parseFloat(document.getElementById('budget-limit').value);
+    const budgetForm = document.getElementById('budget-form');
+    if(budgetForm) {
+        budgetForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let category = document.getElementById('budget-category')?.value;
+            let period = document.getElementById('budget-period')?.value;
+            let limit = parseFloat(document.getElementById('budget-limit')?.value || 0);
 
-        let existing = appState.budgets.find(b => b.category === category && b.period === period);
-        if(existing) {
-            existing.limit = limit;
-        } else {
-            appState.budgets.push({ category, period, limit });
-        }
-        document.getElementById('budget-form').reset();
-        syncToFirebase();
-    });
+            if(!appState.budgets) appState.budgets = [];
+            let existing = appState.budgets.find(b => b.category === category && b.period === period);
+            if(existing) {
+                existing.limit = limit;
+            } else {
+                appState.budgets.push({ category, period, limit });
+            }
+            budgetForm.reset();
+            syncToFirebase();
+        });
+    }
 
     window.deleteBudget = function(category, period) {
-        appState.budgets = appState.budgets.filter(b => !(b.category === category && b.period === period));
+        appState.budgets = (appState.budgets || []).filter(b => !(b.category === category && b.period === period));
         syncToFirebase();
     }
 
-    // Master Render Function
+    // Master Render Function with strict element verification
     function renderAll() {
-        let txHtml = '';
-        appState.transactions.forEach(t => {
-            let badgeClass = t.type === 'Income' ? 'bg-success' : (t.type === 'Expense' ? 'bg-danger' : 'bg-info');
-            txHtml += `<tr>
-                <td>${t.date}</td>
-                <td><span class="badge ${badgeClass}">${t.type}</span></td>
-                <td class="fw-bold">₹${t.amount}</td>
-                <td>${t.account}</td>
-                <td>${t.category}</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('transactions-table-body').innerHTML = txHtml || `<tr><td colspan="6" class="text-center text-muted">No transactions logged yet.</td></tr>`;
+        try {
+            let txHtml = '';
+            (appState.transactions || []).forEach(t => {
+                let badgeClass = t.type === 'Income' ? 'bg-success' : (t.type === 'Expense' ? 'bg-danger' : 'bg-info');
+                txHtml += `<tr>
+                    <td>${t.date}</td>
+                    <td><span class="badge ${badgeClass}">${t.type}</span></td>
+                    <td class="fw-bold">₹${t.amount}</td>
+                    <td>${t.account}</td>
+                    <td>${t.category}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${t.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            const txBody = document.getElementById('transactions-table-body');
+            if(txBody) txBody.innerHTML = txHtml || `<tr><td colspan="6" class="text-center text-muted">No transactions logged yet.</td></tr>`;
 
-        let catHtml = '';
-        appState.categories.forEach(c => {
-            let subsBadge = c.subs.map(s => `<span class="badge-sub">${s}</span>`).join('');
-            catHtml += `<div class="list-group-item bg-card mb-2 border rounded p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="fw-bold m-0 text-primary">${c.name}</h5>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${c.id})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.id})"><i class="bi bi-trash"></i></button>
+            let catHtml = '';
+            (appState.categories || []).forEach(c => {
+                let subsBadge = (c.subs || []).map(s => `<span class="badge-sub">${s}</span>`).join('');
+                catHtml += `<div class="list-group-item bg-card mb-2 border rounded p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold m-0 text-primary">${c.name}</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${c.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.id})"><i class="bi bi-trash"></i></button>
+                        </div>
                     </div>
-                </div>
-                <div>${subsBadge}</div>
-            </div>`;
-        });
-        document.getElementById('categories-list').innerHTML = catHtml;
+                    <div>${subsBadge}</div>
+                </div>`;
+            });
+            const catList = document.getElementById('categories-list');
+            if(catList) catList.innerHTML = catHtml;
 
-        let accHtml = '';
-        let savingsSelectOptions = '<option value="">Select Savings Account</option>';
-        let allAccSourceOptions = '';
-        let budgetCatOptions = '';
+            let accHtml = '';
+            let savingsSelectOptions = '<option value="">Select Savings Account</option>';
+            let allAccSourceOptions = '';
+            let budgetCatOptions = '';
 
-        appState.accounts.forEach(a => {
-            accHtml += `<tr>
-                <td><span class="badge bg-secondary">${a.type}</span></td>
-                <td class="fw-bold">${a.name}</td>
-                <td>₹${a.balance}</td>
-                <td>${a.source || '-'}</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editAccount(${a.id})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteAccount(${a.id})"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>`;
-            if(a.type === 'Savings') savingsSelectOptions += `<option value="${a.name}">${a.name}</option>`;
-            allAccSourceOptions += `<option value="${a.name}">${a.name} (${a.type})</option>`;
-        });
+            (appState.accounts || []).forEach(a => {
+                accHtml += `<tr>
+                    <td><span class="badge bg-secondary">${a.type}</span></td>
+                    <td class="fw-bold">${a.name}</td>
+                    <td>₹${a.balance}</td>
+                    <td>${a.source || '-'}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editAccount(${a.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteAccount(${a.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+                if(a.type === 'Savings') savingsSelectOptions += `<option value="${a.name}">${a.name}</option>`;
+                allAccSourceOptions += `<option value="${a.name}">${a.name} (${a.type})</option>`;
+            });
 
-        appState.cards.forEach(c => {
-            allAccSourceOptions += `<option value="${c.name}">${c.name} (Credit Card)</option>`;
-        });
+            (appState.cards || []).forEach(c => {
+                allAccSourceOptions += `<option value="${c.name}">${c.name} (Credit Card)</option>`;
+            });
 
-        document.getElementById('accounts-table-body').innerHTML = accHtml;
-        document.getElementById('acc-linked-source').innerHTML = savingsSelectOptions;
-        document.getElementById('rec-source').innerHTML = allAccSourceOptions;
+            const accTable = document.getElementById('accounts-table-body');
+            if(accTable) accTable.innerHTML = accHtml;
+            const linkedSrc = document.getElementById('acc-linked-source');
+            if(linkedSrc) linkedSrc.innerHTML = savingsSelectOptions;
+            const recSrc = document.getElementById('rec-source');
+            if(recSrc) recSrc.innerHTML = allAccSourceOptions;
 
-        appState.categories.forEach(c => {
-            budgetCatOptions += `<option value="${c.name}">${c.name}</option>`;
-        });
-        document.getElementById('budget-category').innerHTML = budgetCatOptions;
+            (appState.categories || []).forEach(c => {
+                budgetCatOptions += `<option value="${c.name}">${c.name}</option>`;
+            });
+            const budgetCat = document.getElementById('budget-category');
+            if(budgetCat) budgetCat.innerHTML = budgetCatOptions;
 
-        let invHtml = '';
-        appState.investments.forEach(i => {
-            invHtml += `<tr>
-                <td><span class="badge bg-primary">${i.type}</span></td>
-                <td class="fw-bold">${i.name}</td>
-                <td>${i.category}</td>
-                <td>₹${i.amount}</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editInvestment(${i.id})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteInvestment(${i.id})"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('investments-table-body').innerHTML = invHtml;
+            let invHtml = '';
+            (appState.investments || []).forEach(i => {
+                invHtml += `<tr>
+                    <td><span class="badge bg-primary">${i.type}</span></td>
+                    <td class="fw-bold">${i.name}</td>
+                    <td>${i.category}</td>
+                    <td>₹${i.amount}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editInvestment(${i.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteInvestment(${i.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            const invTable = document.getElementById('investments-table-body');
+            if(invTable) invTable.innerHTML = invHtml;
 
-        let cardHtml = '';
-        appState.cards.forEach(c => {
-            cardHtml += `<tr>
-                <td class="fw-bold">${c.name}</td>
-                <td>₹${c.limit}</td>
-                <td class="text-danger fw-bold">₹${c.due}</td>
-                <td><span class="badge bg-warning text-dark">${c.duedate}</span></td>
-                <td>${c.emis || '-'}</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editCard(${c.id})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCard(${c.id})"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('cards-table-body').innerHTML = cardHtml;
+            let cardHtml = '';
+            (appState.cards || []).forEach(c => {
+                cardHtml += `<tr>
+                    <td class="fw-bold">${c.name}</td>
+                    <td>₹${c.limit}</td>
+                    <td class="text-danger fw-bold">₹${c.due}</td>
+                    <td><span class="badge bg-warning text-dark">${c.duedate}</span></td>
+                    <td>${c.emis || '-'}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCard(${c.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard(${c.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            const cardTable = document.getElementById('cards-table-body');
+            if(cardTable) cardTable.innerHTML = cardHtml;
 
-        let walletHtml = '';
-        appState.wallets.forEach(w => {
-            walletHtml += `<tr>
-                <td class="fw-bold">${w.name}</td>
-                <td>₹${w.balance}</td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editWallet(${w.id})"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteWallet(${w.id})"><i class="bi bi-trash"></i></button>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('wallets-table-body').innerHTML = walletHtml;
+            let walletHtml = '';
+            (appState.wallets || []).forEach(w => {
+                walletHtml += `<tr>
+                    <td class="fw-bold">${w.name}</td>
+                    <td>₹${w.balance}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editWallet(${w.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteWallet(${w.id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            const walletTable = document.getElementById('wallets-table-body');
+            if(walletTable) walletTable.innerHTML = walletHtml;
 
-        let recHtml = '';
-        if(appState.recurring) {
-            appState.recurring.forEach(r => {
+            let recHtml = '';
+            (appState.recurring || []).forEach(r => {
                 recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center p-3">
                     <div>
                         <h6 class="fw-bold m-0 text-primary">${r.name} <span class="badge bg-secondary ms-2">${r.freq}</span></h6>
@@ -619,67 +733,79 @@
                     </div>
                 </div>`;
             });
-        }
-        appState.accounts.filter(a => a.type === 'RD' || a.type === 'FD').forEach(dep => {
-            recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center p-3">
-                <div>
-                    <h6 class="fw-bold m-0 text-success">Linked Deposit (${dep.type}): ${dep.name}</h6>
-                    <small class="text-muted">Linked Source Savings A/c: ${dep.source || 'None'} | Principal/Balance: ₹${dep.balance}</small>
-                </div>
-                <span class="badge bg-info">Linked Active</span>
-            </div>`;
-        });
-        document.getElementById('recurring-list').innerHTML = recHtml || `<div class="text-muted">No recurring payments or linked deposits configured.</div>`;
-
-        let analyticsAcc = '';
-        appState.accounts.forEach(a => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${a.name} (${a.type}) ${a.source ? '<br><small class="text-muted">Linked: '+a.source+'</small>' : ''}</span><span class="fw-bold text-primary">₹${a.balance}</span></div>`);
-        appState.wallets.forEach(w => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${w.name} (Wallet)</span><span class="fw-bold text-primary">₹${w.balance}</span></div>`);
-        document.getElementById('analytics-accounts-list').innerHTML = analyticsAcc;
-
-        let analyticsCards = '';
-        appState.cards.forEach(c => analyticsCards += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><div><strong>${c.name}</strong><br><small class="text-muted">Due Date: ${c.duedate}</small></div><span class="fw-bold text-danger">Due: ₹${c.due} / Limit: ₹${c.limit}</span></div>`);
-        document.getElementById('analytics-cards-list').innerHTML = analyticsCards || '<div class="text-muted">No credit cards added.</div>';
-
-        let catInvMap = {};
-        appState.investments.forEach(i => {
-            catInvMap[i.category] = (catInvMap[i.category] || 0) + i.amount;
-        });
-        let analyticsInv = '';
-        for(let cat in catInvMap) {
-            analyticsInv += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${cat}</span><span class="fw-bold text-primary">₹${catInvMap[cat]}</span></div>`;
-        }
-        document.getElementById('analytics-investments-list').innerHTML = analyticsInv || '<div class="text-muted">No investments recorded.</div>';
-
-        let catSpendMap = {};
-        appState.transactions.filter(t => t.type === 'Expense').forEach(t => {
-            catSpendMap[t.category] = (catSpendMap[t.category] || 0) + t.amount;
-        });
-        let analyticsSpend = '';
-        for(let cat in catSpendMap) {
-            analyticsSpend += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${cat}</span><span class="fw-bold text-danger">₹${catSpendMap[cat]}</span></div>`;
-        }
-        document.getElementById('analytics-spending-list').innerHTML = analyticsSpend || '<div class="text-muted">No expense logs found.</div>';
-
-        let budgetHtml = '';
-        appState.budgets.forEach(b => {
-            let spent = 0;
-            appState.transactions.filter(t => t.type === 'Expense' && (t.category === b.category)).forEach(t => spent += t.amount);
-            let pct = Math.min(Math.round((spent / b.limit) * 100), 100);
-            let progressColor = pct > 85 ? 'bg-danger' : (pct > 50 ? 'bg-warning' : 'bg-success');
-            budgetHtml += `<div class="list-group-item bg-card mb-3 border rounded p-3">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <h6 class="fw-bold m-0 text-primary">${b.category} (${b.period})</h6>
+            (appState.accounts || []).filter(a => a.type === 'RD' || a.type === 'FD').forEach(dep => {
+                recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center p-3">
                     <div>
-                        <span class="fw-bold">₹${spent} / ₹${b.limit}</span>
-                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteBudget('${b.category}', '${b.period}')"><i class="bi bi-trash"></i></button>
+                        <h6 class="fw-bold m-0 text-success">Linked Deposit (${dep.type}): ${dep.name}</h6>
+                        <small class="text-muted">Linked Source Savings A/c: ${dep.source || 'None'} | Principal/Balance: ₹${dep.balance}</small>
                     </div>
-                </div>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar ${progressColor}" role="progressbar" style="width: ${pct}%"></div>
-                </div>
-                <small class="text-muted mt-1 d-block">${pct}% spent of budget limit</small>
-            </div>`;
-        });
-        document.getElementById('budgets-tracking-list').innerHTML = budgetHtml || '<div class="text-muted">No budgets configured.</div>';
+                    <span class="badge bg-info">Linked Active</span>
+                </div>`;
+            });
+            const recList = document.getElementById('recurring-list');
+            if(recList) recList.innerHTML = recHtml || `<div class="text-muted">No recurring payments or linked deposits configured.</div>`;
+
+            let analyticsAcc = '';
+            (appState.accounts || []).forEach(a => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${a.name} (${a.type}) ${a.source ? '<br><small class="text-muted">Linked: '+a.source+'</small>' : ''}</span><span class="fw-bold text-primary">₹${a.balance}</span></div>`);
+            (appState.wallets || []).forEach(w => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${w.name} (Wallet)</span><span class="fw-bold text-primary">₹${w.balance}</span></div>`);
+            const analyticsAccList = document.getElementById('analytics-accounts-list');
+            if(analyticsAccList) analyticsAccList.innerHTML = analyticsAcc;
+
+            let analyticsCards = '';
+            (appState.cards || []).forEach(c => analyticsCards += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><div><strong>${c.name}</strong><br><small class="text-muted">Due Date: ${c.duedate}</small></div><span class="fw-bold text-danger">Due: ₹${c.due} / Limit: ₹${c.limit}</span></div>`);
+            const analyticsCardsList = document.getElementById('analytics-cards-list');
+            if(analyticsCardsList) analyticsCardsList.innerHTML = analyticsCards || '<div class="text-muted">No credit cards added.</div>';
+
+            let catInvMap = {};
+            (appState.investments || []).forEach(i => {
+                catInvMap[i.category] = (catInvMap[i.category] || 0) + i.amount;
+            });
+            let analyticsInv = '';
+            for(let cat in catInvMap) {
+                analyticsInv += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${cat}</span><span class="fw-bold text-primary">₹${catInvMap[cat]}</span></div>`;
+            }
+            const analyticsInvList = document.getElementById('analytics-investments-list');
+            if(analyticsInvList) analyticsInvList.innerHTML = analyticsInv || '<div class="text-muted">No investments recorded.</div>';
+
+            let catSpendMap = {};
+            (appState.transactions || []).filter(t => t.type === 'Expense').forEach(t => {
+                catSpendMap[t.category] = (catSpendMap[t.category] || 0) + t.amount;
+            });
+            let analyticsSpend = '';
+            for(let cat in catSpendMap) {
+                analyticsSpend += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${cat}</span><span class="fw-bold text-danger">₹${catSpendMap[cat]}</span></div>`;
+            }
+            const analyticsSpendList = document.getElementById('analytics-spending-list');
+            if(analyticsSpendList) analyticsSpendList.innerHTML = analyticsSpend || '<div class="text-muted">No expense logs found.</div>';
+
+            let budgetHtml = '';
+            (appState.budgets || []).forEach(b => {
+                let spent = 0;
+                (appState.transactions || []).filter(t => t.type === 'Expense' && (t.category === b.category)).forEach(t => spent += t.amount);
+                let pct = b.limit > 0 ? Math.min(Math.round((spent / b.limit) * 100), 100) : 0;
+                let progressColor = pct > 85 ? 'bg-danger' : (pct > 50 ? 'bg-warning' : 'bg-success');
+                budgetHtml += `<div class="list-group-item bg-card mb-3 border rounded p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="fw-bold m-0 text-primary">${b.category} (${b.period})</h6>
+                        <div>
+                            <span class="fw-bold">₹${spent} / ₹${b.limit}</span>
+                            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteBudget('${b.category}', '${b.period}')"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar ${progressColor}" role="progressbar" style="width: ${pct}%"></div>
+                    </div>
+                    <small class="text-muted mt-1 d-block">${pct}% spent of budget limit</small>
+                </div>`;
+            });
+            const budgetTrackingList = document.getElementById('budgets-tracking-list');
+            if(budgetTrackingList) budgetTrackingList.innerHTML = budgetHtml || '<div class="text-muted">No budgets configured.</div>';
+
+        } catch (err) {
+            console.error("Error during renderAll execution:", err);
+        }
     }
+
+    // Initial safe render run
+    renderAll();
 </script>
