@@ -82,7 +82,7 @@
             <div class="sidebar-header d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="m-0 fw-bold text-primary">Passbook</h4>
-                    <small class="text-success"><i class="bi bi-circle-fill fs-7"></i> Realtime DB Connected</small>
+                    <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Connecting DB...</small>
                 </div>
                 <button class="btn btn-sm btn-outline-secondary d-md-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
             </div>
@@ -182,8 +182,8 @@
                             </div>
 
                             <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top">
-                                <span id="current-date-display">Jul 31, 2026</span>
-                                <span id="current-time-display">10:00 PM</span>
+                                <span id="current-date-display">Aug 1, 2026</span>
+                                <span id="current-time-display">12:11 PM</span>
                             </div>
                         </div>
                     </div>
@@ -237,7 +237,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Manage Categories</h4>
+                            <h4 class="mb-3 text-primary fw-bold" id="cat-form-title">Manage Categories</h4>
                             <form id="category-form">
                                 <input type="hidden" id="cat-id">
                                 <div class="mb-3">
@@ -248,7 +248,10 @@
                                     <label class="form-label fw-semibold">Linked Subcategories (Comma Separated)</label>
                                     <textarea class="form-control" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white" id="cat-submit-btn">Save Category</button>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary w-100 fw-semibold text-white" id="cat-submit-btn">Save Category</button>
+                                    <button type="button" class="btn btn-outline-secondary w-50" id="cat-cancel-edit" style="display:none;" onclick="resetCategoryForm()">Cancel</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -266,12 +269,12 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold" id="acc-form-title">Add Bank / Account / RD</h4>
+                            <h4 class="mb-3 text-primary fw-bold" id="acc-form-title">Add Bank / Account / RD / FD</h4>
                             <form id="account-form">
                                 <input type="hidden" id="acc-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account Type</label>
-                                    <select class="form-select" id="acc-type" onchange="toggleRDLinkFields()" required>
+                                    <select class="form-select" id="acc-type" onchange="toggleDepositLinkFields()" required>
                                         <option value="Savings">Savings Account</option>
                                         <option value="FD">Fixed Deposit (FD)</option>
                                         <option value="RD">Recurring Deposit (RD)</option>
@@ -280,14 +283,14 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account / Bank Name</label>
-                                    <input type="text" class="form-control" id="acc-name" placeholder="e.g. HDFC Salary, SBI Savings" required>
+                                    <input type="text" class="form-control" id="acc-name" placeholder="e.g. HDFC Salary, SBI FD" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Initial Balance / Principal (₹)</label>
                                     <input type="number" step="0.01" class="form-control" id="acc-balance" placeholder="0.00" required>
                                 </div>
-                                <div class="mb-3" id="rd-link-group" style="display:none;">
-                                    <label class="form-label fw-semibold">Linked Source Savings Account (for Auto RD)</label>
+                                <div class="mb-3" id="deposit-link-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Link to Savings Bank Account</label>
                                     <select class="form-select" id="acc-linked-source">
                                         <option value="">Select Savings Account</option>
                                     </select>
@@ -301,7 +304,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Active Accounts & Deposits</h4>
+                            <h4 class="mb-3 fw-bold">Active Accounts & Deposits (Linked RD/FD)</h4>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead>
@@ -309,7 +312,7 @@
                                             <th>Type</th>
                                             <th>Name</th>
                                             <th>Balance</th>
-                                            <th>Linked Source</th>
+                                            <th>Linked Bank A/c</th>
                                             <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
@@ -481,10 +484,45 @@
 
             <!-- 7. RECURRING PAYMENTS -->
             <div id="section-recurring" class="section-view">
-                <div class="card p-4">
-                    <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Recurring Payments & SIP Triggers</h4>
-                    <p class="text-muted">Automated triggers for RDs, SIPs, subscriptions, and regular bills.</p>
-                    <div id="recurring-list" class="list-group"></div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold" id="rec-form-title">Add Recurring Payment</h4>
+                            <form id="recurring-form">
+                                <input type="hidden" id="rec-id">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Title / Name</label>
+                                    <input type="text" class="form-control" id="rec-name" placeholder="e.g. Netflix Subscription, Health Insurance" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Frequency</label>
+                                    <select class="form-select" id="rec-freq" required>
+                                        <option value="Weekly">Weekly</option>
+                                        <option value="Monthly" selected>Monthly</option>
+                                        <option value="Yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Amount (₹)</label>
+                                    <input type="number" step="0.01" class="form-control" id="rec-amount" placeholder="499.00" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Source Account / Card</label>
+                                    <select class="form-select" id="rec-source" required></select>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary w-100 fw-semibold text-white" id="rec-submit-btn">Save Recurring</button>
+                                    <button type="button" class="btn btn-outline-secondary w-50" id="rec-cancel-edit" style="display:none;" onclick="resetRecurringForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Scheduled Subscriptions, Bills & Automated Deposits</h4>
+                            <div id="recurring-list" class="list-group"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -493,7 +531,7 @@
                 <div class="row">
                     <div class="col-xl-6 mb-4">
                         <div class="card p-4 h-100">
-                            <h4 class="mb-3 fw-bold text-primary"><i class="bi bi-wallet2 me-2"></i>Account & Wallet Summaries</h4>
+                            <h4 class="mb-3 fw-bold text-primary"><i class="bi bi-wallet2 me-2"></i>Account & Deposit Summaries</h4>
                             <div id="analytics-accounts-list" class="list-group list-group-flush"></div>
                         </div>
                     </div>
@@ -558,7 +596,25 @@
 
     <!-- Bootstrap JS & App Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+    
+    <!-- Firebase SDK v10 Modular Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
+          authDomain: "passbook-229d7.firebaseapp.com",
+          databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "passbook-229d7",
+          storageBucket: "passbook-229d7.firebasestorage.app",
+          messagingSenderId: "1020688201249",
+          appId: "1:1020688201249:web:57d42542d59471f303d560"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
         // State Management
         let appState = {
             theme: 'dark',
@@ -573,7 +629,8 @@
             ],
             accounts: [
                 { id: 1, type: 'Savings', name: 'HDFC Salary A/c', balance: 45000, source: '' },
-                { id: 2, type: 'RD', name: 'SBI Monthly RD', balance: 5000, source: 'HDFC Salary A/c' }
+                { id: 2, type: 'RD', name: 'SBI Monthly RD', balance: 5000, source: 'HDFC Salary A/c' },
+                { id: 3, type: 'FD', name: 'ICICI Tax Saver FD', balance: 100000, source: 'HDFC Salary A/c' }
             ],
             investments: [
                 { id: 1, type: 'Mutual Fund SIP', name: 'Parag Parikh Flexi Cap', category: 'Equity', amount: 10000 },
@@ -586,6 +643,10 @@
                 { id: 1, name: 'Paytm Wallet', balance: 1200 },
                 { id: 2, name: 'Pocket Cash', balance: 800 }
             ],
+            recurring: [
+                { id: 1, name: 'Netflix Subscription', freq: 'Monthly', amount: 649, source: 'HDFC Regalia' },
+                { id: 2, name: 'Life Insurance Premium', freq: 'Yearly', amount: 12000, source: 'HDFC Salary A/c' }
+            ],
             transactions: [
                 { id: 1, date: '2026-07-30', type: 'Expense', amount: 650, account: 'HDFC Salary A/c', category: 'Groceries' }
             ],
@@ -593,6 +654,34 @@
                 { category: 'Food & Dining', period: 'Monthly', limit: 12000 }
             ]
         };
+
+        // Realtime Database Sync Listener
+        const stateRef = ref(db, 'passbook_state');
+        let isSyncingFromDB = false;
+
+        onValue(stateRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                isSyncingFromDB = true;
+                appState = data;
+                if(!appState.recurring) appState.recurring = [];
+                document.documentElement.setAttribute('data-bs-theme', appState.theme || 'dark');
+                renderAll();
+                isSyncingFromDB = false;
+                document.getElementById('db-status').innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Realtime DB Connected';
+            } else {
+                // Initialize DB with default state if empty
+                syncToFirebase();
+            }
+        }, (error) => {
+            document.getElementById('db-status').innerHTML = '<i class="bi bi-exclamation-circle-fill fs-7 text-danger"></i> DB Sync Failed';
+            console.error(error);
+        });
+
+        function syncToFirebase() {
+            if (isSyncingFromDB) return;
+            set(stateRef, appState).catch((err) => console.error("Firebase write error:", err));
+        }
 
         // Navigation & UI Toggle
         document.getElementById('sidebarCollapse').addEventListener('click', () => {
@@ -602,7 +691,7 @@
             document.getElementById('sidebar').classList.remove('active');
         });
 
-        function switchSection(sectionId, el) {
+        window.switchSection = function(sectionId, el) {
             document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
             document.getElementById('section-' + sectionId).classList.add('active');
             document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
@@ -612,15 +701,16 @@
             renderAll();
         }
 
-        function toggleTheme() {
+        window.toggleTheme = function() {
             appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-bs-theme', appState.theme);
             const icon = document.getElementById('theme-icon');
             icon.className = appState.theme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+            syncToFirebase();
         }
 
         // App Simulator Logic
-        function setAppType(type) {
+        window.setAppType = function(type) {
             appState.type = type;
             ['income', 'expense', 'transfer'].forEach(t => {
                 document.getElementById('type-' + t).classList.remove('active');
@@ -644,13 +734,13 @@
             }
         }
 
-        function appendCalc(val) {
+        window.appendCalc = function(val) {
             if(appState.calcInput === '0' && val !== '.') appState.calcInput = val;
             else appState.calcInput += val;
             document.getElementById('calc-display').innerText = appState.calcInput;
         }
 
-        function calculateResult() {
+        window.calculateResult = function() {
             try {
                 let res = eval(appState.calcInput);
                 appState.calcInput = String(res);
@@ -661,7 +751,7 @@
             }
         }
 
-        function resetAppInput() {
+        window.resetAppInput = function() {
             appState.calcInput = '0';
             document.getElementById('calc-display').innerText = '0';
             document.getElementById('app-notes').value = '';
@@ -669,7 +759,7 @@
 
         // Modals
         let activeAccountModalMode = 'primary';
-        function openAccountModal(mode) {
+        window.openAccountModal = function(mode) {
             activeAccountModalMode = mode;
             document.getElementById('account-modal-title').innerText = mode === 'source' ? 'Select Source Account' : (mode === 'destination' ? 'Select Destination Account' : 'Select Account / Wallet / Card');
             let listHTML = '';
@@ -685,15 +775,15 @@
             document.getElementById('account-modal-list').innerHTML = listHTML;
             document.getElementById('account-modal').style.display = 'flex';
         }
-        function closeAccountModal() { document.getElementById('account-modal').style.display = 'none'; }
-        function selectAccount(name) {
+        window.closeAccountModal = function() { document.getElementById('account-modal').style.display = 'none'; }
+        window.selectAccount = function(name) {
             if(activeAccountModalMode === 'source') document.getElementById('selected-source-label').innerText = name;
             else if(activeAccountModalMode === 'destination') document.getElementById('selected-dest-label').innerText = name;
             else document.getElementById('selected-account-label').innerText = name;
             closeAccountModal();
         }
 
-        function openCategoryModal() {
+        window.openCategoryModal = function() {
             let listHTML = '';
             appState.categories.forEach(cat => {
                 listHTML += `<div class="p-2 fw-bold text-primary border-bottom">${cat.name}</div>`;
@@ -704,14 +794,14 @@
             document.getElementById('category-modal-list').innerHTML = listHTML;
             document.getElementById('category-modal').style.display = 'flex';
         }
-        function closeCategoryModal() { document.getElementById('category-modal').style.display = 'none'; }
-        function selectCategory(sub) {
+        window.closeCategoryModal = function() { document.getElementById('category-modal').style.display = 'none'; }
+        window.selectCategory = function(sub) {
             document.getElementById('selected-category-label').innerText = sub;
             document.getElementById('app-notes').value = sub;
             closeCategoryModal();
         }
 
-        function submitAppTransaction() {
+        window.submitAppTransaction = function() {
             let amt = parseFloat(appState.calcInput);
             if(isNaN(amt) || amt <= 0) { alert('Enter valid amount'); return; }
             let accountName = appState.type === 'Transfer' ? (document.getElementById('selected-source-label')?.innerText + ' -> ' + document.getElementById('selected-dest-label')?.innerText) : document.getElementById('selected-account-label')?.innerText;
@@ -726,6 +816,7 @@
                 category: subcat
             });
             resetAppInput();
+            syncToFirebase();
             renderAll();
             alert('Transaction saved successfully!');
         }
@@ -743,27 +834,37 @@
             } else {
                 appState.categories.push({ id: Date.now(), name, subs });
             }
-            document.getElementById('category-form').reset();
-            document.getElementById('cat-id').value = '';
+            resetCategoryForm();
+            syncToFirebase();
             renderAll();
         });
 
-        function editCategory(id) {
+        window.editCategory = function(id) {
             let cat = appState.categories.find(c => c.id == id);
             document.getElementById('cat-id').value = cat.id;
             document.getElementById('cat-name').value = cat.name;
             document.getElementById('cat-sub').value = cat.subs.join(', ');
+            document.getElementById('cat-form-title').innerText = 'Edit Category';
             document.getElementById('cat-submit-btn').innerText = 'Update Category';
+            document.getElementById('cat-cancel-edit').style.display = 'block';
         }
-        function deleteCategory(id) {
+        window.resetCategoryForm = function() {
+            document.getElementById('category-form').reset();
+            document.getElementById('cat-id').value = '';
+            document.getElementById('cat-form-title').innerText = 'Manage Categories';
+            document.getElementById('cat-submit-btn').innerText = 'Save Category';
+            document.getElementById('cat-cancel-edit').style.display = 'none';
+        }
+        window.deleteCategory = function(id) {
             appState.categories = appState.categories.filter(c => c.id != id);
+            syncToFirebase();
             renderAll();
         }
 
-        // 2. Accounts
-        function toggleRDLinkFields() {
+        // 2. Accounts & RD / FD linking
+        window.toggleDepositLinkFields = function() {
             let type = document.getElementById('acc-type').value;
-            document.getElementById('rd-link-group').style.display = type === 'RD' ? 'block' : 'none';
+            document.getElementById('deposit-link-group').style.display = (type === 'RD' || type === 'FD') ? 'block' : 'none';
         }
         document.getElementById('account-form').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -771,7 +872,7 @@
             let type = document.getElementById('acc-type').value;
             let name = document.getElementById('acc-name').value;
             let balance = parseFloat(document.getElementById('acc-balance').value);
-            let source = document.getElementById('acc-linked-source').value;
+            let source = (type === 'RD' || type === 'FD') ? document.getElementById('acc-linked-source').value : '';
 
             if(id) {
                 let acc = appState.accounts.find(a => a.id == id);
@@ -780,31 +881,33 @@
                 appState.accounts.push({ id: Date.now(), type, name, balance, source });
             }
             resetAccountForm();
+            syncToFirebase();
             renderAll();
         });
 
-        function editAccount(id) {
+        window.editAccount = function(id) {
             let acc = appState.accounts.find(a => a.id == id);
             document.getElementById('acc-id').value = acc.id;
             document.getElementById('acc-type').value = acc.type;
             document.getElementById('acc-name').value = acc.name;
             document.getElementById('acc-balance').value = acc.balance;
             document.getElementById('acc-linked-source').value = acc.source || '';
-            toggleRDLinkFields();
-            document.getElementById('acc-form-title').innerText = 'Edit Bank / Account / RD';
+            toggleDepositLinkFields();
+            document.getElementById('acc-form-title').innerText = 'Edit Bank / Deposit';
             document.getElementById('acc-submit-btn').innerText = 'Update Account';
             document.getElementById('acc-cancel-edit').style.display = 'block';
         }
-        function resetAccountForm() {
+        window.resetAccountForm = function() {
             document.getElementById('account-form').reset();
             document.getElementById('acc-id').value = '';
-            document.getElementById('rd-link-group').style.display = 'none';
-            document.getElementById('acc-form-title').innerText = 'Add Bank / Account / RD';
+            document.getElementById('deposit-link-group').style.display = 'none';
+            document.getElementById('acc-form-title').innerText = 'Add Bank / Account / RD / FD';
             document.getElementById('acc-submit-btn').innerText = 'Save Account';
             document.getElementById('acc-cancel-edit').style.display = 'none';
         }
-        function deleteAccount(id) {
+        window.deleteAccount = function(id) {
             appState.accounts = appState.accounts.filter(a => a.id != id);
+            syncToFirebase();
             renderAll();
         }
 
@@ -824,10 +927,11 @@
                 appState.investments.push({ id: Date.now(), type, name, category, amount });
             }
             resetInvestmentForm();
+            syncToFirebase();
             renderAll();
         });
 
-        function editInvestment(id) {
+        window.editInvestment = function(id) {
             let inv = appState.investments.find(i => i.id == id);
             document.getElementById('inv-id').value = inv.id;
             document.getElementById('inv-type').value = inv.type;
@@ -838,15 +942,16 @@
             document.getElementById('inv-submit-btn').innerText = 'Update Investment';
             document.getElementById('inv-cancel-edit').style.display = 'block';
         }
-        function resetInvestmentForm() {
+        window.resetInvestmentForm = function() {
             document.getElementById('investment-form').reset();
             document.getElementById('inv-id').value = '';
             document.getElementById('inv-form-title').innerText = 'Add Investment';
             document.getElementById('inv-submit-btn').innerText = 'Save Investment';
             document.getElementById('inv-cancel-edit').style.display = 'none';
         }
-        function deleteInvestment(id) {
+        window.deleteInvestment = function(id) {
             appState.investments = appState.investments.filter(i => i.id != id);
+            syncToFirebase();
             renderAll();
         }
 
@@ -867,10 +972,11 @@
                 appState.cards.push({ id: Date.now(), name, limit, due, duedate, emis });
             }
             resetCardForm();
+            syncToFirebase();
             renderAll();
         });
 
-        function editCard(id) {
+        window.editCard = function(id) {
             let card = appState.cards.find(c => c.id == id);
             document.getElementById('card-id').value = card.id;
             document.getElementById('card-name').value = card.name;
@@ -882,15 +988,16 @@
             document.getElementById('card-submit-btn').innerText = 'Update Card';
             document.getElementById('card-cancel-edit').style.display = 'block';
         }
-        function resetCardForm() {
+        window.resetCardForm = function() {
             document.getElementById('card-form').reset();
             document.getElementById('card-id').value = '';
             document.getElementById('card-form-title').innerText = 'Add Credit Card / EMI';
             document.getElementById('card-submit-btn').innerText = 'Save Card';
             document.getElementById('card-cancel-edit').style.display = 'none';
         }
-        function deleteCard(id) {
+        window.deleteCard = function(id) {
             appState.cards = appState.cards.filter(c => c.id != id);
+            syncToFirebase();
             renderAll();
         }
 
@@ -908,10 +1015,11 @@
                 appState.wallets.push({ id: Date.now(), name, balance });
             }
             resetWalletForm();
+            syncToFirebase();
             renderAll();
         });
 
-        function editWallet(id) {
+        window.editWallet = function(id) {
             let w = appState.wallets.find(x => x.id == id);
             document.getElementById('wallet-id').value = w.id;
             document.getElementById('wallet-name').value = w.name;
@@ -920,25 +1028,73 @@
             document.getElementById('wallet-submit-btn').innerText = 'Update Wallet';
             document.getElementById('wallet-cancel-edit').style.display = 'block';
         }
-        function resetWalletForm() {
+        window.resetWalletForm = function() {
             document.getElementById('wallet-form').reset();
             document.getElementById('wallet-id').value = '';
             document.getElementById('wallet-form-title').innerText = 'Add Cash / Wallet';
             document.getElementById('wallet-submit-btn').innerText = 'Save Wallet';
             document.getElementById('wallet-cancel-edit').style.display = 'none';
         }
-        function deleteWallet(id) {
+        window.deleteWallet = function(id) {
             appState.wallets = appState.wallets.filter(w => w.id != id);
+            syncToFirebase();
             renderAll();
         }
 
-        // 6. Transactions log edit/delete
-        function deleteTransaction(id) {
+        // 6. Recurring Payments CRUD
+        document.getElementById('recurring-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            let id = document.getElementById('rec-id').value;
+            let name = document.getElementById('rec-name').value;
+            let freq = document.getElementById('rec-freq').value;
+            let amount = parseFloat(document.getElementById('rec-amount').value);
+            let source = document.getElementById('rec-source').value;
+
+            if(!appState.recurring) appState.recurring = [];
+
+            if(id) {
+                let rec = appState.recurring.find(r => r.id == id);
+                rec.name = name; rec.freq = freq; rec.amount = amount; rec.source = source;
+            } else {
+                appState.recurring.push({ id: Date.now(), name, freq, amount, source });
+            }
+            resetRecurringForm();
+            syncToFirebase();
+            renderAll();
+        });
+
+        window.editRecurring = function(id) {
+            let rec = appState.recurring.find(r => r.id == id);
+            document.getElementById('rec-id').value = rec.id;
+            document.getElementById('rec-name').value = rec.name;
+            document.getElementById('rec-freq').value = rec.freq;
+            document.getElementById('rec-amount').value = rec.amount;
+            document.getElementById('rec-source').value = rec.source;
+            document.getElementById('rec-form-title').innerText = 'Edit Recurring Payment';
+            document.getElementById('rec-submit-btn').innerText = 'Update Recurring';
+            document.getElementById('rec-cancel-edit').style.display = 'block';
+        }
+        window.resetRecurringForm = function() {
+            document.getElementById('recurring-form').reset();
+            document.getElementById('rec-id').value = '';
+            document.getElementById('rec-form-title').innerText = 'Add Recurring Payment';
+            document.getElementById('rec-submit-btn').innerText = 'Save Recurring';
+            document.getElementById('rec-cancel-edit').style.display = 'none';
+        }
+        window.deleteRecurring = function(id) {
+            appState.recurring = appState.recurring.filter(r => r.id != id);
+            syncToFirebase();
+            renderAll();
+        }
+
+        // 7. Transactions log edit/delete
+        window.deleteTransaction = function(id) {
             appState.transactions = appState.transactions.filter(t => t.id != id);
+            syncToFirebase();
             renderAll();
         }
 
-        // 7. Budgets
+        // 8. Budgets
         document.getElementById('budget-form').addEventListener('submit', (e) => {
             e.preventDefault();
             let category = document.getElementById('budget-category').value;
@@ -952,11 +1108,13 @@
                 appState.budgets.push({ category, period, limit });
             }
             document.getElementById('budget-form').reset();
+            syncToFirebase();
             renderAll();
         });
 
-        function deleteBudget(category, period) {
+        window.deleteBudget = function(category, period) {
             appState.budgets = appState.budgets.filter(b => !(b.category === category && b.period === period));
+            syncToFirebase();
             renderAll();
         }
 
@@ -998,8 +1156,10 @@
 
             // 3. Accounts Table & Select options
             let accHtml = '';
-            let accSelectOptions = '<option value="">Select Savings Account</option>';
+            let savingsSelectOptions = '<option value="">Select Savings Account</option>';
+            let allAccSourceOptions = '';
             let budgetCatOptions = '';
+
             appState.accounts.forEach(a => {
                 accHtml += `<tr>
                     <td><span class="badge bg-secondary">${a.type}</span></td>
@@ -1011,10 +1171,17 @@
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteAccount(${a.id})"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>`;
-                if(a.type === 'Savings') accSelectOptions += `<option value="${a.name}">${a.name}</option>`;
+                if(a.type === 'Savings') savingsSelectOptions += `<option value="${a.name}">${a.name}</option>`;
+                allAccSourceOptions += `<option value="${a.name}">${a.name} (${a.type})</option>`;
             });
+
+            appState.cards.forEach(c => {
+                allAccSourceOptions += `<option value="${c.name}">${c.name} (Credit Card)</option>`;
+            });
+
             document.getElementById('accounts-table-body').innerHTML = accHtml;
-            document.getElementById('acc-linked-source').innerHTML = accSelectOptions;
+            document.getElementById('acc-linked-source').innerHTML = savingsSelectOptions;
+            document.getElementById('rec-source').innerHTML = allAccSourceOptions;
 
             appState.categories.forEach(c => {
                 budgetCatOptions += `<option value="${c.name}">${c.name}</option>`;
@@ -1068,25 +1235,36 @@
             });
             document.getElementById('wallets-table-body').innerHTML = walletHtml;
 
-            // 7. Recurring Triggers
+            // 7. Recurring & Linked Deposits Triggers
             let recHtml = '';
-            appState.accounts.filter(a => a.type === 'RD').forEach(rd => {
-                recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center">
-                    <div><h6 class="fw-bold m-0 text-primary">Auto RD Transfer: ${rd.name}</h6><small class="text-muted">Linked Source: ${rd.source || 'None'} | Amount: ₹${rd.balance}/mo</small></div>
-                    <span class="badge bg-success">Active Trigger</span>
+            if(appState.recurring) {
+                appState.recurring.forEach(r => {
+                    recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center p-3">
+                        <div>
+                            <h6 class="fw-bold m-0 text-primary">${r.name} <span class="badge bg-secondary ms-2">${r.freq}</span></h6>
+                            <small class="text-muted">Debit Source: ${r.source} | Amount: ₹${r.amount}</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editRecurring(${r.id})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring(${r.id})"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>`;
+                });
+            }
+            appState.accounts.filter(a => a.type === 'RD' || a.type === 'FD').forEach(dep => {
+                recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center p-3">
+                    <div>
+                        <h6 class="fw-bold m-0 text-success">Linked Deposit (${dep.type}): ${dep.name}</h6>
+                        <small class="text-muted">Linked Source Savings A/c: ${dep.source || 'None'} | Principal/Balance: ₹${dep.balance}</small>
+                    </div>
+                    <span class="badge bg-info">Linked Active</span>
                 </div>`;
             });
-            appState.investments.filter(i => i.type === 'Mutual Fund SIP').forEach(sip => {
-                recHtml += `<div class="list-group-item bg-card mb-2 border rounded d-flex justify-content-between align-items-center">
-                    <div><h6 class="fw-bold m-0 text-primary">Monthly SIP Trigger: ${sip.name}</h6><small class="text-muted">Category: ${sip.category} | Amount: ₹${sip.amount}/mo</small></div>
-                    <span class="badge bg-success">Active Trigger</span>
-                </div>`;
-            });
-            document.getElementById('recurring-list').innerHTML = recHtml || `<div class="text-muted">No recurring triggers configured.</div>`;
+            document.getElementById('recurring-list').innerHTML = recHtml || `<div class="text-muted">No recurring payments or linked deposits configured.</div>`;
 
             // 8. Analytics
             let analyticsAcc = '';
-            appState.accounts.forEach(a => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${a.name} (${a.type})</span><span class="fw-bold text-primary">₹${a.balance}</span></div>`);
+            appState.accounts.forEach(a => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${a.name} (${a.type}) ${a.source ? '<br><small class="text-muted">Linked: '+a.source+'</small>' : ''}</span><span class="fw-bold text-primary">₹${a.balance}</span></div>`);
             appState.wallets.forEach(w => analyticsAcc += `<div class="list-group-item bg-card d-flex justify-content-between align-items-center"><span>${w.name} (Wallet)</span><span class="fw-bold text-primary">₹${w.balance}</span></div>`);
             document.getElementById('analytics-accounts-list').innerHTML = analyticsAcc;
 
@@ -1137,9 +1315,6 @@
             });
             document.getElementById('budgets-tracking-list').innerHTML = budgetHtml || '<div class="text-muted">No budgets configured.</div>';
         }
-
-        // Initial render
-        renderAll();
     </script>
 </body>
 </html>
