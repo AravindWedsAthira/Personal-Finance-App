@@ -31,13 +31,44 @@
             --border-color: #ced4da;
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--app-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
-        #wrapper { display: flex; width: 100%; align-items: stretch; }
-        #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: var(--card-bg); color: var(--text-color); transition: all 0.3s; min-height: 100vh; z-index: 1000; border-right: 1px solid var(--border-color); }
-        #sidebar.active { margin-left: calc(-1 * var(--sidebar-width)); }
+        #wrapper { display: flex; width: 100%; align-items: stretch; position: relative; }
+        
+        /* Auto-hide / Offcanvas style sidebar */
+        #sidebar { 
+            position: fixed;
+            top: 0;
+            left: calc(-1 * var(--sidebar-width));
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--card-bg); 
+            color: var(--text-color); 
+            transition: left 0.3s ease-in-out; 
+            z-index: 1050; 
+            border-right: 1px solid var(--border-color); 
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+        }
+        #sidebar.active { left: 0; }
+        
+        /* Backdrop overlay when sidebar is open */
+        #sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.3s ease;
+        }
+        #sidebar-backdrop.active { display: block; }
+
         #sidebar .sidebar-header { padding: 25px 20px; background: var(--input-bg); border-bottom: 1px solid var(--border-color); }
         #sidebar ul.components { padding: 15px 0; }
         #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: var(--text-color); opacity: 0.85; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
         #sidebar ul li a:hover, #sidebar ul li.active > a { opacity: 1; background: rgba(13, 110, 253, 0.12); border-left: 4px solid var(--accent-blue); }
+        
         #content { width: 100%; padding: 25px; min-height: 100vh; transition: all 0.3s; background-color: var(--app-bg); }
         .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 0.75rem; background-color: var(--card-bg) !important; color: var(--text-color); }
         .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
@@ -69,11 +100,11 @@
         
         .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
         .account-select-row:hover { background: rgba(13, 110, 253, 0.08); }
-        
-        @media (max-width: 768px) { #sidebar { position: absolute; } }
     </style>
 </head>
 <body>
+
+    <div id="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
     <div id="wrapper">
         <!-- Sidebar -->
@@ -83,7 +114,7 @@
                     <h4 class="m-0 fw-bold text-primary">Passbook</h4>
                     <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Connecting...</small>
                 </div>
-                <button class="btn btn-sm btn-outline-secondary d-md-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
             </div>
             <ul class="list-unstyled components">
                 <li class="active"><a href="#" onclick="switchSection('home', this)"><i class="bi bi-house-door me-3"></i> Home & Logs</a></li>
@@ -754,6 +785,9 @@
                 'budgets': 'Budgets'
             };
             document.getElementById('page-title').innerText = titles[sectionId] || 'Dashboard';
+            
+            // Auto-hide sidebar on mobile/desktop selection
+            toggleSidebar(false);
         }
 
         // Theme Toggle
@@ -766,13 +800,24 @@
             icon.className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
         }
 
-        // Sidebar Toggles
-        document.getElementById('sidebarCollapse').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-        document.getElementById('sidebarClose').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.remove('active');
-        });
+        // Sidebar Toggles (Auto-hide behavior)
+        function toggleSidebar(forceState) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            const isOpen = forceState !== undefined ? forceState : !sidebar.classList.contains('active');
+            
+            if (isOpen) {
+                sidebar.classList.add('active');
+                backdrop.classList.add('active');
+            } else {
+                sidebar.classList.remove('active');
+                backdrop.classList.remove('active');
+            }
+        }
+
+        document.getElementById('sidebarCollapse').addEventListener('click', () => toggleSidebar(true));
+        document.getElementById('sidebarClose').addEventListener('click', () => toggleSidebar(false));
 
         // App Simulator Logic
         function setAppType(type) {
