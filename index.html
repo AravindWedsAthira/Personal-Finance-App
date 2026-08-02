@@ -70,8 +70,7 @@
         .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
         .account-select-row:hover { background: rgba(13, 110, 253, 0.08); }
         
-        .badge-sub { background-color: rgba(13, 110, 253, 0.15); color: var(--accent-blue); font-weight: 500; margin-right: 6px; margin-bottom: 6px; display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(13, 110, 253, 0.3); }
-        @media (max-width: 768px) { #sidebar { margin-left: calc(-1 * var(--sidebar-width)); position: absolute; } #sidebar.active { margin-left: 0; } }
+        @media (max-width: 768px) { #sidebar { position: absolute; } }
     </style>
 </head>
 <body>
@@ -82,7 +81,7 @@
             <div class="sidebar-header d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="m-0 fw-bold text-primary">Passbook</h4>
-                    <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Ready</small>
+                    <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Connecting...</small>
                 </div>
                 <button class="btn btn-sm btn-outline-secondary d-md-none" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
             </div>
@@ -152,8 +151,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <input type="text" class="form-control notes-box" id="app-notes" list="autosuggest-subcategories" placeholder="Subcategory / Notes (Autofill available)">
-                                    <datalist id="autosuggest-subcategories"></datalist>
+                                    <input type="text" class="form-control notes-box" id="app-notes" placeholder="Subcategory / Notes">
                                 </div>
 
                                 <div class="calc-display mb-2" id="calc-display">0</div>
@@ -198,8 +196,8 @@
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Accounts / Transfer</th>
-                                            <th>Subcategory / Notes</th>
+                                            <th>Account</th>
+                                            <th>Notes</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
@@ -215,7 +213,7 @@
             <div class="custom-modal-overlay" id="account-modal">
                 <div class="custom-modal-content">
                     <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary" id="account-modal-title">Select an account</h5>
+                        <h5 class="fw-bold m-0 text-primary">Select an account</h5>
                         <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div id="account-modal-list"></div>
@@ -237,9 +235,8 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold" id="cat-form-title">Manage Categories</h4>
+                            <h4 class="mb-3 text-primary fw-bold">Manage Categories</h4>
                             <form id="category-form" onsubmit="saveCategory(event)">
-                                <input type="hidden" id="cat-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Category Name</label>
                                     <input type="text" class="form-control" id="cat-name" placeholder="e.g. Food" required>
@@ -248,10 +245,7 @@
                                     <label class="form-label fw-semibold">Linked Subcategories (Comma Separated)</label>
                                     <textarea class="form-control" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
                                 </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary w-100 fw-semibold text-white" id="cat-submit-btn">Save Category</button>
-                                    <button type="button" class="btn btn-outline-secondary w-50" id="cat-cancel-edit" style="display:none;" onclick="resetCategoryForm()">Cancel</button>
-                                </div>
+                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Category</button>
                             </form>
                         </div>
                     </div>
@@ -269,9 +263,8 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold" id="acc-form-title">Add Bank / Account</h4>
+                            <h4 class="mb-3 text-primary fw-bold">Add Bank / Account</h4>
                             <form id="account-form" onsubmit="saveAccount(event)">
-                                <input type="hidden" id="acc-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Account Name / Bank</label>
                                     <input type="text" class="form-control" id="acc-name" placeholder="e.g. HDFC Salary Acc" required>
@@ -300,7 +293,6 @@
                         <div class="card p-4">
                             <h4 class="mb-3 text-primary fw-bold">Add Investment</h4>
                             <form id="investment-form" onsubmit="saveInvestment(event)">
-                                <input type="hidden" id="inv-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Investment Name / Fund</label>
                                     <input type="text" class="form-control" id="inv-name" placeholder="e.g. Parag Parikh Flexi Cap" required>
@@ -338,7 +330,6 @@
                         <div class="card p-4">
                             <h4 class="mb-3 text-primary fw-bold">Add Card / EMI</h4>
                             <form id="card-form" onsubmit="saveCardOrEmi(event)">
-                                <input type="hidden" id="card-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Card Name / Loan Name</label>
                                     <input type="text" class="form-control" id="card-name" placeholder="e.g. Amazon Pay CC / Laptop EMI" required>
@@ -374,7 +365,6 @@
                         <div class="card p-4">
                             <h4 class="mb-3 text-primary fw-bold">Add Cash / Digital Wallet</h4>
                             <form id="wallet-form" onsubmit="saveWallet(event)">
-                                <input type="hidden" id="wal-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Wallet / Pocket Name</label>
                                     <input type="text" class="form-control" id="wal-name" placeholder="e.g. Paytm Wallet / Cash in Hand" required>
@@ -398,9 +388,41 @@
 
             <!-- 7. RECURRING PAYMENTS -->
             <div id="section-recurring" class="section-view">
-                <div class="card p-4">
-                    <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Recurring Payments</h4>
-                    <p class="text-muted">Manage automated subscriptions, rent, and monthly utility schedules.</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Recurring Payment</h4>
+                            <form id="recurring-form" onsubmit="saveRecurring(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Item Name</label>
+                                    <input type="text" class="form-control" id="rec-name" placeholder="e.g. Netflix / Term Insurance" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Frequency</label>
+                                    <select class="form-select" id="rec-frequency">
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Quarterly">Quarterly</option>
+                                        <option value="Yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="rec-amount" placeholder="0.00" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Next Payment Date</label>
+                                    <input type="date" class="form-control" id="rec-date" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Subscription</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Active Recurring Payments</h4>
+                            <div id="recurring-list" class="list-group"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -408,9 +430,7 @@
             <div id="section-analytics" class="section-view">
                 <div class="card p-4">
                     <h4 class="mb-3 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Financial Analytics & Overview</h4>
-                    <div class="row g-3" id="analytics-summary-cards">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <div class="row g-3" id="analytics-summary-cards"></div>
                 </div>
             </div>
 
@@ -447,22 +467,27 @@
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Data Store State
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
+          authDomain: "passbook-229d7.firebaseapp.com",
+          databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "passbook-229d7",
+          storageBucket: "passbook-229d7.appspot.com",
+          messagingSenderId: "1020688201249",
+          appId: "1:1020688201249:web:57d42542d59471f303d560"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
         let appData = {
-            categories: JSON.parse(localStorage.getItem('passbook_categories')) || [
-                { id: 1, name: 'Food', subs: ['Groceries', 'Restaurants', 'Coffee'] },
-                { id: 2, name: 'Bills', subs: ['Electricity', 'Water', 'Internet'] }
-            ],
-            accounts: JSON.parse(localStorage.getItem('passbook_accounts')) || [
-                { id: 1, name: 'HDFC Bank', balance: 25000 },
-                { id: 2, name: 'SBI Salary', balance: 50000 }
-            ],
-            investments: JSON.parse(localStorage.getItem('passbook_investments')) || [],
-            cards: JSON.parse(localStorage.getItem('passbook_cards')) || [],
-            wallets: JSON.parse(localStorage.getItem('passbook_wallets')) || [],
-            budgets: JSON.parse(localStorage.getItem('passbook_budgets')) || [],
-            transactions: JSON.parse(localStorage.getItem('passbook_transactions')) || []
+            categories: [], accounts: [], investments: [], cards: [], wallets: [], recurring: [], budgets: [], transactions: []
         };
 
         let currentAppType = 'Expense';
@@ -470,18 +495,36 @@
         let selectedCategory = null;
         let calcInput = '0';
 
-        function saveData() {
-            localStorage.setItem('passbook_categories', JSON.stringify(appData.categories));
-            localStorage.setItem('passbook_accounts', JSON.stringify(appData.accounts));
-            localStorage.setItem('passbook_investments', JSON.stringify(appData.investments));
-            localStorage.setItem('passbook_cards', JSON.stringify(appData.cards));
-            localStorage.setItem('passbook_wallets', JSON.stringify(appData.wallets));
-            localStorage.setItem('passbook_budgets', JSON.stringify(appData.budgets));
-            localStorage.setItem('passbook_transactions', JSON.stringify(appData.transactions));
+        // Listen for Realtime Database changes
+        const dbRef = ref(db, 'passbook_data');
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                appData = data;
+                // Ensure array fields exist
+                ['categories', 'accounts', 'investments', 'cards', 'wallets', 'recurring', 'budgets', 'transactions'].forEach(key => {
+                    if(!appData[key]) appData[key] = [];
+                });
+            } else {
+                // Default starter data if DB is empty
+                appData = {
+                    categories: [{ id: 1, name: 'Food', subs: ['Groceries', 'Restaurants', 'Coffee'] }],
+                    accounts: [{ id: 1, name: 'HDFC Bank', balance: 25000 }],
+                    investments: [], cards: [], wallets: [], recurring: [], budgets: [], transactions: []
+                };
+                syncToFirebase();
+            }
             renderAll();
+            document.getElementById('db-status').innerHTML = '<i class="bi bi-circle-fill fs-7 text-success"></i> Synced';
+        }, (error) => {
+            document.getElementById('db-status').innerHTML = '<i class="bi bi-circle-fill fs-7 text-danger"></i> Offline';
+        });
+
+        function syncToFirebase() {
+            set(ref(db, 'passbook_data'), appData).catch(err => console.error(err));
         }
 
-        function switchSection(sectionId, el) {
+        window.switchSection = function(sectionId, el) {
             document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
             document.getElementById('section-' + sectionId).classList.add('active');
             
@@ -501,14 +544,11 @@
             };
             document.getElementById('page-title').innerText = titles[sectionId] || 'Passbook';
 
-            // Auto-hide sidebar on mobile/selection
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.add('active');
-            }
+            // Auto-hide sidebar on mobile or any section selection
+            document.getElementById('sidebar').classList.add('active');
         }
 
-        // Toggle Theme
-        function toggleTheme() {
+        window.toggleTheme = function() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-bs-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -516,7 +556,6 @@
             document.getElementById('theme-icon').className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
         }
 
-        // Sidebar Collapse Toggle
         document.getElementById('sidebarCollapse').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('active');
         });
@@ -524,13 +563,12 @@
             document.getElementById('sidebar').classList.add('active');
         });
 
-        // Calculator Functions
-        function appendCalc(val) {
+        window.appendCalc = function(val) {
             if(calcInput === '0' && val !== '.') calcInput = '';
             calcInput += val;
             document.getElementById('calc-display').innerText = calcInput;
         }
-        function calculateResult() {
+        window.calculateResult = function() {
             try {
                 calcInput = eval(calcInput).toString();
                 document.getElementById('calc-display').innerText = calcInput;
@@ -539,13 +577,13 @@
                 document.getElementById('calc-display').innerText = 'Error';
             }
         }
-        function resetAppInput() {
+        window.resetAppInput = function() {
             calcInput = '0';
             document.getElementById('calc-display').innerText = '0';
             document.getElementById('app-notes').value = '';
         }
 
-        function setAppType(type) {
+        window.setAppType = function(type) {
             currentAppType = type;
             ['Income', 'Expense', 'Transfer'].forEach(t => {
                 document.getElementById('type-' + t.toLowerCase()).classList.remove('active');
@@ -553,8 +591,7 @@
             document.getElementById('type-' + type.toLowerCase()).classList.add('active');
         }
 
-        // Modals Logic
-        function openAccountModal(type) {
+        window.openAccountModal = function(type) {
             const list = document.getElementById('account-modal-list');
             list.innerHTML = '';
             appData.accounts.forEach(acc => {
@@ -562,97 +599,102 @@
             });
             document.getElementById('account-modal').style.display = 'flex';
         }
-        function closeAccountModal() { document.getElementById('account-modal').style.display = 'none'; }
-        function selectAccount(name) {
+        window.closeAccountModal = function() { document.getElementById('account-modal').style.display = 'none'; }
+        window.selectAccount = function(name) {
             selectedAccount = name;
             document.getElementById('selected-account-label').innerText = name;
             closeAccountModal();
         }
 
-        function openCategoryModal() {
+        window.openCategoryModal = function() {
             const list = document.getElementById('category-modal-list');
             list.innerHTML = '';
             appData.categories.forEach(cat => {
                 list.innerHTML += `<div class="p-2 fw-bold text-primary">${cat.name}</div>`;
-                cat.subs.forEach(sub => {
-                    list.innerHTML += `<div class="account-select-row ps-4" onclick="selectCategory('${cat.name} > ${sub}')"><span>${sub}</span></div>`;
-                });
+                if(cat.subs) {
+                    cat.subs.forEach(sub => {
+                        list.innerHTML += `<div class="account-select-row ps-4" onclick="selectCategory('${cat.name} > ${sub}')"><span>${sub}</span></div>`;
+                    });
+                }
             });
             document.getElementById('category-modal').style.display = 'flex';
         }
-        function closeCategoryModal() { document.getElementById('category-modal').style.display = 'none'; }
-        function selectCategory(catName) {
+        window.closeCategoryModal = function() { document.getElementById('category-modal').style.display = 'none'; }
+        window.selectCategory = function(catName) {
             selectedCategory = catName;
             document.getElementById('selected-category-label').innerText = catName;
             document.getElementById('app-notes').value = catName;
             closeCategoryModal();
         }
 
-        // CRUD Functions for additional sections
-        function saveCategory(e) {
+        window.saveCategory = function(e) {
             e.preventDefault();
             const name = document.getElementById('cat-name').value;
             const subs = document.getElementById('cat-sub').value.split(',').map(s => s.trim()).filter(s => s);
-            const id = document.getElementById('cat-id').value;
-            if(id) {
-                let cat = appData.categories.find(c => c.id == id);
-                cat.name = name; cat.subs = subs;
-            } else {
-                appData.categories.push({ id: Date.now(), name, subs });
-            }
+            appData.categories.push({ id: Date.now(), name, subs });
             document.getElementById('category-form').reset();
-            document.getElementById('cat-id').value = '';
-            saveData();
+            syncToFirebase();
         }
 
-        function saveAccount(e) {
+        window.saveAccount = function(e) {
             e.preventDefault();
             const name = document.getElementById('acc-name').value;
             const balance = parseFloat(document.getElementById('acc-balance').value);
             appData.accounts.push({ id: Date.now(), name, balance });
             document.getElementById('account-form').reset();
-            saveData();
+            syncToFirebase();
         }
 
-        function saveInvestment(e) {
+        window.saveInvestment = function(e) {
             e.preventDefault();
             const name = document.getElementById('inv-name').value;
             const type = document.getElementById('inv-type').value;
             const value = parseFloat(document.getElementById('inv-value').value);
             appData.investments.push({ id: Date.now(), name, type, value });
             document.getElementById('investment-form').reset();
-            saveData();
+            syncToFirebase();
         }
 
-        function saveCardOrEmi(e) {
+        window.saveCardOrEmi = function(e) {
             e.preventDefault();
             const name = document.getElementById('card-name').value;
             const type = document.getElementById('card-type').value;
             const amount = parseFloat(document.getElementById('card-amount').value);
             appData.cards.push({ id: Date.now(), name, type, amount });
             document.getElementById('card-form').reset();
-            saveData();
+            syncToFirebase();
         }
 
-        function saveWallet(e) {
+        window.saveWallet = function(e) {
             e.preventDefault();
             const name = document.getElementById('wal-name').value;
             const balance = parseFloat(document.getElementById('wal-balance').value);
             appData.wallets.push({ id: Date.now(), name, balance });
             document.getElementById('wallet-form').reset();
-            saveData();
+            syncToFirebase();
         }
 
-        function saveBudget(e) {
+        window.saveRecurring = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('rec-name').value;
+            const frequency = document.getElementById('rec-frequency').value;
+            const amount = parseFloat(document.getElementById('rec-amount').value);
+            const nextDate = document.getElementById('rec-date').value;
+            appData.recurring.push({ id: Date.now(), name, frequency, amount, nextDate });
+            document.getElementById('recurring-form').reset();
+            syncToFirebase();
+        }
+
+        window.saveBudget = function(e) {
             e.preventDefault();
             const category = document.getElementById('bud-category').value;
             const limit = parseFloat(document.getElementById('bud-limit').value);
             appData.budgets.push({ id: Date.now(), category, limit });
             document.getElementById('budget-form').reset();
-            saveData();
+            syncToFirebase();
         }
 
-        function submitAppTransaction() {
+        window.submitAppTransaction = function() {
             const amt = parseFloat(calcInput);
             if(!amt || isNaN(amt) || amt <= 0) {
                 alert('Please enter a valid amount');
@@ -667,53 +709,57 @@
                 notes: document.getElementById('app-notes').value || 'General'
             });
             resetAppInput();
-            saveData();
+            syncToFirebase();
+        }
+
+        window.deleteTx = function(id) {
+            appData.transactions = appData.transactions.filter(t => t.id !== id);
+            syncToFirebase();
         }
 
         function renderAll() {
-            // Render Categories
             const catList = document.getElementById('categories-list');
             catList.innerHTML = '';
             appData.categories.forEach(c => {
-                catList.innerHTML += `<div class="list-group-item bg-card text-color border-color d-flex justify-content-between align-items-center"><div><strong>${c.name}</strong><br><small class="text-muted">${c.subs.join(', ')}</small></div></div>`;
+                catList.innerHTML += `<div class="list-group-item bg-card text-color border-color"><strong>${c.name}</strong><br><small class="text-muted">${c.subs ? c.subs.join(', ') : ''}</small></div>`;
             });
 
-            // Render Accounts
             const accList = document.getElementById('accounts-list');
             accList.innerHTML = '';
             appData.accounts.forEach(a => {
                 accList.innerHTML += `<div class="list-group-item bg-card text-color border-color d-flex justify-content-between align-items-center"><span>${a.name}</span><strong>₹${a.balance}</strong></div>`;
             });
 
-            // Render Investments
             const invList = document.getElementById('investments-list');
             invList.innerHTML = '';
             appData.investments.forEach(i => {
                 invList.innerHTML += `<div class="list-group-item bg-card text-color border-color d-flex justify-content-between align-items-center"><div><strong>${i.name}</strong><br><small class="text-muted">${i.type}</small></div><strong>₹${i.value}</strong></div>`;
             });
 
-            // Render Cards & EMIs
             const cardList = document.getElementById('cards-list');
             cardList.innerHTML = '';
             appData.cards.forEach(c => {
                 cardList.innerHTML += `<div class="list-group-item bg-card text-color border-color d-flex justify-content-between align-items-center"><div><strong>${c.name}</strong><br><small class="text-muted">${c.type}</small></div><strong>₹${c.amount}</strong></div>`;
             });
 
-            // Render Wallets
             const walList = document.getElementById('wallets-list');
             walList.innerHTML = '';
             appData.wallets.forEach(w => {
                 walList.innerHTML += `<div class="list-group-item bg-card text-color border-color d-flex justify-content-between align-items-center"><span>${w.name}</span><strong>₹${w.balance}</strong></div>`;
             });
 
-            // Render Budgets
+            const recList = document.getElementById('recurring-list');
+            recList.innerHTML = '';
+            appData.recurring.forEach(r => {
+                recList.innerHTML += `<div class="list-group-item bg-card text-color border-color d-flex justify-content-between align-items-center"><div><strong>${r.name}</strong><br><small class="text-muted">${r.frequency} • Next Due: ${r.nextDate}</small></div><strong>₹${r.amount}</strong></div>`;
+            });
+
             const budList = document.getElementById('budgets-list');
             budList.innerHTML = '';
             appData.budgets.forEach(b => {
                 budList.innerHTML += `<div class="mb-3"><div class="d-flex justify-content-between"><span>${b.category}</span><span>Limit: ₹${b.limit}</span></div><div class="progress mt-1" style="height: 8px;"><div class="progress-bar bg-primary" style="width: 35%;"></div></div></div>`;
             });
 
-            // Render Analytics Summary Cards
             const analyticsCards = document.getElementById('analytics-summary-cards');
             let totalInv = appData.investments.reduce((sum, i) => sum + i.value, 0);
             let totalAcc = appData.accounts.reduce((sum, a) => sum + a.balance, 0);
@@ -722,21 +768,12 @@
                 <div class="col-md-6"><div class="card p-3 border"><h6>Total Portfolio Value</h6><h3>₹${totalInv}</h3></div></div>
             `;
 
-            // Render Transactions
             const txBody = document.getElementById('transactions-table-body');
             txBody.innerHTML = '';
             appData.transactions.forEach(t => {
                 txBody.innerHTML += `<tr><td>${t.date}</td><td><span class="badge bg-${t.type==='Income'?'success':t.type==='Expense'?'danger':'warning'}">${t.type}</span></td><td>₹${t.amount}</td><td>${t.account}</td><td>${t.notes}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteTx(${t.id})"><i class="bi bi-trash"></i></button></td></tr>`;
             });
         }
-
-        function deleteTx(id) {
-            appData.transactions = appData.transactions.filter(t => t.id !== id);
-            saveData();
-        }
-
-        // Initial Load Render
-        renderAll();
     </script>
 </body>
 </html>
