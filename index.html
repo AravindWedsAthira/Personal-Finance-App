@@ -480,8 +480,8 @@
                                 <input type="number" step="any" class="form-control" id="edit-card-limit" required>
                             </div>
                             <div class="col-6 mb-3">
-                                <label class="form-label fw-semibold">Outstanding Limit (₹)</label>
-                                <input type="number" step="any" class="form-control" id="edit-card-outstanding-limit" required>
+                                <label class="form-label fw-semibold">Initial Unbilled Amount (₹)</label>
+                                <input type="number" step="any" class="form-control" id="edit-card-initial-unbilled" placeholder="e.g. 5000" value="0">
                             </div>
                         </div>
                         <div class="row">
@@ -900,8 +900,8 @@
                                         <input type="number" step="any" class="form-control" id="card-limit" placeholder="e.g. 100000" required>
                                     </div>
                                     <div class="col-6 mb-3">
-                                        <label class="form-label fw-semibold">Outstanding Limit (₹)</label>
-                                        <input type="number" step="any" class="form-control" id="card-outstanding-limit" placeholder="e.g. 25000" required>
+                                        <label class="form-label fw-semibold">Initial Unbilled Amount (₹)</label>
+                                        <input type="number" step="any" class="form-control" id="card-initial-unbilled" placeholder="e.g. 5000" value="0">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -1408,7 +1408,6 @@
                         alert('Credit cards can only log expenses or be paid off.');
                         return;
                     }
-                    // For card expense, update outstanding limit or store transactions normally so billing period sums them up
                 } else {
                     let newBal = entData.balance;
                     if(currentAppType === 'Income') newBal += amount;
@@ -1511,7 +1510,6 @@
             closeCategoryModal();
         }
 
-        // TRANSACTION EDIT & DELETE
         function editTransaction(id) {
             const tx = appData.transactions[id];
             if(!tx) return;
@@ -1544,7 +1542,6 @@
             if(confirm('Delete transaction record?')) db.ref('transactions/' + id).remove();
         }
 
-        // BANK ACCOUNT EDIT & DELETE
         function editAccount(id) {
             const acc = appData.accounts[id];
             if(!acc) return;
@@ -1602,7 +1599,6 @@
             document.getElementById('accounts-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No accounts found.</td></tr>';
         }
 
-        // WALLET FUNCTIONS
         function saveWallet(e) {
             e.preventDefault();
             const id = document.getElementById('wallet-id').value;
@@ -1718,7 +1714,6 @@
             document.getElementById('wallets-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No wallets found.</td></tr>';
         }
 
-        // FD / RD EDIT & WITHDRAW
         function toggleRdFields() {
             const type = document.getElementById('fr-type').value;
             document.getElementById('rd-monthly-date-group').style.display = type === 'RD' ? 'block' : 'none';
@@ -1882,7 +1877,6 @@
             }
         }
 
-        // CATEGORIES MANAGEMENT
         function saveCategory(e) {
             e.preventDefault();
             const id = document.getElementById('cat-id').value;
@@ -1929,7 +1923,6 @@
             document.getElementById('categories-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No categories found.</td></tr>';
         }
 
-        // MUTUAL FUNDS EDIT & WITHDRAW WITH INITIAL LUMPSUM
         function toggleMfFields() {
             const mode = document.getElementById('mf-mode').value;
             document.getElementById('mf-freq-group').style.display = mode === 'SIP' ? 'block' : 'none';
@@ -2047,7 +2040,6 @@
             document.getElementById('withdraw-modal').style.display = 'flex';
         }
 
-        // STOCKS PORTFOLIO MANAGEMENT
         function saveStock(e) {
             e.preventDefault();
             const name = document.getElementById('stock-name').value;
@@ -2139,16 +2131,16 @@
             document.getElementById('stocks-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No stocks found.</td></tr>';
         }
 
-        // CARDS & EMIS EDIT & DELETE
         function saveCard(e) {
             e.preventDefault();
             const name = document.getElementById('card-name').value;
             const limit = parseFloat(document.getElementById('card-limit').value || 0);
-            const outstandingLimit = parseFloat(document.getElementById('card-outstanding-limit').value || 0);
+            const initialUnbilled = parseFloat(document.getElementById('card-initial-unbilled').value || 0);
             const billDate = parseInt(document.getElementById('card-bill-date').value);
             const dueDate = parseInt(document.getElementById('card-due-date').value);
-            db.ref('cards').push({ name, limit, outstandingLimit, billDate, dueDate }, () => {
+            db.ref('cards').push({ name, limit, initialUnbilled, billDate, dueDate }, () => {
                 document.getElementById('card-form').reset();
+                document.getElementById('card-initial-unbilled').value = '0';
                 alert('Card saved successfully!');
             });
         }
@@ -2159,7 +2151,7 @@
             document.getElementById('edit-card-id').value = id;
             document.getElementById('edit-card-name').value = card.name;
             document.getElementById('edit-card-limit').value = card.limit || 0;
-            document.getElementById('edit-card-outstanding-limit').value = card.outstandingLimit || 0;
+            document.getElementById('edit-card-initial-unbilled').value = card.initialUnbilled || 0;
             document.getElementById('edit-card-bill-date').value = card.billDate;
             document.getElementById('edit-card-due-date').value = card.dueDate;
             document.getElementById('edit-card-modal').style.display = 'flex';
@@ -2174,11 +2166,11 @@
             const id = document.getElementById('edit-card-id').value;
             const name = document.getElementById('edit-card-name').value;
             const limit = parseFloat(document.getElementById('edit-card-limit').value || 0);
-            const outstandingLimit = parseFloat(document.getElementById('edit-card-outstanding-limit').value || 0);
+            const initialUnbilled = parseFloat(document.getElementById('edit-card-initial-unbilled').value || 0);
             const billDate = parseInt(document.getElementById('edit-card-bill-date').value);
             const dueDate = parseInt(document.getElementById('edit-card-due-date').value);
 
-            db.ref('cards/' + id).update({ name, limit, outstandingLimit, billDate, dueDate }, () => {
+            db.ref('cards/' + id).update({ name, limit, initialUnbilled, billDate, dueDate }, () => {
                 closeEditCardModal();
                 alert('Card updated successfully!');
             });
@@ -2246,109 +2238,42 @@
 
             db.ref('emis/' + id).update({ name, cardId, principal, rate, tenure, emiAmt }, () => {
                 closeEditEmiModal();
-                alert('EMI updated and auto-calculated successfully!');
+                alert('EMI updated successfully!');
             });
         }
 
         function deleteEmi(id) {
-            if(confirm('Delete EMI?')) db.ref('emis/' + id).remove();
-        }
-
-        let accountModalTargetParamCardId = '';
-        function promptCardPayment(cardId) {
-            accountModalTargetParamCardId = cardId;
-            accountModalTarget = 'payment';
-            openAccountModal('payment');
-        }
-
-        function executeCardPayment(cardId, bankAccId) {
-            const cards = appData.cards;
-            let card = cards[cardId];
-            if(!card) return;
-
-            // Calculate unbilled + active EMIs for this card as total bill amount
-            let unbilled = 0;
-            const txs = appData.transactions;
-            for(let txId in txs) {
-                let tx = txs[txId];
-                if(tx.accountId === cardId && tx.type === 'Expense') {
-                    unbilled += tx.amount;
-                }
-            }
-            let emiTotal = 0;
-            const emis = appData.emis;
-            for(let emId in emis) {
-                if(emis[emId].cardId === cardId) emiTotal += emis[emId].emiAmt;
-            }
-            let totalBill = unbilled + emiTotal;
-
-            if(totalBill <= 0) { alert('No outstanding/unbilled amount to pay on this card.'); return; }
-
-            db.ref('accounts/' + bankAccId).once('value').then(snap => {
-                let acc = snap.val();
-                if(acc && acc.balance >= totalBill) {
-                    db.ref('accounts/' + bankAccId).update({ balance: acc.balance - totalBill });
-                    
-                    // Log the bill payment transaction
-                    db.ref('transactions').push({
-                        type: 'Expense',
-                        amount: totalBill,
-                        accountId: bankAccId,
-                        accountName: acc.name,
-                        notes: `Credit Card Bill Payment: ${card.name}`,
-                        category: 'Bills & Payments > Credit Card',
-                        date: new Date().toISOString()
-                    });
-
-                    alert(`Successfully paid bill of ₹${totalBill} for ${card.name} from ${acc.name}!`);
-                } else {
-                    alert('Insufficient balance in selected bank account.');
-                }
-            });
+            if(confirm('Delete EMI entry?')) db.ref('emis/' + id).remove();
         }
 
         function renderCards() {
             let html = '';
             const cards = appData.cards;
-            const emis = appData.emis;
+            
+            // Calculate expenses logged against each card from transactions
+            let cardExpenses = {};
             const txs = appData.transactions;
-
-            for(let cardId in cards) {
-                let card = cards[cardId];
-                
-                // Calculate unbilled expenses for the billing period
-                let unbilled = 0;
-                for(let txId in txs) {
-                    let tx = txs[txId];
-                    if(tx.accountId === cardId && tx.type === 'Expense') {
-                        unbilled += tx.amount;
-                    }
+            for(let txId in txs) {
+                let tx = txs[txId];
+                if(tx.type === 'Expense' && cards[tx.accountId]) {
+                    cardExpenses[tx.accountId] = (cardExpenses[tx.accountId] || 0) + tx.amount;
                 }
+            }
 
-                // Add active EMIs coming in successive bills
-                let activeEmisTotal = 0;
-                for(let emId in emis) {
-                    if(emis[emId].cardId === cardId) {
-                        activeEmisTotal += emis[emId].emiAmt;
-                    }
-                }
-
-                let currentOutstanding = unbilled + activeEmisTotal;
-                let limit = card.limit || 0;
-                let outLimit = card.outstandingLimit || 0;
+            for(let id in cards) {
+                let card = cards[id];
+                let initialUnbilled = card.initialUnbilled || 0;
+                let loggedExpenses = cardExpenses[id] || 0;
+                let totalUnbilled = initialUnbilled + loggedExpenses;
 
                 html += `<tr>
-                    <td class="fw-semibold">${card.name}</td>
-                    <td><div>Limit: ₹${limit.toLocaleString()}</div><small class="text-muted">Out. Limit: ₹${outLimit.toLocaleString()}</small></td>
-                    <td><small>Bill: ${card.billDate}th | Due: ${card.dueDate}th</small></td>
-                    <td>
-                        <div class="text-danger fw-bold">₹${currentOutstanding.toLocaleString()}</div>
-                        <small class="text-muted">(Unbilled: ₹${unbilled} + EMIs: ₹${activeEmisTotal})</small>
-                    </td>
+                    <td><div class="fw-semibold">${card.name}</div></td>
+                    <td><div>Limit: ₹${(card.limit || 0).toLocaleString()}</div><small class="text-muted">Out. Limit: ₹${(card.outstandingLimit || 0).toLocaleString()}</small></td>
+                    <td><div>Bill: ${card.billDate}th</div><small class="text-muted">Due: ${card.dueDate}th</small></td>
+                    <td><span class="text-warning fw-bold">₹${totalUnbilled.toLocaleString()}</span> <small class="text-muted">(Init: ₹${initialUnbilled} + Log: ₹${loggedExpenses})</small></td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-success me-1" onclick="promptCardPayment('${cardId}')"><i class="bi bi-wallet2"></i> Pay Bill</button>
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCard('${cardId}')"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${cardId}')"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCard('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${id}')"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>`;
             }
@@ -2358,15 +2283,14 @@
         function renderEmis() {
             let html = '';
             const emis = appData.emis;
-            const cards = appData.cards;
             for(let id in emis) {
                 let em = emis[id];
-                let cardName = cards[em.cardId] ? cards[em.cardId].name : 'Unassigned';
+                let cardName = appData.cards[em.cardId] ? appData.cards[em.cardId].name : 'Unknown Card';
                 html += `<tr>
                     <td class="fw-semibold">${em.name}</td>
-                    <td><span class="badge bg-info text-dark">${cardName}</span></td>
-                    <td class="text-success fw-bold">₹${em.emiAmt.toLocaleString()}</td>
-                    <td><small class="text-muted">${em.tenure} months</small></td>
+                    <td>${cardName}</td>
+                    <td class="text-primary fw-bold">₹${em.emiAmt.toLocaleString()}</td>
+                    <td>${em.tenure} mos</td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmi('${id}')"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteEmi('${id}')"><i class="bi bi-trash"></i></button>
@@ -2376,7 +2300,6 @@
             document.getElementById('emi-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No active EMIs found.</td></tr>';
         }
 
-        // RECURRING PAYMENTS
         function saveRecurring(e) {
             e.preventDefault();
             const title = document.getElementById('rec-title').value;
@@ -2386,11 +2309,11 @@
 
             db.ref('recurring').push({ title, amount, dueDate, account, status: 'Active' }, () => {
                 document.getElementById('recurring-form').reset();
-                alert('Recurring payment saved!');
+                alert('Recurring payment saved successfully!');
             });
         }
 
-        function editRecurring(id) {
+        function editRec(id) {
             const rec = appData.recurring[id];
             if(!rec) return;
             document.getElementById('edit-rec-id').value = id;
@@ -2426,23 +2349,23 @@
         }
 
         function deleteRecurring(id) {
-            if(confirm('Delete recurring item?')) db.ref('recurring/' + id).remove();
+            if(confirm('Delete recurring payment?')) db.ref('recurring/' + id).remove();
         }
 
         function renderRecurring() {
             let html = '';
             const recs = appData.recurring;
             for(let id in recs) {
-                let rec = recs[id];
-                let accName = appData.accounts[rec.account] ? appData.accounts[rec.account].name : 'Account';
+                let rc = recs[id];
+                let accName = appData.accounts[rc.account] ? appData.accounts[rc.account].name : 'Account';
                 html += `<tr>
-                    <td class="fw-semibold">${rec.title}</td>
-                    <td class="text-danger fw-bold">₹${rec.amount.toLocaleString()}</td>
-                    <td>Day ${rec.dueDate}</td>
+                    <td class="fw-semibold">${rc.title}</td>
+                    <td class="text-danger fw-bold">₹${rc.amount.toLocaleString()}</td>
+                    <td>Day ${rc.dueDate}</td>
                     <td>${accName}</td>
-                    <td><span class="badge bg-success">${rec.status || 'Active'}</span></td>
+                    <td><span class="badge bg-success">Active</span></td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editRecurring('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editRec('${id}')"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring('${id}')"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>`;
@@ -2450,13 +2373,38 @@
             document.getElementById('recurring-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No recurring payments found.</td></tr>';
         }
 
-        // WEALTH SUMMARY
+        function renderTransactions() {
+            let html = '';
+            const txs = appData.transactions;
+            let sortedKeys = Object.keys(txs).sort((a,b) => new Date(txs[b].date) - new Date(txs[a].date));
+            
+            sortedKeys.forEach(id => {
+                let tx = txs[id];
+                let dateFormatted = new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                let badgeClass = tx.type === 'Income' ? 'bg-success' : (tx.type === 'Expense' ? 'bg-danger' : 'bg-primary');
+                let amountPrefix = tx.type === 'Income' ? '+' : (tx.type === 'Expense' ? '-' : '');
+                
+                html += `<tr>
+                    <td>${dateFormatted}</td>
+                    <td><span class="badge ${badgeClass}">${tx.type}</span></td>
+                    <td class="fw-bold">₹${amountPrefix}${tx.amount.toLocaleString()}</td>
+                    <td>${tx.accountName || 'N/A'}</td>
+                    <td>${tx.notes || ''}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTransaction('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('transactions-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No transactions logged yet.</td></tr>';
+        }
+
         function renderWealthSummary() {
             let totalBank = 0;
-            for(let id in appData.accounts) totalBank += appData.accounts[id].balance;
+            for(let id in appData.accounts) totalBank += appData.accounts[id].balance || 0;
 
-            let totalWallet = 0;
-            for(let id in appData.wallets) totalWallet += appData.wallets[id].balance;
+            let totalWallets = 0;
+            for(let id in appData.wallets) totalWallets += appData.wallets[id].balance || 0;
 
             let totalFdRd = 0;
             for(let id in appData.fdRd) totalFdRd += calculateFdRdValue(appData.fdRd[id]).current;
@@ -2464,59 +2412,54 @@
             let totalMf = 0;
             for(let id in appData.mutualFunds) totalMf += (appData.mutualFunds[id].amount + (appData.mutualFunds[id].lumpsum || 0));
 
-            let totalStock = 0;
-            for(let id in appData.stocks) totalStock += appData.stocks[id].current;
+            let totalStocks = 0;
+            for(let id in appData.stocks) totalStocks += appData.stocks[id].current || 0;
 
-            let totalCardOut = 0;
-            for(let id in appData.emis) totalCardOut += appData.emis[id].emiAmt;
-
-            let grandTotalNet = totalBank + totalWallet + totalFdRd + totalMf + totalStock - totalCardOut;
+            let totalWealth = totalBank + totalWallets + totalFdRd + totalMf + totalStocks;
 
             let html = `
-                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Bank Balances</span><h3 class="text-success m-0">₹${totalBank.toLocaleString()}</h3></div></div>
-                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Wallets (Cash/GPay)</span><h3 class="text-success m-0">₹${totalWallet.toLocaleString()}</h3></div></div>
-                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">FD & RD Value</span><h3 class="text-primary m-0">₹${totalFdRd.toLocaleString()}</h3></div></div>
-                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Mutual Funds Portfolio</span><h3 class="text-primary m-0">₹${totalMf.toLocaleString()}</h3></div></div>
-                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Stocks Portfolio</span><h3 class="text-primary m-0">₹${totalStock.toLocaleString()}</h3></div></div>
-                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Cards Outstanding / EMIs</span><h3 class="text-danger m-0">₹${totalCardOut.toLocaleString()}</h3></div></div>
-                <div class="col-12"><div class="p-3 border rounded bg-input text-center"><span class="text-muted small">Estimated Net Wealth</span><h2 class="text-success m-0 fw-bold">₹${grandTotalNet.toLocaleString()}</h2></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Total Bank Balance</span><h3 class="text-success m-0">₹${totalBank.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Wallets Balance</span><h3 class="text-success m-0">₹${totalWallets.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">FD & RD Value</span><h3 class="text-info m-0">₹${totalFdRd.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Mutual Funds Invested</span><h3 class="text-primary m-0">₹${totalMf.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Stocks Current Value</span><h3 class="text-warning m-0">₹${totalStocks.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input border-primary"><span class="text-primary small fw-bold">Total Net Worth / Wealth</span><h3 class="text-primary m-0">₹${totalWealth.toLocaleString()}</h3></div></div>
             `;
-            if(document.getElementById('wealth-summary-cards')) document.getElementById('wealth-summary-cards').innerHTML = html;
+            document.getElementById('wealth-summary-cards').innerHTML = html;
         }
 
-        // ANALYTICS
         function renderAnalytics() {
             let totalInc = 0;
             let totalExp = 0;
-            let catSummary = {};
+            let catTotals = {};
 
             const txs = appData.transactions;
             for(let id in txs) {
                 let tx = txs[id];
-                if(tx.type === 'Income') totalInc += tx.amount;
-                else if(tx.type === 'Expense') {
+                if(tx.type === 'Income') {
+                    totalInc += tx.amount;
+                } else if(tx.type === 'Expense') {
                     totalExp += tx.amount;
-                    let catKey = tx.category || 'Uncategorized';
-                    catSummary[catKey] = (catSummary[catKey] || 0) + tx.amount;
+                    let cat = tx.category || 'General';
+                    catTotals[cat] = (catTotals[cat] || 0) + tx.amount;
                 }
             }
 
-            if(document.getElementById('analytics-total-income')) document.getElementById('analytics-total-income').innerText = '₹' + totalInc.toLocaleString();
-            if(document.getElementById('analytics-total-expense')) document.getElementById('analytics-total-expense').innerText = '₹' + totalExp.toLocaleString();
-            if(document.getElementById('analytics-net')) document.getElementById('analytics-net').innerText = '₹' + (totalInc - totalExp).toLocaleString();
+            document.getElementById('analytics-total-income').innerText = `₹${totalInc.toLocaleString()}`;
+            document.getElementById('analytics-total-expense').innerText = `₹${totalExp.toLocaleString()}`;
+            document.getElementById('analytics-net').innerText = `₹${(totalInc - totalExp).toLocaleString()}`;
 
             let html = '';
-            for(let cat in catSummary) {
+            for(let cat in catTotals) {
                 html += `<tr>
                     <td class="fw-semibold">${cat}</td>
-                    <td>Expense</td>
-                    <td class="text-danger fw-bold">₹${catSummary[cat].toLocaleString()}</td>
+                    <td><span class="badge bg-danger">Expense</span></td>
+                    <td class="fw-bold">₹${catTotals[cat].toLocaleString()}</td>
                 </tr>`;
             }
-            if(document.getElementById('analytics-table-body')) document.getElementById('analytics-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No expense analytics available.</td></tr>';
+            document.getElementById('analytics-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No expense records for analytics.</td></tr>';
         }
 
-        // BUDGETS
         function saveBudget(e) {
             e.preventDefault();
             const category = document.getElementById('budget-category').value;
@@ -2530,82 +2473,67 @@
         }
 
         function deleteBudget(id) {
-            if(confirm('Delete budget rule?')) db.ref('budgets/' + id).remove();
+            if(confirm('Delete budget?')) db.ref('budgets/' + id).remove();
         }
 
         function renderBudgets() {
             let html = '';
-            const budgets = appData.budgets;
+            let catSpentMonthly = {};
+            
             const txs = appData.transactions;
-
-            for(let id in budgets) {
-                let b = budgets[id];
-                let spentMonthly = 0;
-                let spentAnnual = 0;
-
-                for(let txId in txs) {
-                    let tx = txs[txId];
-                    if(tx.type === 'Expense' && tx.category && tx.category.startsWith(b.category)) {
-                        spentMonthly += tx.amount;
-                        spentAnnual += tx.amount;
+            const now = new Date();
+            for(let id in txs) {
+                let tx = txs[id];
+                if(tx.type === 'Expense') {
+                    let txDate = new Date(tx.date);
+                    if(txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
+                        let mainCat = (tx.category || '').split('>')[0].trim();
+                        catSpentMonthly[mainCat] = (catSpentMonthly[mainCat] || 0) + tx.amount;
                     }
                 }
+            }
 
+            const budgets = appData.budgets;
+            for(let id in budgets) {
+                let b = budgets[id];
+                let spentM = catSpentMonthly[b.category] || 0;
                 html += `<tr>
                     <td class="fw-semibold">${b.category}</td>
-                    <td>₹${spentMonthly.toLocaleString()} / <span class="text-primary">₹${b.monthly.toLocaleString()}</span></td>
-                    <td>₹${spentAnnual.toLocaleString()} / <span class="text-primary">₹${b.annual.toLocaleString()}</span></td>
+                    <td>₹${spentM.toLocaleString()} / ₹${b.monthly.toLocaleString()}</td>
+                    <td>- / ₹${b.annual.toLocaleString()}</td>
                     <td class="text-end">
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteBudget('${id}')"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>`;
             }
-            if(document.getElementById('budgets-table-body')) document.getElementById('budgets-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No budgets configured.</td></tr>';
-        }
-
-        function renderTransactions() {
-            let html = '';
-            const txs = appData.transactions;
-            const sortedIds = Object.keys(txs).sort((a,b) => new Date(txs[b].date) - new Date(txs[a].date));
-
-            sortedIds.forEach(id => {
-                let tx = txs[id];
-                let dateFormatted = new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                let colorClass = tx.type === 'Income' ? 'text-success' : (tx.type === 'Expense' ? 'text-danger' : 'text-primary');
-                let sign = tx.type === 'Income' ? '+' : (tx.type === 'Expense' ? '-' : '');
-                
-                html += `<tr>
-                    <td><small class="text-muted">${dateFormatted}</small></td>
-                    <td><span class="badge bg-secondary">${tx.type}</span></td>
-                    <td class="${colorClass} fw-bold">${sign}₹${tx.amount.toLocaleString()}</td>
-                    <td>${tx.accountName || 'Account'}</td>
-                    <td>${tx.notes || ''}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTransaction('${id}')"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${id}')"><i class="bi bi-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
-            if(document.getElementById('transactions-table-body')) document.getElementById('transactions-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No transactions found.</td></tr>';
+            document.getElementById('budgets-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No budgets set.</td></tr>';
         }
 
         function updateDropdownOptions() {
             let accOptions = '';
             for(let id in appData.accounts) {
-                accOptions += `<option value="${id}">${appData.accounts[id].name} (₹${appData.accounts[id].balance})</option>`;
+                accOptions += `<option value="${id}">${appData.accounts[id].name}</option>`;
             }
-            if(document.getElementById('transfer-from-acc')) document.getElementById('transfer-from-acc').innerHTML = accOptions;
-            if(document.getElementById('transfer-to-acc')) document.getElementById('transfer-to-acc').innerHTML = accOptions;
-            if(document.getElementById('fr-linked-account')) document.getElementById('fr-linked-account').innerHTML = accOptions;
-            if(document.getElementById('mf-linked-account')) document.getElementById('mf-linked-account').innerHTML = accOptions;
-            if(document.getElementById('stock-linked-account')) document.getElementById('stock-linked-account').innerHTML = accOptions;
-            if(document.getElementById('rec-account')) document.getElementById('rec-account').innerHTML = accOptions;
-
+            
             let cardOptions = '';
             for(let id in appData.cards) {
                 cardOptions += `<option value="${id}">${appData.cards[id].name}</option>`;
             }
+
+            if(document.getElementById('transfer-from-acc')) {
+                let transferAccs = accOptions;
+                for(let id in appData.wallets) {
+                    transferAccs += `<option value="${id}">${appData.wallets[id].name} (Wallet)</option>`;
+                }
+                document.getElementById('transfer-from-acc').innerHTML = transferAccs;
+                document.getElementById('transfer-to-acc').innerHTML = transferAccs;
+            }
+
+            if(document.getElementById('fr-linked-account')) document.getElementById('fr-linked-account').innerHTML = accOptions;
+            if(document.getElementById('mf-linked-account')) document.getElementById('mf-linked-account').innerHTML = accOptions;
+            if(document.getElementById('stock-linked-account')) document.getElementById('stock-linked-account').innerHTML = accOptions;
             if(document.getElementById('emi-card-id')) document.getElementById('emi-card-id').innerHTML = cardOptions;
+            if(document.getElementById('rec-account')) document.getElementById('rec-account').innerHTML = accOptions;
 
             let catOptions = '';
             for(let id in appData.categories) {
