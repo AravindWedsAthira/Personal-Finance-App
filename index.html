@@ -178,6 +178,19 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-3" id="transfer-accounts-row" style="display:none;">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label small text-muted">From Account</label>
+                                            <select class="form-select form-select-sm" id="transfer-from-acc"></select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small text-muted">To Account</label>
+                                            <select class="form-select form-select-sm" id="transfer-to-acc"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="mb-3">
                                     <input type="text" class="form-control notes-box" id="app-notes" placeholder="Subcategory / Notes">
                                 </div>
@@ -209,7 +222,7 @@
 
                             <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top">
                                 <span id="current-date-display">Aug 3, 2026</span>
-                                <span id="current-time-display">12:20 PM</span>
+                                <span id="current-time-display">12:39 PM</span>
                             </div>
                         </div>
                     </div>
@@ -255,6 +268,28 @@
                         <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div id="category-modal-list" class="list-group list-group-flush"></div>
+                </div>
+            </div>
+
+            <!-- EDIT TRANSACTION MODAL -->
+            <div class="custom-modal-overlay" id="edit-tx-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Transaction</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditTxModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedTransaction(event)">
+                        <input type="hidden" id="edit-tx-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-tx-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Notes / Details</label>
+                            <input type="text" class="form-control" id="edit-tx-notes" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
                 </div>
             </div>
 
@@ -647,7 +682,23 @@
             <!-- 8. ANALYTICS -->
             <div id="section-analytics" class="section-view">
                 <div class="card p-4 mb-4">
-                    <h4 class="mb-3 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Income & Expense Analytics</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="m-0 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Income & Expense Analytics</h4>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-daily" autocomplete="off" onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-daily">Daily</label>
+
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-weekly" autocomplete="off" onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-weekly">Weekly</label>
+
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-monthly" autocomplete="off" checked onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-monthly">Monthly</label>
+
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-annual" autocomplete="off" onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-annual">Annual</label>
+                        </div>
+                    </div>
+
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-input">
@@ -688,10 +739,10 @@
                 <div class="row">
                     <div class="col-md-5">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Set Budget Limits</h4>
+                            <h4 class="mb-3 text-primary fw-bold">Set Category Budgets</h4>
                             <form id="budget-form" onsubmit="saveBudget(event)">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Category</label>
+                                    <label class="form-label fw-semibold">Main Category</label>
                                     <select class="form-select" id="budget-category" required></select>
                                 </div>
                                 <div class="mb-3">
@@ -738,7 +789,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
             authDomain: "passbook-229d7.firebaseapp.com",
@@ -752,7 +802,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Application State Data Storage
         let appData = {
             accounts: {},
             categories: {},
@@ -765,20 +814,17 @@
             budgets: {}
         };
 
-        // UI State variables
         let currentAppType = 'Expense';
         let selectedAccountId = '';
         let selectedCategorySub = '';
         let calcExpression = '';
-        let accountModalTarget = 'primary'; // 'primary' or 'withdraw' or 'payment'
+        let accountModalTarget = 'primary';
 
-        // Initialization & Realtime Listeners
         window.addEventListener('DOMContentLoaded', () => {
             initSidebar();
             updateDateTimeDisplay();
             setInterval(updateDateTimeDisplay, 60000);
 
-            // Connect Firebase real-time sync
             const statusBadge = document.getElementById('db-status');
             db.ref('.info/connected').on('value', (snap) => {
                 if (snap.val() === true) {
@@ -790,7 +836,6 @@
                 }
             });
 
-            // Load data nodes
             const keys = ['accounts', 'categories', 'transactions', 'fdRd', 'mutualFunds', 'cards', 'emis', 'recurring', 'budgets'];
             keys.forEach(key => {
                 db.ref(key).on('value', (snapshot) => {
@@ -799,7 +844,6 @@
                 });
             });
 
-            // Set default date for FdRd/EMI
             const todayStr = new Date().toISOString().split('T')[0];
             if(document.getElementById('fr-start-date')) document.getElementById('fr-start-date').value = todayStr;
             if(document.getElementById('emi-start-date')) document.getElementById('emi-start-date').value = todayStr;
@@ -820,7 +864,6 @@
             updateDropdownOptions();
         }
 
-        // Sidebar and Theme controls
         function initSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
@@ -874,7 +917,6 @@
             if(document.getElementById('current-time-display')) document.getElementById('current-time-display').innerText = now.toLocaleTimeString('en-US', timeOpts);
         }
 
-        // --- APP CALCULATOR & TRANSACTION ENGINE ---
         function setAppType(type) {
             currentAppType = type;
             document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('active'));
@@ -882,12 +924,17 @@
             
             const accBox = document.getElementById('box-primary-account');
             const catBox = document.getElementById('box-secondary-category');
+            const transferRow = document.getElementById('transfer-accounts-row');
+
             if (type === 'Transfer') {
-                accBox.className = 'col-12';
+                accBox.style.display = 'none';
                 catBox.style.display = 'none';
+                transferRow.style.display = 'block';
             } else {
+                accBox.style.display = 'block';
                 accBox.className = 'col-6';
                 catBox.style.display = 'block';
+                transferRow.style.display = 'none';
             }
         }
 
@@ -921,39 +968,68 @@
         function submitAppTransaction() {
             const amount = parseFloat(calcExpression || document.getElementById('calc-display').innerText);
             if(isNaN(amount) || amount <= 0) { alert('Please enter a valid amount.'); return; }
-            if(!selectedAccountId) { alert('Please select an account.'); return; }
-            if(currentAppType !== 'Transfer' && !selectedCategorySub) { alert('Please select a subcategory.'); return; }
-
-            const notes = document.getElementById('app-notes').value || selectedCategorySub || currentAppType;
+            
             const dateStr = new Date().toISOString();
 
-            // Update Account Balance
-            let accRef = db.ref('accounts/' + selectedAccountId);
-            accRef.once('value').then(snap => {
-                let acc = snap.val();
-                if(!acc) return;
-                let newBal = acc.balance;
-                if(currentAppType === 'Income') newBal += amount;
-                else if(currentAppType === 'Expense') newBal -= amount;
-                accRef.update({ balance: newBal });
+            if(currentAppType === 'Transfer') {
+                const fromId = document.getElementById('transfer-from-acc').value;
+                const toId = document.getElementById('transfer-to-acc').value;
+                if(!fromId || !toId) { alert('Please select both From and To accounts.'); return; }
+                if(fromId === toId) { alert('From and To accounts cannot be the same.'); return; }
 
-                // Push transaction
-                db.ref('transactions').push({
-                    type: currentAppType,
-                    amount: amount,
-                    accountId: selectedAccountId,
-                    accountName: acc.name,
-                    notes: notes,
-                    category: selectedCategorySub,
-                    date: dateStr
+                db.ref('accounts/' + fromId).once('value').then(fromSnap => {
+                    let fromAcc = fromSnap.val();
+                    db.ref('accounts/' + toId).once('value').then(toSnap => {
+                        let toAcc = toSnap.val();
+                        if(fromAcc && toAcc) {
+                            db.ref('accounts/' + fromId).update({ balance: fromAcc.balance - amount });
+                            db.ref('accounts/' + toId).update({ balance: toAcc.balance + amount });
+
+                            db.ref('transactions').push({
+                                type: 'Transfer',
+                                amount: amount,
+                                accountId: fromId,
+                                accountName: `${fromAcc.name} ➔ ${toAcc.name}`,
+                                notes: `Transfer from ${fromAcc.name} to ${toAcc.name}`,
+                                category: 'Transfer',
+                                date: dateStr
+                            });
+
+                            resetAppInput();
+                            alert('Transfer completed successfully!');
+                        }
+                    });
                 });
+            } else {
+                if(!selectedAccountId) { alert('Please select an account.'); return; }
+                if(!selectedCategorySub) { alert('Please select a subcategory.'); return; }
 
-                resetAppInput();
-                alert('Transaction saved successfully!');
-            });
+                const notes = document.getElementById('app-notes').value || selectedCategorySub;
+                let accRef = db.ref('accounts/' + selectedAccountId);
+                accRef.once('value').then(snap => {
+                    let acc = snap.val();
+                    if(!acc) return;
+                    let newBal = acc.balance;
+                    if(currentAppType === 'Income') newBal += amount;
+                    else if(currentAppType === 'Expense') newBal -= amount;
+                    accRef.update({ balance: newBal });
+
+                    db.ref('transactions').push({
+                        type: currentAppType,
+                        amount: amount,
+                        accountId: selectedAccountId,
+                        accountName: acc.name,
+                        notes: notes,
+                        category: selectedCategorySub,
+                        date: dateStr
+                    });
+
+                    resetAppInput();
+                    alert('Transaction saved successfully!');
+                });
+            }
         }
 
-        // --- MODAL SELECTORS ---
         function openAccountModal(target) {
             accountModalTarget = target;
             document.getElementById('account-modal').style.display = 'flex';
@@ -1013,7 +1089,34 @@
             closeCategoryModal();
         }
 
-        // --- 1. CATEGORIES MANAGEMENT ---
+        function editTransaction(id) {
+            const tx = appData.transactions[id];
+            if(!tx) return;
+            document.getElementById('edit-tx-id').value = id;
+            document.getElementById('edit-tx-amount').value = tx.amount;
+            document.getElementById('edit-tx-notes').value = tx.notes;
+            document.getElementById('edit-tx-modal').style.display = 'flex';
+        }
+
+        function closeEditTxModal() {
+            document.getElementById('edit-tx-modal').style.display = 'none';
+        }
+
+        function saveEditedTransaction(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-tx-id').value;
+            const newAmount = parseFloat(document.getElementById('edit-tx-amount').value);
+            const newNotes = document.getElementById('edit-tx-notes').value;
+
+            db.ref('transactions/' + id).update({
+                amount: newAmount,
+                notes: newNotes
+            }, () => {
+                closeEditTxModal();
+                alert('Transaction updated successfully!');
+            });
+        }
+
         function saveCategory(e) {
             e.preventDefault();
             const id = document.getElementById('cat-id').value;
@@ -1060,7 +1163,6 @@
             document.getElementById('categories-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No categories found.</td></tr>';
         }
 
-        // --- 2. ACCOUNTS, FD & RD ---
         function saveAccount(e) {
             e.preventDefault();
             const id = document.getElementById('acc-id').value;
@@ -1124,12 +1226,10 @@
             const monthsElapsed = Math.max(0, Math.min(item.tenure, diffMonths));
             
             if(item.type === 'FD') {
-                // Compound Interest A = P (1 + r/100)^(t/12)
                 let years = monthsElapsed / 12;
                 let maturityVal = item.amount * Math.pow((1 + item.rate / 100), years);
                 return { invested: item.amount, current: Math.round(maturityVal) };
             } else {
-                // RD cumulative calculation
                 let totalInvested = item.amount * monthsElapsed;
                 let monthlyRate = item.rate / (12 * 100);
                 let currentVal = 0;
@@ -1159,11 +1259,7 @@
             document.getElementById('fd-rd-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No FD/RD schemes found.</td></tr>';
         }
 
-        let withdrawTargetId = '';
-        let withdrawTargetType = '';
         function openWithdrawModalForFdRd(id, maxVal) {
-            withdrawTargetId = id;
-            withdrawTargetType = 'fdRd';
             document.getElementById('withdraw-title').innerText = 'Premature Withdrawal / Payout';
             document.getElementById('withdraw-inv-id').value = id;
             document.getElementById('withdraw-type').value = 'fdRd';
@@ -1205,7 +1301,6 @@
             }
         }
 
-        // --- 3. MUTUAL FUNDS & SIPs ---
         function toggleMfFields() {
             const mode = document.getElementById('mf-mode').value;
             document.getElementById('mf-freq-group').style.display = mode === 'SIP' ? 'block' : 'none';
@@ -1263,7 +1358,6 @@
             document.getElementById('withdraw-modal').style.display = 'flex';
         }
 
-        // --- 4. CARDS & EMIs ---
         function saveCard(e) {
             e.preventDefault();
             const name = document.getElementById('card-name').value;
@@ -1283,7 +1377,6 @@
             const tenure = parseInt(document.getElementById('emi-tenure').value);
             const startDate = document.getElementById('emi-start-date').value;
 
-            // Calculate monthly EMI formula: P * r * (1+r)^n / ((1+r)^n - 1)
             let rMonthly = rate / (12 * 100);
             let emiAmt = principal * rMonthly * Math.pow(1 + rMonthly, tenure) / (Math.pow(1 + rMonthly, tenure) - 1);
             emiAmt = Math.round(emiAmt * 100) / 100;
@@ -1304,7 +1397,6 @@
         }
 
         function executeCardPayment(cardId, bankAccId) {
-            // Find total outstanding for card
             let totalOut = 0;
             const emis = appData.emis;
             for(let id in emis) {
@@ -1369,7 +1461,6 @@
             if(confirm('Delete EMI?')) db.ref('emis/' + id).remove();
         }
 
-        // --- 5. RECURRING PAYMENTS ---
         function saveRecurring(e) {
             e.preventDefault();
             const title = document.getElementById('rec-title').value;
@@ -1417,7 +1508,6 @@
             document.getElementById('recurring-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No recurring payments configured.</td></tr>';
         }
 
-        // --- 6. INVESTMENTS / SAVINGS STATUS ---
         function renderWealthSummary() {
             let totalBank = 0;
             for(let id in appData.accounts) totalBank += appData.accounts[id].balance;
@@ -1442,19 +1532,43 @@
             document.getElementById('wealth-summary-cards').innerHTML = html;
         }
 
-        // --- 7. ANALYTICS ---
         function renderAnalytics() {
+            let filter = 'monthly';
+            if(document.getElementById('filter-daily').checked) filter = 'daily';
+            if(document.getElementById('filter-weekly').checked) filter = 'weekly';
+            if(document.getElementById('filter-monthly').checked) filter = 'monthly';
+            if(document.getElementById('filter-annual').checked) filter = 'annual';
+
             let income = 0;
             let expense = 0;
             let catSummary = {};
+            const now = new Date();
 
             const txs = appData.transactions;
             for(let id in txs) {
                 let tx = txs[id];
-                if(tx.type === 'Income') income += tx.amount;
-                if(tx.type === 'Expense') {
-                    expense += tx.amount;
-                    catSummary[tx.category] = (catSummary[tx.category] || 0) + tx.amount;
+                let txDate = new Date(tx.date);
+                let include = false;
+
+                if(filter === 'daily') {
+                    if(txDate.toDateString() === now.toDateString()) include = true;
+                } else if(filter === 'weekly') {
+                    let diffTime = Math.abs(now - txDate);
+                    let diffDays = diffTime / (1000 * 60 * 60 * 24);
+                    if(diffDays <= 7) include = true;
+                } else if(filter === 'monthly') {
+                    if(txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) include = true;
+                } else if(filter === 'annual') {
+                    if(txDate.getFullYear() === now.getFullYear()) include = true;
+                }
+
+                if(include) {
+                    if(tx.type === 'Income') income += tx.amount;
+                    if(tx.type === 'Expense') {
+                        expense += tx.amount;
+                        let mainCat = tx.category ? tx.category.split('>')[0].trim() : 'General';
+                        catSummary[mainCat] = (catSummary[mainCat] || 0) + tx.amount;
+                    }
                 }
             }
 
@@ -1466,10 +1580,9 @@
             for(let cat in catSummary) {
                 html += `<tr><td>${cat}</td><td>Expense</td><td>₹${catSummary[cat].toLocaleString()}</td></tr>`;
             }
-            document.getElementById('analytics-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No expense analytics available.</td></tr>';
+            document.getElementById('analytics-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No analytics data for this period.</td></tr>';
         }
 
-        // --- 8. BUDGETS ---
         function saveBudget(e) {
             e.preventDefault();
             const category = document.getElementById('budget-category').value;
@@ -1491,19 +1604,19 @@
             const budgets = appData.budgets;
             const txs = appData.transactions;
 
-            // Calculate current month/year spend per category
             let monthlySpent = {};
             let annualSpent = {};
             const now = new Date();
             for(let id in txs) {
                 let tx = txs[id];
                 if(tx.type === 'Expense' && tx.category) {
+                    let mainCat = tx.category.split('>')[0].trim();
                     let txDate = new Date(tx.date);
                     if(txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
-                        monthlySpent[tx.category] = (monthlySpent[tx.category] || 0) + tx.amount;
+                        monthlySpent[mainCat] = (monthlySpent[mainCat] || 0) + tx.amount;
                     }
                     if(txDate.getFullYear() === now.getFullYear()) {
-                        annualSpent[tx.category] = (annualSpent[tx.category] || 0) + tx.amount;
+                        annualSpent[mainCat] = (annualSpent[mainCat] || 0) + tx.amount;
                     }
                 }
             }
@@ -1524,9 +1637,7 @@
             document.getElementById('budgets-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No budgets configured.</td></tr>';
         }
 
-        // --- UTILITY DROPDOWN BINDINGS ---
         function updateDropdownOptions() {
-            // Account Selectors
             let accOptions = '<option value="">Select Account</option>';
             for(let id in appData.accounts) {
                 accOptions += `<option value="${id}">${appData.accounts[id].name} (₹${appData.accounts[id].balance})</option>`;
@@ -1534,28 +1645,23 @@
             if(document.getElementById('fr-linked-account')) document.getElementById('fr-linked-account').innerHTML = accOptions;
             if(document.getElementById('mf-linked-account')) document.getElementById('mf-linked-account').innerHTML = accOptions;
             if(document.getElementById('rec-account')) document.getElementById('rec-account').innerHTML = accOptions;
+            if(document.getElementById('transfer-from-acc')) document.getElementById('transfer-from-acc').innerHTML = accOptions;
+            if(document.getElementById('transfer-to-acc')) document.getElementById('transfer-to-acc').innerHTML = accOptions;
 
-            // Card Selectors for EMI
             let cardOptions = '<option value="">Select Card</option>';
             for(let id in appData.cards) {
                 cardOptions += `<option value="${id}">${appData.cards[id].name}</option>`;
             }
             if(document.getElementById('emi-card-id')) document.getElementById('emi-card-id').innerHTML = cardOptions;
 
-            // Category Selectors for Budget
-            let catOptions = '<option value="">Select Category/Subcategory</option>';
+            let catOptions = '<option value="">Select Main Category</option>';
             for(let id in appData.categories) {
                 let cat = appData.categories[id];
-                let subs = (cat.sub || '').split(',');
-                subs.forEach(sub => {
-                    let s = sub.trim();
-                    if(s) catOptions += `<option value="${cat.name} > ${s}">${cat.name} > ${s}</option>`;
-                });
+                catOptions += `<option value="${cat.name}">${cat.name}</option>`;
             }
             if(document.getElementById('budget-category')) document.getElementById('budget-category').innerHTML = catOptions;
         }
 
-        // --- TRANSACTIONS LOGS TABLE RENDER ---
         function renderTransactions() {
             let html = '';
             const txs = appData.transactions;
@@ -1572,6 +1678,7 @@
                     <td><small>${tx.accountName || 'Account'}</small></td>
                     <td>${tx.notes || ''}</td>
                     <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTransaction('${id}')"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${id}')"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>`;
