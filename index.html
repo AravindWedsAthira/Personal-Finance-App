@@ -251,317 +251,51 @@
                 </div>
             </div>
 
-            <!-- OTHER SECTIONS -->
-            <div id="section-master-categories" class="section-view"><div class="card p-4"><h4>Categories & Subs</h4></div></div>
-            <div id="section-master-accounts" class="section-view"><div class="card p-4"><h4>Accounts, Wallets & FD/RD</h4></div></div>
-            <div id="section-master-investments" class="section-view"><div class="card p-4"><h4>Mutual Funds & SIPs</h4></div></div>
-            <div id="section-master-stocks" class="section-view"><div class="card p-4"><h4>Stocks & Trading</h4></div></div>
-            
-            <!-- CARDS & EMIs SECTION -->
-            <div id="section-master-cards" class="section-view">
-                <div class="card p-4">
-                    <h4 class="mb-3 fw-bold"><i class="bi bi-credit-card me-2"></i>Credit Cards & Unbilled Amounts</h4>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Card Name</th>
-                                    <th>Auto-Calculated Unbilled Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cards-unbilled-table-body">
-                                <!-- Dynamically populated -->
-                            </tbody>
-                        </table>
+            <!-- MODALS FOR SELECTORS -->
+            <div class="custom-modal-overlay" id="account-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary" id="account-modal-title">Select an account or card</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
+                    <div id="account-modal-list"></div>
                 </div>
             </div>
 
-            <div id="section-recurring" class="section-view"><div class="card p-4"><h4>Recurring Payments</h4></div></div>
-            <div id="section-investments-status" class="section-view"><div class="card p-4"><h4>Investments / Savings</h4></div></div>
-            <div id="section-analytics" class="section-view"><div class="card p-4"><h4>Analytics</h4></div></div>
-            <div id="section-budgets" class="section-view"><div class="card p-4"><h4>Budgets</h4></div></div>
-
-        </div>
-    </div>
-
-    <!-- MODALS FOR SELECTORS -->
-    <div class="custom-modal-overlay" id="account-modal">
-        <div class="custom-modal-content">
-            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                <h5 class="fw-bold m-0 text-primary" id="account-modal-title">Select an account or card</h5>
-                <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div id="account-modal-list"></div>
-        </div>
-    </div>
-
-    <div class="custom-modal-overlay" id="category-modal">
-        <div class="custom-modal-content">
-            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                <h5 class="fw-bold m-0 text-primary">Select a Subcategory</h5>
-                <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div id="category-modal-list" class="list-group list-group-flush"></div>
-        </div>
-    </div>
-
-    <!-- EDIT TRANSACTION MODAL -->
-    <div class="custom-modal-overlay" id="edit-tx-modal">
-        <div class="custom-modal-content">
-            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                <h5 class="fw-bold m-0 text-primary">Edit Transaction</h5>
-                <button class="btn btn-sm btn-outline-secondary" onclick="closeEditTxModal()"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <form onsubmit="saveEditedTransaction(event)">
-                <input type="hidden" id="edit-tx-id">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Amount (₹)</label>
-                    <input type="number" step="any" class="form-control" id="edit-tx-amount" required>
+            <div class="custom-modal-overlay" id="category-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Select a Subcategory</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div id="category-modal-list" class="list-group list-group-flush"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Notes / Details</label>
-                    <input type="text" class="form-control" id="edit-tx-notes" required>
-                </div>
-                <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- EDIT BANK ACCOUNT MODAL -->
-    <div class="custom-modal-overlay" id="edit-bank-modal">
-        <div class="custom-modal-content">
-            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                <h5 class="fw-bold m-0 text-primary">Edit Account / Card</h5>
-                <button class="btn btn-sm btn-outline-secondary" onclick="closeEditBankModal()"><i class="bi bi-x-lg"></i></button>
             </div>
-        </div>
-    </div>
 
-    <script>
-        let currentType = 'Expense';
-        let calcValue = '0';
-        let selectedAccount = 'HDFC Credit Card';
-        let selectedCategory = 'Groceries';
+            <!-- EDIT TRANSACTION MODAL -->
+            <div class="custom-modal-overlay" id="edit-tx-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Transaction</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditTxModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedTransaction(event)">
+                        <input type="hidden" id="edit-tx-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-tx-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Notes / Details</label>
+                            <input type="text" class="form-control" id="edit-tx-notes" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
 
-        let accountsList = ['HDFC Credit Card', 'SBI Credit Card', 'Savings Account'];
-        let categoriesList = ['Groceries', 'Utilities', 'Shopping', 'Dining', 'Fuel'];
-        let transactions = [];
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('sidebar-backdrop').classList.toggle('active');
-        }
-
-        document.getElementById('sidebarCollapse').addEventListener('click', toggleSidebar);
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-bs-theme');
-            html.setAttribute('data-bs-theme', currentTheme === 'dark' ? 'light' : 'dark');
-        }
-
-        function switchSection(sectionId, element) {
-            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
-            document.getElementById('section-' + sectionId).classList.add('active');
-            
-            document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
-            if(element) element.parentElement.classList.add('active');
-
-            const titles = {
-                'home': 'Home & Logs',
-                'master-categories': 'Categories & Subs',
-                'master-accounts': 'Accounts, Wallets & FD/RD',
-                'master-investments': 'Mutual Funds & SIPs',
-                'master-stocks': 'Stocks & Trading',
-                'master-cards': 'Cards & EMIs',
-                'recurring': 'Recurring Payments',
-                'investments-status': 'Investments / Savings',
-                'analytics': 'Analytics',
-                'budgets': 'Budgets'
-            };
-            document.getElementById('page-title').innerText = titles[sectionId] || 'Passbook';
-            if(sectionId === 'master-cards') {
-                renderCardsUnbilled();
-            }
-            if(window.innerWidth <= 992) toggleSidebar();
-        }
-
-        function setAppType(type) {
-            currentType = type;
-            document.querySelectorAll('.type-option').forEach(el => el.classList.remove('active'));
-            document.getElementById('type-' + type.toLowerCase()).classList.add('active');
-        }
-
-        function appendCalc(val) {
-            if(calcValue === '0' && val !== '.') {
-                calcValue = val;
-            } else {
-                calcValue += val;
-            }
-            document.getElementById('calc-display').innerText = calcValue;
-        }
-
-        function calculateResult() {
-            try {
-                calcValue = eval(calcValue).toString();
-                document.getElementById('calc-display').innerText = calcValue;
-            } catch(e) {
-                document.getElementById('calc-display').innerText = 'Error';
-                calcValue = '0';
-            }
-        }
-
-        function resetAppInput() {
-            calcValue = '0';
-            document.getElementById('calc-display').innerText = calcValue;
-            document.getElementById('app-notes').value = '';
-        }
-
-        function submitAppTransaction() {
-            const amount = parseFloat(calcValue);
-            if(isNaN(amount) || amount <= 0) {
-                alert('Please enter a valid amount.');
-                return;
-            }
-            const notes = document.getElementById('app-notes').value || selectedCategory;
-            const dateStr = document.getElementById('current-date-display').innerText;
-
-            transactions.push({
-                id: Date.now(),
-                date: dateStr,
-                type: currentType,
-                amount: amount,
-                account: selectedAccount,
-                notes: notes
-            });
-
-            renderTransactions();
-            resetAppInput();
-            alert('Transaction saved successfully!');
-        }
-
-        function renderTransactions() {
-            const tbody = document.getElementById('transactions-table-body');
-            tbody.innerHTML = '';
-            transactions.slice().reverse().forEach(tx => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${tx.date}</td>
-                        <td><span class="badge bg-${tx.type === 'Income' ? 'success' : tx.type === 'Expense' ? 'danger' : 'warning'}">${tx.type}</span></td>
-                        <td>₹${tx.amount.toFixed(2)}</td>
-                        <td>${tx.account}</td>
-                        <td>${tx.notes}</td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="openEditTxModal(${tx.id})"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${tx.id})"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function deleteTransaction(id) {
-            transactions = transactions.filter(tx => tx.id !== id);
-            renderTransactions();
-        }
-
-        function renderCardsUnbilled() {
-            const tbody = document.getElementById('cards-unbilled-table-body');
-            tbody.innerHTML = '';
-            
-            // Filter accounts that are cards (containing "Card" in name) or just show all accounts configured as cards
-            const cardAccounts = accountsList.filter(acc => acc.toLowerCase().includes('card'));
-            
-            cardAccounts.forEach(cardName => {
-                // Auto-calculate unbilled amount from expenses logged using home section for this specific card
-                const totalUnbilled = transactions
-                    .filter(tx => tx.account === cardName && tx.type === 'Expense')
-                    .reduce((sum, tx) => sum + tx.amount, 0);
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="fw-semibold">${cardName}</td>
-                        <td><span class="text-info fw-bold">₹${totalUnbilled.toFixed(2)}</span></td>
-                    </tr>
-                `;
-            });
-
-            if(cardAccounts.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">No credit cards found in accounts list.</td></tr>`;
-            }
-        }
-
-        function openAccountModal(target) {
-            const list = document.getElementById('account-modal-list');
-            list.innerHTML = '';
-            accountsList.forEach(acc => {
-                list.innerHTML += `<div class="account-select-row" onclick="selectAccount('${acc}')"><span>${acc}</span><i class="bi bi-chevron-right text-muted"></i></div>`;
-            });
-            document.getElementById('account-modal').style.display = 'flex';
-        }
-
-        function closeAccountModal() {
-            document.getElementById('account-modal').style.display = 'none';
-        }
-
-        function selectAccount(acc) {
-            selectedAccount = acc;
-            document.getElementById('selected-account-label').innerText = acc;
-            closeAccountModal();
-        }
-
-        function openCategoryModal() {
-            const list = document.getElementById('category-modal-list');
-            list.innerHTML = '';
-            categoriesList.forEach(cat => {
-                list.innerHTML += `<button type="button" class="list-group-item list-group-item-action" onclick="selectCategory('${cat}')">${cat}</button>`;
-            });
-            document.getElementById('category-modal').style.display = 'flex';
-        }
-
-        function closeCategoryModal() {
-            document.getElementById('category-modal').style.display = 'none';
-        }
-
-        function selectCategory(cat) {
-            selectedCategory = cat;
-            document.getElementById('selected-category-label').innerText = cat;
-            document.getElementById('app-notes').value = cat;
-            closeCategoryModal();
-        }
-
-        function openEditTxModal(id) {
-            const tx = transactions.find(t => t.id === id);
-            if(!tx) return;
-            document.getElementById('edit-tx-id').value = tx.id;
-            document.getElementById('edit-tx-amount').value = tx.amount;
-            document.getElementById('edit-tx-notes').value = tx.notes;
-            document.getElementById('edit-tx-modal').style.display = 'flex';
-        }
-
-        function closeEditTxModal() {
-            document.getElementById('edit-tx-modal').style.display = 'none';
-        }
-
-        function saveEditedTransaction(e) {
-            e.preventDefault();
-            const id = parseInt(document.getElementById('edit-tx-id').value);
-            const amount = parseFloat(document.getElementById('edit-tx-amount').value);
-            const notes = document.getElementById('edit-tx-notes').value;
-
-            const tx = transactions.find(t => t.id === id);
-            if(tx) {
-                tx.amount = amount;
-                tx.notes = notes;
-            }
-            closeEditTxModal();
-            renderTransactions();
-        }
-
-        function closeEditBankModal() {
-            document.getElementById('edit-bank-modal').style.display = 'none';
-        }
-    </script>
-</body>
-</html>
+            <!-- EDIT BANK ACCOUNT MODAL -->
+            <div class="custom-modal-overlay" id="edit-bank-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 cl
