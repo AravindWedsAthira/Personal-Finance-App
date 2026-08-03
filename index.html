@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
             --sidebar-width: 260px;
@@ -109,7 +111,7 @@
             <div class="sidebar-header d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="m-0 fw-bold text-primary">Passbook</h4>
-                    <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Connecting...</small>
+                    <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Connected</small>
                 </div>
                 <button class="btn btn-sm btn-outline-secondary" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
             </div>
@@ -117,7 +119,9 @@
                 <li class="active"><a href="#" onclick="switchSection('home', this)"><i class="bi bi-house-door me-3"></i> Home & Logs</a></li>
                 <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Subs</a></li>
                 <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Accounts, FD & RD</a></li>
+                <li><a href="#" onclick="switchSection('master-wallets', this)"><i class="bi bi-wallet me-3"></i> Wallets & Cash</a></li>
                 <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Mutual Funds & SIPs</a></li>
+                <li><a href="#" onclick="switchSection('master-stocks', this)"><i class="bi bi-cpu me-3"></i> Stocks & Equity</a></li>
                 <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Cards & EMIs</a></li>
                 <li><a href="#" onclick="switchSection('recurring', this)"><i class="bi bi-arrow-repeat me-3"></i> Recurring Payments</a></li>
                 <li><a href="#" onclick="switchSection('investments-status', this)"><i class="bi bi-pie-chart-fill me-3"></i> Investments / Savings</a></li>
@@ -162,7 +166,7 @@
                                         <div class="selector-box" onclick="openAccountModal('primary')">
                                             <div class="d-flex align-items-center gap-2 text-truncate">
                                                 <i class="bi bi-wallet2 text-primary fs-5"></i>
-                                                <span id="selected-account-label" class="text-truncate">Account</span>
+                                                <span id="selected-account-label" class="text-truncate">Source / Account</span>
                                             </div>
                                             <i class="bi bi-chevron-right text-muted small"></i>
                                         </div>
@@ -181,11 +185,11 @@
                                 <div class="mb-3" id="transfer-accounts-row" style="display:none;">
                                     <div class="row g-2">
                                         <div class="col-6">
-                                            <label class="form-label small text-muted">From Account</label>
+                                            <label class="form-label small text-muted">From Source</label>
                                             <select class="form-select form-select-sm" id="transfer-from-acc"></select>
                                         </div>
                                         <div class="col-6">
-                                            <label class="form-label small text-muted">To Account</label>
+                                            <label class="form-label small text-muted">To Account / Wallet</label>
                                             <select class="form-select form-select-sm" id="transfer-to-acc"></select>
                                         </div>
                                     </div>
@@ -237,7 +241,7 @@
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount</th>
-                                            <th>Account</th>
+                                            <th>Source/Account</th>
                                             <th>Notes</th>
                                             <th class="text-end">Action</th>
                                         </tr>
@@ -250,52 +254,832 @@
                 </div>
             </div>
 
-            <!-- MODALS FOR SELECTORS -->
-            <div class="custom-modal-overlay" id="account-modal">
-                <div class="custom-modal-content">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary" id="account-modal-title">Select an account</h5>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
-                    </div>
-                    <div id="account-modal-list"></div>
-                </div>
-            </div>
-
-            <div class="custom-modal-overlay" id="category-modal">
-                <div class="custom-modal-content">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary">Select a Subcategory</h5>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
-                    </div>
-                    <div id="category-modal-list" class="list-group list-group-flush"></div>
-                </div>
-            </div>
-
-            <!-- EDIT TRANSACTION MODAL -->
-            <div class="custom-modal-overlay" id="edit-tx-modal">
-                <div class="custom-modal-content">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary">Edit Transaction</h5>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditTxModal()"><i class="bi bi-x-lg"></i></button>
-                    </div>
-                    <form onsubmit="saveEditedTransaction(event)">
-                        <input type="hidden" id="edit-tx-id">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Amount (₹)</label>
-                            <input type="number" step="any" class="form-control" id="edit-tx-amount" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Notes / Details</label>
-                            <input type="text" class="form-control" id="edit-tx-notes" required>
-                        </div>
-                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+            <!-- 2. MASTER CATEGORIES -->
+            <div id="section-master-categories" class="section-view">
+                <div class="card p-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-tags me-2"></i>Manage Categories & Subcategories</h4>
+                    <form id="category-form" class="row g-3 mb-4" onsubmit="saveCategory(event)">
+                        <div class="col-md-5"><label class="form-label">Category Name</label><input type="text" class="form-control" id="cat-name" required placeholder="e.g., Food"></div>
+                        <div class="col-md-5"><label class="form-label">Subcategories (Comma separated)</label><input type="text" class="form-control" id="cat-subs" required placeholder="Groceries, Dining Out"></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100">Save Category</button></div>
                     </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Category</th><th>Subcategories</th><th class="text-end">Action</th></tr></thead>
+                            <tbody id="categories-table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- EDIT BANK ACCOUNT MODAL -->
-            <div class="custom-modal-overlay" id="edit-bank-modal">
-                <div class="custom-modal-content">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary">Edit Bank Account</h5>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditBankModal()"><i class="bi bi-x-
+            <!-- 3. MASTER ACCOUNTS -->
+            <div id="section-master-accounts" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-wallet2 me-2"></i>Manage Bank Accounts, FDs & RDs</h4>
+                    <form id="bank-form" class="row g-3 mb-4" onsubmit="saveBankAccount(event)">
+                        <div class="col-md-3"><label class="form-label">Bank Name</label><input type="text" class="form-control" id="bank-name" required></div>
+                        <div class="col-md-3"><label class="form-label">Account Type</label>
+                            <select class="form-select" id="bank-type"><option value="Savings">Savings</option><option value="Current">Current</option><option value="FD">Fixed Deposit (FD)</option><option value="RD">Recurring Deposit (RD)</option></select>
+                        </div>
+                        <div class="col-md-3"><label class="form-label">Balance / Amount (₹)</label><input type="number" step="any" class="form-control" id="bank-bal" required></div>
+                        <div class="col-md-3 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100">Add Account</button></div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Name</th><th>Type</th><th>Balance</th><th class="text-end">Action</th></tr></thead>
+                            <tbody id="banks-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. MASTER WALLETS & CASH -->
+            <div id="section-master-wallets" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-wallet me-2"></i>Manage Wallets & Cash (PhonePe, GPay, Paytm, Cash)</h4>
+                    <form id="wallet-form" class="row g-3 mb-4" onsubmit="saveWallet(event)">
+                        <input type="hidden" id="wallet-edit-index" value="-1">
+                        <div class="col-md-5"><label class="form-label">Wallet Name</label><input type="text" class="form-control" id="wallet-name" required placeholder="e.g., PhonePe, Cash, GPay"></div>
+                        <div class="col-md-5"><label class="form-label">Balance (₹)</label><input type="number" step="any" class="form-control" id="wallet-bal" required></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" id="wallet-submit-btn">Save Wallet</button></div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Wallet Name</th><th>Balance</th><th class="text-end">Action</th></tr></thead>
+                            <tbody id="wallets-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. MASTER MUTUAL FUNDS & SIPS (With Lump Sum & Editing Support) -->
+            <div id="section-master-investments" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>Mutual Funds & SIPs Management</h4>
+                    <form id="investment-form" class="row g-3 mb-4" onsubmit="saveInvestment(event)">
+                        <input type="hidden" id="inv-edit-index" value="-1">
+                        <div class="col-md-3"><label class="form-label">Mutual Fund Name</label><input type="text" class="form-control" id="inv-name" required placeholder="Fund Name"></div>
+                        <div class="col-md-2"><label class="form-label">Initial Lump Sum (₹)</label><input type="number" step="any" class="form-control" id="inv-lumpsum" value="0"></div>
+                        <div class="col-md-2"><label class="form-label">Monthly SIP (₹)</label><input type="number" step="any" class="form-control" id="inv-sip" value="0"></div>
+                        <div class="col-md-3"><label class="form-label">Current Total Value (₹)</label><input type="number" step="any" class="form-control" id="inv-val" required></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" id="inv-submit-btn">Save Fund</button></div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Fund Name</th><th>Lump Sum</th><th>Monthly SIP</th><th>Current Value</th><th class="text-end">Action</th></tr></thead>
+                            <tbody id="investments-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. MASTER STOCKS & EQUITY (Linked to Bank Account Withdrawal) -->
+            <div id="section-master-stocks" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-cpu me-2"></i>Stocks & Equity Management</h4>
+                    <form id="stock-form" class="row g-3 mb-4" onsubmit="saveStock(event)">
+                        <input type="hidden" id="stock-edit-index" value="-1">
+                        <div class="col-md-3"><label class="form-label">Stock Name / Ticker</label><input type="text" class="form-control" id="stock-name" required placeholder="e.g., Reliance"></div>
+                        <div class="col-md-2"><label class="form-label">Invested Value (₹)</label><input type="number" step="any" class="form-control" id="stock-invested" required></div>
+                        <div class="col-md-2"><label class="form-label">Current Value (₹)</label><input type="number" step="any" class="form-control" id="stock-current" required></div>
+                        <div class="col-md-3"><label class="form-label">Linked Bank Account</label><select class="form-select" id="stock-linked-bank"></select></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100" id="stock-submit-btn">Save Stock</button></div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Stock Name</th><th>Invested</th><th>Current Value</th><th>Linked Bank Account</th><th class="text-end">Action</th></tr></thead>
+                            <tbody id="stocks-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. CARDS & EMIS -->
+            <div id="section-master-cards" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-credit-card me-2"></i>Credit Cards & EMIs</h4>
+                    <form id="card-form" class="row g-3 mb-4" onsubmit="saveCard(event)">
+                        <div class="col-md-4"><label class="form-label">Card Name / Bank</label><input type="text" class="form-control" id="card-name" required></div>
+                        <div class="col-md-3"><label class="form-label">Credit Limit (₹)</label><input type="number" step="any" class="form-control" id="card-limit" required></div>
+                        <div class="col-md-3"><label class="form-label">Current Outstanding Due (₹)</label><input type="number" step="any" class="form-control" id="card-due" required></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100">Add Card</button></div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Card Name</th><th>Limit</th><th>Outstanding Due</th><th class="text-end">Action</th></tr></thead>
+                            <tbody id="cards-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. RECURRING PAYMENTS -->
+            <div id="section-recurring" class="section-view">
+                <div class="card p-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Recurring Payments & Subscriptions</h4>
+                    <form id="recurring-form" class="row g-3 mb-4" onsubmit="saveRecurring(event)">
+                        <div class="col-md-4"><label class="form-label">Description</label><input type="text" class="form-control" id="rec-desc" required placeholder="Netflix, Rent"></div>
+                        <div class="col-md-3"><label class="form-label">Amount (₹)</label><input type="number" step="any" class="form-control" id="rec-amt" required></div>
+                        <div class="col-md-3"><label class="form-label">Frequency</label><select class="form-select" id="rec-freq"><option value="Monthly">Monthly</option><option value="Yearly">Yearly</option></select></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100">Add</button></div>
+                    </form>
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Description</th><th>Amount</th><th>Frequency</th><th class="text-end">Action</th></tr></thead>
+                        <tbody id="recurring-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 9. INVESTMENTS / SAVINGS STATUS -->
+            <div id="section-investments-status" class="section-view">
+                <div class="card p-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-pie-chart-fill me-2"></i>Investments & Savings Status</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded bg-card mb-3">
+                                <h5>Total Bank Balances: <span id="summary-banks" class="text-success">₹0</span></h5>
+                                <h5>Total Wallets / Cash: <span id="summary-wallets" class="text-primary">₹0</span></h5>
+                                <h5>Total Mutual Funds: <span id="summary-mfs" class="text-info">₹0</span></h5>
+                                <h5>Total Stocks: <span id="summary-stocks" class="text-warning">₹0</span></h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="p-3 border rounded bg-card">
+                                <h3>Net Worth</h3>
+                                <h1 class="text-success fw-bold" id="summary-networth">₹0</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. ANALYTICS -->
+            <div id="section-analytics" class="section-view">
+                <div class="card p-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Analytics Dashboard</h4>
+                    <div style="max-width: 450px; margin: auto;"><canvas id="analyticsChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- 11. BUDGETS -->
+            <div id="section-budgets" class="section-view">
+                <div class="card p-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-calculator me-2"></i>Monthly Budgets</h4>
+                    <form id="budget-form" class="row g-3 mb-4" onsubmit="saveBudget(event)">
+                        <div class="col-md-5"><label class="form-label">Category</label><input type="text" class="form-control" id="bud-cat" required placeholder="Food, Shopping"></div>
+                        <div class="col-md-5"><label class="form-label">Monthly Limit (₹)</label><input type="number" step="any" class="form-control" id="bud-lim" required></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" class="btn btn-primary w-100">Set Budget</button></div>
+                    </form>
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>Category</th><th>Monthly Limit</th><th class="text-end">Action</th></tr></thead>
+                        <tbody id="budgets-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SELECTION MODALS -->
+    <div class="custom-modal-overlay" id="account-modal">
+        <div class="custom-modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="m-0 fw-bold" id="account-modal-title">Select Account / Wallet / Card</h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="closeModals()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="account-modal-list"></div>
+        </div>
+    </div>
+
+    <div class="custom-modal-overlay" id="category-modal">
+        <div class="custom-modal-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="m-0 fw-bold">Select Subcategory</h5>
+                <button class="btn btn-sm btn-outline-secondary" onclick="closeModals()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="category-modal-list"></div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Application State Data structures
+        let appState = {
+            transactions: JSON.parse(localStorage.getItem('pb_transactions')) || [],
+            categories: JSON.parse(localStorage.getItem('pb_categories')) || [
+                { name: 'Food', subs: ['Groceries', 'Restaurants', 'Snacks'] },
+                { name: 'Bills', subs: ['Electricity', 'Internet', 'Water'] }
+            ],
+            banks: JSON.parse(localStorage.getItem('pb_banks')) || [
+                { name: 'HDFC Bank', type: 'Savings', balance: 25000 }
+            ],
+            wallets: JSON.parse(localStorage.getItem('pb_wallets')) || [
+                { name: 'PhonePe', balance: 1500 },
+                { name: 'Cash in Hand', balance: 2000 }
+            ],
+            investments: JSON.parse(localStorage.getItem('pb_investments')) || [
+                { name: 'Axis ELSS', lumpsum: 10000, sip: 2000, value: 45000 }
+            ],
+            stocks: JSON.parse(localStorage.getItem('pb_stocks')) || [
+                { name: 'Reliance', invested: 15000, current: 18000, linkedBank: 'HDFC Bank' }
+            ],
+            cards: JSON.parse(localStorage.getItem('pb_cards')) || [],
+            recurring: JSON.parse(localStorage.getItem('pb_recurring')) || [],
+            budgets: JSON.parse(localStorage.getItem('pb_budgets')) || []
+        };
+
+        let currentAppType = 'Expense';
+        let selectedAccount = null;
+        let selectedCategory = null;
+        let calcInput = "0";
+        let analyticsChartInstance = null;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initApp();
+        });
+
+        function initApp() {
+            renderTransactions();
+            renderCategories();
+            renderBanks();
+            renderWallets();
+            renderInvestments();
+            renderStocks();
+            renderCards();
+            renderRecurring();
+            renderBudgets();
+            renderInvestmentsStatus();
+            renderAnalytics();
+            updateAppSelectors();
+
+            document.getElementById('sidebarCollapse').addEventListener('click', toggleSidebar);
+            document.getElementById('sidebarClose').addEventListener('click', toggleSidebar);
+            
+            const today = new Date();
+            document.getElementById('current-date-display').innerText = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('current-time-display').innerText = today.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function saveAll() {
+            localStorage.setItem('pb_transactions', JSON.stringify(appState.transactions));
+            localStorage.setItem('pb_categories', JSON.stringify(appState.categories));
+            localStorage.setItem('pb_banks', JSON.stringify(appState.banks));
+            localStorage.setItem('pb_wallets', JSON.stringify(appState.wallets));
+            localStorage.setItem('pb_investments', JSON.stringify(appState.investments));
+            localStorage.setItem('pb_stocks', JSON.stringify(appState.stocks));
+            localStorage.setItem('pb_cards', JSON.stringify(appState.cards));
+            localStorage.setItem('pb_recurring', JSON.stringify(appState.recurring));
+            localStorage.setItem('pb_budgets', JSON.stringify(appState.budgets));
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebar-backdrop').classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', newTheme);
+            document.getElementById('theme-icon').className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+        }
+
+        function switchSection(sectionId, el) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + sectionId).classList.add('active');
+            
+            document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
+            if(el) el.parentElement.classList.add('active');
+            
+            document.getElementById('page-title').innerText = el ? el.innerText.trim() : 'Dashboard';
+            if(window.innerWidth < 992) toggleSidebar();
+            if(sectionId === 'analytics') renderAnalytics();
+            if(sectionId === 'investments-status') renderInvestmentsStatus();
+            if(sectionId === 'master-stocks') populateStockBankDropdown();
+        }
+
+        // --- SIMULATOR & LEDGER LOGIC ---
+        function setAppType(type) {
+            currentAppType = type;
+            ['income', 'expense', 'transfer'].forEach(t => {
+                document.getElementById('type-' + t).classList.toggle('active', t === type.toLowerCase());
+            });
+            const transferRow = document.getElementById('transfer-accounts-row');
+            const primaryBox = document.getElementById('box-primary-account');
+            const secondaryBox = document.getElementById('box-secondary-category');
+            
+            if(type === 'Transfer') {
+                transferRow.style.display = 'block';
+                primaryBox.style.display = 'none';
+                secondaryBox.style.display = 'none';
+                populateTransferDropdowns();
+            } else {
+                transferRow.style.display = 'none';
+                primaryBox.style.display = 'block';
+                secondaryBox.style.display = 'block';
+            }
+        }
+
+        function populateTransferDropdowns() {
+            const fromSelect = document.getElementById('transfer-from-acc');
+            const toSelect = document.getElementById('transfer-to-acc');
+            fromSelect.innerHTML = ''; toSelect.innerHTML = '';
+            
+            appState.banks.forEach(b => {
+                fromSelect.innerHTML += `<option value="${b.name}">Bank: ${b.name} (₹${b.balance})</option>`;
+                toSelect.innerHTML += `<option value="${b.name}">Bank: ${b.name}</option>`;
+            });
+            appState.wallets.forEach(w => {
+                fromSelect.innerHTML += `<option value="${w.name}">Wallet: ${w.name} (₹${w.balance})</option>`;
+                toSelect.innerHTML += `<option value="${w.name}">Wallet: ${w.name}</option>`;
+            });
+        }
+
+        function updateAppSelectors() {
+            if(appState.banks.length > 0 && !selectedAccount) selectedAccount = appState.banks[0].name;
+            if(appState.categories.length > 0 && appState.categories[0].subs.length > 0 && !selectedCategory) {
+                selectedCategory = `${appState.categories[0].name} > ${appState.categories[0].subs[0]}`;
+            }
+            document.getElementById('selected-account-label').innerText = selectedAccount || 'Select Source';
+            document.getElementById('selected-category-label').innerText = selectedCategory || 'Select Subcategory';
+        }
+
+        function appendCalc(val) {
+            if(calcInput === "0" && val !== '.') calcInput = "";
+            calcInput += val;
+            document.getElementById('calc-display').innerText = calcInput;
+        }
+
+        function calculateResult() {
+            try {
+                calcInput = eval(calcInput).toString();
+                document.getElementById('calc-display').innerText = calcInput;
+            } catch(e) {
+                calcInput = "Error";
+                document.getElementById('calc-display').innerText = calcInput;
+                setTimeout(() => { calcInput = "0"; document.getElementById('calc-display').innerText = calcInput; }, 1000);
+            }
+        }
+
+        function resetAppInput() {
+            calcInput = "0";
+            document.getElementById('calc-display').innerText = calcInput;
+            document.getElementById('app-notes').value = "";
+        }
+
+        function submitAppTransaction() {
+            const amount = parseFloat(calcInput);
+            if(isNaN(amount) || amount <= 0) { alert("Enter a valid amount"); return; }
+            const notes = document.getElementById('app-notes').value || '-';
+            const date = new Date().toISOString().split('T')[0];
+
+            let tx = { date, type: currentAppType, amount, notes };
+            if(currentAppType === 'Transfer') {
+                tx.fromAccount = document.getElementById('transfer-from-acc').value;
+                tx.toAccount = document.getElementById('transfer-to-acc').value;
+                tx.account = `${tx.fromAccount} -> ${tx.toAccount}`;
+                
+                let fromBank = appState.banks.find(b => b.name === tx.fromAccount);
+                let toBank = appState.banks.find(b => b.name === tx.toAccount);
+                let fromWallet = appState.wallets.find(w => w.name === tx.fromAccount);
+                let toWallet = appState.wallets.find(w => w.name === tx.toAccount);
+
+                if(fromBank) fromBank.balance -= amount;
+                if(fromWallet) fromWallet.balance -= amount;
+                if(toBank) toBank.balance += amount;
+                if(toWallet) toWallet.balance += amount;
+            } else {
+                tx.account = selectedAccount;
+                tx.notes = `${selectedCategory} | ${notes}`;
+                
+                let bank = appState.banks.find(b => b.name === selectedAccount);
+                let wallet = appState.wallets.find(w => w.name === selectedAccount);
+                let card = appState.cards.find(c => c.name === selectedAccount);
+
+                if(currentAppType === 'Income') {
+                    if(bank) bank.balance += amount;
+                    if(wallet) wallet.balance += amount;
+                } else {
+                    if(bank) bank.balance -= amount;
+                    if(wallet) wallet.balance -= amount;
+                    if(card) card.due += amount;
+                }
+            }
+
+            appState.transactions.unshift(tx);
+            saveAll();
+            renderTransactions();
+            renderBanks();
+            renderWallets();
+            renderCards();
+            resetAppInput();
+            alert("Transaction Saved Successfully!");
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transactions-table-body');
+            tbody.innerHTML = '';
+            appState.transactions.forEach((tx, idx) => {
+                let badgeClass = tx.type === 'Income' ? 'bg-success' : (tx.type === 'Expense' ? 'bg-danger' : 'bg-primary');
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${tx.date}</td>
+                        <td><span class="badge ${badgeClass}">${tx.type}</span></td>
+                        <td class="fw-bold">₹${tx.amount.toLocaleString()}</td>
+                        <td>${tx.account || tx.fromAccount + ' -> ' + tx.toAccount}</td>
+                        <td>${tx.notes || '-'}</td>
+                        <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction(${idx})"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteTransaction(idx) {
+            appState.transactions.splice(idx, 1);
+            saveAll();
+            renderTransactions();
+        }
+
+        // --- CATEGORIES MANAGEMENT ---
+        function saveCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('cat-name').value;
+            const subs = document.getElementById('cat-subs').value.split(',').map(s => s.trim()).filter(Boolean);
+            appState.categories.push({ name, subs });
+            saveAll();
+            renderCategories();
+            document.getElementById('category-form').reset();
+        }
+
+        function renderCategories() {
+            const tbody = document.getElementById('categories-table-body');
+            tbody.innerHTML = '';
+            appState.categories.forEach((cat, idx) => {
+                tbody.innerHTML += `<tr><td class="fw-bold">${cat.name}</td><td>${cat.subs.join(', ')}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${idx})"><i class="bi bi-trash"></i></button></td></tr>`;
+            });
+        }
+
+        function deleteCategory(idx) {
+            appState.categories.splice(idx, 1);
+            saveAll();
+            renderCategories();
+        }
+
+        // --- ACCOUNTS MANAGEMENT ---
+        function saveBankAccount(e) {
+            e.preventDefault();
+            const name = document.getElementById('bank-name').value;
+            const type = document.getElementById('bank-type').value;
+            const balance = parseFloat(document.getElementById('bank-bal').value);
+            appState.banks.push({ name, type, balance });
+            saveAll();
+            renderBanks();
+            document.getElementById('bank-form').reset();
+        }
+
+        function renderBanks() {
+            const tbody = document.getElementById('banks-table-body');
+            tbody.innerHTML = '';
+            appState.banks.forEach((b, idx) => {
+                tbody.innerHTML += `<tr><td class="fw-bold">${b.name}</td><td><span class="badge bg-secondary">${b.type}</span></td><td>₹${b.balance.toLocaleString()}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteBank(${idx})"><i class="bi bi-trash"></i></button></td></tr>`;
+            });
+        }
+
+        function deleteBank(idx) {
+            appState.banks.splice(idx, 1);
+            saveAll();
+            renderBanks();
+        }
+
+        // --- WALLETS MANAGEMENT ---
+        function saveWallet(e) {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('wallet-edit-index').value);
+            const name = document.getElementById('wallet-name').value;
+            const balance = parseFloat(document.getElementById('wallet-bal').value);
+
+            if(editIdx >= 0) {
+                appState.wallets[editIdx] = { name, balance };
+                document.getElementById('wallet-edit-index').value = "-1";
+                document.getElementById('wallet-submit-btn').innerText = "Save Wallet";
+            } else {
+                appState.wallets.push({ name, balance });
+            }
+
+            saveAll();
+            renderWallets();
+            document.getElementById('wallet-form').reset();
+        }
+
+        function renderWallets() {
+            const tbody = document.getElementById('wallets-table-body');
+            tbody.innerHTML = '';
+            appState.wallets.forEach((w, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold">${w.name}</td>
+                        <td>₹${w.balance.toLocaleString()}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editWallet(${idx})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteWallet(${idx})"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editWallet(idx) {
+            let w = appState.wallets[idx];
+            document.getElementById('wallet-edit-index').value = idx;
+            document.getElementById('wallet-name').value = w.name;
+            document.getElementById('wallet-bal').value = w.balance;
+            document.getElementById('wallet-submit-btn').innerText = "Update Wallet";
+        }
+
+        function deleteWallet(idx) {
+            appState.wallets.splice(idx, 1);
+            saveAll();
+            renderWallets();
+        }
+
+        // --- MUTUAL FUNDS MANAGEMENT (With Lump Sum & Edit Option) ---
+        function saveInvestment(e) {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('inv-edit-index').value);
+            const name = document.getElementById('inv-name').value;
+            const lumpsum = parseFloat(document.getElementById('inv-lumpsum').value) || 0;
+            const sip = parseFloat(document.getElementById('inv-sip').value) || 0;
+            const value = parseFloat(document.getElementById('inv-val').value);
+
+            if(editIdx >= 0) {
+                appState.investments[editIdx] = { name, lumpsum, sip, value };
+                document.getElementById('inv-edit-index').value = "-1";
+                document.getElementById('inv-submit-btn').innerText = "Save Fund";
+            } else {
+                appState.investments.push({ name, lumpsum, sip, value });
+            }
+
+            saveAll();
+            renderInvestments();
+            document.getElementById('investment-form').reset();
+        }
+
+        function renderInvestments() {
+            const tbody = document.getElementById('investments-table-body');
+            tbody.innerHTML = '';
+            appState.investments.forEach((inv, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold">${inv.name}</td>
+                        <td>₹${(inv.lumpsum || 0).toLocaleString()}</td>
+                        <td>₹${(inv.sip || 0).toLocaleString()}/mo</td>
+                        <td class="fw-bold text-success">₹${inv.value.toLocaleString()}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editInvestment(${idx})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteInvestment(${idx})"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editInvestment(idx) {
+            let inv = appState.investments[idx];
+            document.getElementById('inv-edit-index').value = idx;
+            document.getElementById('inv-name').value = inv.name;
+            document.getElementById('inv-lumpsum').value = inv.lumpsum || 0;
+            document.getElementById('inv-sip').value = inv.sip || 0;
+            document.getElementById('inv-val').value = inv.value;
+            document.getElementById('inv-submit-btn').innerText = "Update Fund";
+        }
+
+        function deleteInvestment(idx) {
+            appState.investments.splice(idx, 1);
+            saveAll();
+            renderInvestments();
+        }
+
+        // --- STOCKS & EQUITY MANAGEMENT (Linked to Bank Account Withdrawal) ---
+        function populateStockBankDropdown() {
+            const select = document.getElementById('stock-linked-bank');
+            select.innerHTML = '';
+            appState.banks.forEach(b => {
+                select.innerHTML += `<option value="${b.name}">${b.name}</option>`;
+            });
+        }
+
+        function saveStock(e) {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('stock-edit-index').value);
+            const name = document.getElementById('stock-name').value;
+            const invested = parseFloat(document.getElementById('stock-invested').value);
+            const current = parseFloat(document.getElementById('stock-current').value);
+            const linkedBank = document.getElementById('stock-linked-bank').value;
+
+            if(editIdx >= 0) {
+                appState.stocks[editIdx] = { name, invested, current, linkedBank };
+                document.getElementById('stock-edit-index').value = "-1";
+                document.getElementById('stock-submit-btn').innerText = "Save Stock";
+            } else {
+                appState.stocks.push({ name, invested, current, linkedBank });
+            }
+
+            saveAll();
+            renderStocks();
+            document.getElementById('stock-form').reset();
+            populateStockBankDropdown();
+        }
+
+        function renderStocks() {
+            const tbody = document.getElementById('stocks-table-body');
+            tbody.innerHTML = '';
+            appState.stocks.forEach((stk, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="fw-bold">${stk.name}</td>
+                        <td>₹${stk.invested.toLocaleString()}</td>
+                        <td class="fw-bold text-success">₹${stk.current.toLocaleString()}</td>
+                        <td><span class="badge bg-info text-dark">${stk.linkedBank || 'None'}</span></td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editStock(${idx})"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteStock(${idx})"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editStock(idx) {
+            populateStockBankDropdown();
+            let stk = appState.stocks[idx];
+            document.getElementById('stock-edit-index').value = idx;
+            document.getElementById('stock-name').value = stk.name;
+            document.getElementById('stock-invested').value = stk.invested;
+            document.getElementById('stock-current').value = stk.current;
+            document.getElementById('stock-linked-bank').value = stk.linkedBank;
+            document.getElementById('stock-submit-btn').innerText = "Update Stock";
+        }
+
+        function deleteStock(idx) {
+            appState.stocks.splice(idx, 1);
+            saveAll();
+            renderStocks();
+        }
+
+        // --- CARDS & EMIS ---
+        function saveCard(e) {
+            e.preventDefault();
+            const name = document.getElementById('card-name').value;
+            const limit = parseFloat(document.getElementById('card-limit').value);
+            const due = parseFloat(document.getElementById('card-due').value);
+            appState.cards.push({ name, limit, due });
+            saveAll();
+            renderCards();
+            document.getElementById('card-form').reset();
+        }
+
+        function renderCards() {
+            const tbody = document.getElementById('cards-table-body');
+            tbody.innerHTML = '';
+            appState.cards.forEach((c, idx) => {
+                tbody.innerHTML += `<tr><td class="fw-bold">${c.name}</td><td>₹${c.limit.toLocaleString()}</td><td class="text-danger">₹${c.due.toLocaleString()}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteCard(${idx})"><i class="bi bi-trash"></i></button></td></tr>`;
+            });
+        }
+
+        function deleteCard(idx) {
+            appState.cards.splice(idx, 1);
+            saveAll();
+            renderCards();
+        }
+
+        // --- RECURRING ---
+        function saveRecurring(e) {
+            e.preventDefault();
+            const description = document.getElementById('rec-desc').value;
+            const amount = parseFloat(document.getElementById('rec-amt').value);
+            const frequency = document.getElementById('rec-freq').value;
+            appState.recurring.push({ description, amount, frequency });
+            saveAll();
+            renderRecurring();
+            document.getElementById('recurring-form').reset();
+        }
+
+        function renderRecurring() {
+            const tbody = document.getElementById('recurring-table-body');
+            tbody.innerHTML = '';
+            appState.recurring.forEach((r, idx) => {
+                tbody.innerHTML += `<tr><td class="fw-bold">${r.description}</td><td>₹${r.amount.toLocaleString()}</td><td>${r.frequency}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring(${idx})"><i class="bi bi-trash"></i></button></td></tr>`;
+            });
+        }
+
+        function deleteRecurring(idx) {
+            appState.recurring.splice(idx, 1);
+            saveAll();
+            renderRecurring();
+        }
+
+        // --- BUDGETS ---
+        function saveBudget(e) {
+            e.preventDefault();
+            const category = document.getElementById('bud-cat').value;
+            const limit = parseFloat(document.getElementById('bud-lim').value);
+            appState.budgets.push({ category, limit });
+            saveAll();
+            renderBudgets();
+            document.getElementById('budget-form').reset();
+        }
+
+        function renderBudgets() {
+            const tbody = document.getElementById('budgets-table-body');
+            tbody.innerHTML = '';
+            appState.budgets.forEach((b, idx) => {
+                tbody.innerHTML += `<tr><td class="fw-bold">${b.category}</td><td>₹${b.limit.toLocaleString()}</td><td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteBudget(${idx})"><i class="bi bi-trash"></i></button></td></tr>`;
+            });
+        }
+
+        function deleteBudget(idx) {
+            appState.budgets.splice(idx, 1);
+            saveAll();
+            renderBudgets();
+        }
+
+        // --- INVESTMENTS STATUS & NET WORTH ---
+        function renderInvestmentsStatus() {
+            let totalBanks = appState.banks.reduce((sum, b) => sum + b.balance, 0);
+            let totalWallets = appState.wallets.reduce((sum, w) => sum + w.balance, 0);
+            let totalMFs = appState.investments.reduce((sum, i) => sum + i.value, 0);
+            let totalStocks = appState.stocks.reduce((sum, s) => sum + s.current, 0);
+            let totalCardsDue = appState.cards.reduce((sum, c) => sum + c.due, 0);
+
+            document.getElementById('summary-banks').innerText = `₹${totalBanks.toLocaleString()}`;
+            document.getElementById('summary-wallets').innerText = `₹${totalWallets.toLocaleString()}`;
+            document.getElementById('summary-mfs').innerText = `₹${totalMFs.toLocaleString()}`;
+            document.getElementById('summary-stocks').innerText = `₹${totalStocks.toLocaleString()}`;
+
+            let netWorth = (totalBanks + totalWallets + totalMFs + totalStocks) - totalCardsDue;
+            document.getElementById('summary-networth').innerText = `₹${netWorth.toLocaleString()}`;
+        }
+
+        // --- MODALS & ANALYTICS ---
+        function openAccountModal(type) {
+            const list = document.getElementById('account-modal-list');
+            list.innerHTML = '';
+            
+            appState.banks.forEach(b => {
+                list.innerHTML += `<div class="account-select-row" onclick="selectAccountVal('${b.name}')"><span>Bank: ${b.name} (${b.type})</span><span class="fw-bold">₹${b.balance}</span></div>`;
+            });
+            appState.wallets.forEach(w => {
+                list.innerHTML += `<div class="account-select-row" onclick="selectAccountVal('${w.name}')"><span>Wallet: ${w.name}</span><span class="fw-bold">₹${w.balance}</span></div>`;
+            });
+            appState.cards.forEach(c => {
+                list.innerHTML += `<div class="account-select-row" onclick="selectAccountVal('${c.name}')"><span>Credit Card: ${c.name}</span><span class="text-danger">Due: ₹${c.due}</span></div>`;
+            });
+
+            document.getElementById('account-modal').style.display = 'flex';
+        }
+
+        function selectAccountVal(name) {
+            selectedAccount = name;
+            document.getElementById('selected-account-label').innerText = name;
+            closeModals();
+        }
+
+        function openCategoryModal() {
+            const list = document.getElementById('category-modal-list');
+            list.innerHTML = '';
+            appState.categories.forEach(cat => {
+                cat.subs.forEach(sub => {
+                    let path = `${cat.name} > ${sub}`;
+                    list.innerHTML += `<div class="account-select-row" onclick="selectCategoryVal('${path}')"><span>${path}</span></div>`;
+                });
+            });
+            document.getElementById('category-modal').style.display = 'flex';
+        }
+
+        function selectCategoryVal(path) {
+            selectedCategory = path;
+            document.getElementById('selected-category-label').innerText = path;
+            closeModals();
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.custom-modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function renderAnalytics() {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            let totalIncome = appState.transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0);
+            let totalExpense = appState.transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0);
+
+            if(analyticsChartInstance) analyticsChartInstance.destroy();
+            analyticsChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Total Income', 'Total Expenses'],
+                    datasets: [{ data: [totalIncome || 1, totalExpense || 1], backgroundColor: ['#198754', '#dc3545'] }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+    </script>
+</body>
+</html>
