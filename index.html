@@ -33,7 +33,6 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--app-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
         #wrapper { display: flex; width: 100%; align-items: stretch; position: relative; }
         
-        /* Auto-hide / Offcanvas style sidebar */
         #sidebar { 
             position: fixed;
             top: 0;
@@ -46,10 +45,10 @@
             z-index: 1050; 
             border-right: 1px solid var(--border-color); 
             box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            overflow-y: auto;
         }
         #sidebar.active { left: 0; }
         
-        /* Backdrop overlay when sidebar is open */
         #sidebar-backdrop {
             position: fixed;
             top: 0;
@@ -75,7 +74,6 @@
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom App Theme Elements */
         .app-container { max-width: 480px; margin: 0 auto; background-color: var(--app-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .top-nav-bar { background-color: var(--input-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
         .type-selector { display: flex; justify-content: center; gap: 20px; background-color: var(--card-bg); padding: 12px; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
@@ -94,9 +92,8 @@
         .calc-btn.operator { color: var(--accent-blue); font-size: 1.4rem; }
         .calc-btn.equals { background-color: var(--accent-blue); color: #fff; }
 
-        /* Modal Overlays for Selectors */
         .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .custom-modal-content { background: var(--app-bg); border: 1px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 420px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .custom-modal-content { background: var(--app-bg); border: 1px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         
         .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
         .account-select-row:hover { background: rgba(13, 110, 253, 0.08); }
@@ -118,14 +115,14 @@
             </div>
             <ul class="list-unstyled components">
                 <li class="active"><a href="#" onclick="switchSection('home', this)"><i class="bi bi-house-door me-3"></i> Home & Logs</a></li>
-                <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Linked Subs</a></li>
-                <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Bank Accounts & FD/RD</a></li>
-                <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Investments & SIP/Lumpsum</a></li>
-                <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Credit Cards & EMIs</a></li>
-                <li><a href="#" onclick="switchSection('master-wallets', this)"><i class="bi bi-cash-coin me-3"></i> Cash & Wallets</a></li>
+                <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Subs</a></li>
+                <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Accounts, FD & RD</a></li>
+                <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Mutual Funds & SIPs</a></li>
+                <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Cards & EMIs</a></li>
                 <li><a href="#" onclick="switchSection('recurring', this)"><i class="bi bi-arrow-repeat me-3"></i> Recurring Payments</a></li>
+                <li><a href="#" onclick="switchSection('investments-status', this)"><i class="bi bi-pie-chart-fill me-3"></i> Investments / Savings</a></li>
                 <li><a href="#" onclick="switchSection('analytics', this)"><i class="bi bi-bar-chart-line me-3"></i> Analytics</a></li>
-                <li><a href="#" onclick="switchSection('budgets', this)"><i class="bi bi-pie-chart me-3"></i> Budgets</a></li>
+                <li><a href="#" onclick="switchSection('budgets', this)"><i class="bi bi-calculator me-3"></i> Budgets</a></li>
             </ul>
         </nav>
 
@@ -211,8 +208,8 @@
                             </div>
 
                             <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top">
-                                <span id="current-date-display">Aug 2, 2026</span>
-                                <span id="current-time-display">3:20 PM</span>
+                                <span id="current-date-display">Aug 3, 2026</span>
+                                <span id="current-time-display">12:20 PM</span>
                             </div>
                         </div>
                     </div>
@@ -244,7 +241,7 @@
             <div class="custom-modal-overlay" id="account-modal">
                 <div class="custom-modal-content">
                     <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary">Select an account</h5>
+                        <h5 class="fw-bold m-0 text-primary" id="account-modal-title">Select an account</h5>
                         <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
                     <div id="account-modal-list"></div>
@@ -261,24 +258,25 @@
                 </div>
             </div>
 
-            <!-- REDEEM INVESTMENT MODAL -->
-            <div class="custom-modal-overlay" id="redeem-modal">
+            <!-- WITHDRAW INVESTMENT MODAL -->
+            <div class="custom-modal-overlay" id="withdraw-modal">
                 <div class="custom-modal-content">
                     <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="fw-bold m-0 text-primary">Redeem Investment</h5>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="closeRedeemModal()"><i class="bi bi-x-lg"></i></button>
+                        <h5 class="fw-bold m-0 text-primary" id="withdraw-title">Withdraw Investment</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeWithdrawModal()"><i class="bi bi-x-lg"></i></button>
                     </div>
-                    <form onsubmit="executeRedeem(event)">
-                        <input type="hidden" id="redeem-inv-id">
+                    <form onsubmit="executeWithdraw(event)">
+                        <input type="hidden" id="withdraw-inv-id">
+                        <input type="hidden" id="withdraw-type">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Redeem Amount (₹)</label>
-                            <input type="number" step="any" class="form-control" id="redeem-amount" required>
+                            <label class="form-label fw-semibold">Withdraw Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="withdraw-amount" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Deposit into Bank Account</label>
-                            <select class="form-select" id="redeem-target-account" required></select>
+                            <select class="form-select" id="withdraw-target-account" required></select>
                         </div>
-                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Confirm Redemption</button>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Confirm Transfer</button>
                     </form>
                 </div>
             </div>
@@ -300,157 +298,126 @@
                                     <textarea class="form-control" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
                                 </div>
                                 <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Category</button>
-                                    <button type="button" class="btn btn-outline-secondary" id="cat-cancel" style="display:none;" onclick="resetCategoryForm()">Cancel</button>
+                                    <button type="submit" class="btn btn-primary flex-grow-1">Save Category</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="resetCategoryForm()">Cancel</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-8">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Linked Categories & Subcategories</h4>
-                            <div id="categories-list" class="list-group list-group-flush"></div>
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-tags me-2"></i>Existing Categories & Subs</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Subcategories</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categories-table-body"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. BANK ACCOUNTS & FD/RD -->
+            <!-- 3. ACCOUNTS, FD & RD -->
             <div id="section-master-accounts" class="section-view">
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold" id="acc-form-title">Add Bank Account</h4>
+                    <div class="col-md-5">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Bank Account</h4>
                             <form id="account-form" onsubmit="saveAccount(event)">
                                 <input type="hidden" id="acc-id">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Bank / Account Name</label>
+                                    <label class="form-label fw-semibold">Account Name</label>
                                     <input type="text" class="form-control" id="acc-name" placeholder="e.g. HDFC Salary" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Account Type</label>
-                                    <select class="form-select" id="acc-type">
-                                        <option value="Savings">Savings</option>
-                                        <option value="Current">Current</option>
-                                        <option value="Salary">Salary</option>
-                                    </select>
+                                    <label class="form-label fw-semibold">Opening Balance (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="acc-balance" required>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Initial Balance (₹)</label>
-                                    <input type="number" step="any" class="form-control" id="acc-balance" value="0" required>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Account</button>
-                                    <button type="button" class="btn btn-outline-secondary" id="acc-cancel" style="display:none;" onclick="resetAccountForm()">Cancel</button>
-                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Account</button>
                             </form>
                         </div>
 
-                        <!-- FD/RD Form Card -->
-                        <div class="card p-4 mt-4">
-                            <h4 class="mb-3 text-success fw-bold">Add FD / RD</h4>
-                            <form id="fdrd-form" onsubmit="saveFdRd(event)">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Select Bank Account</label>
-                                    <select class="form-select" id="fdrd-account-id" required></select>
-                                </div>
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add FD / RD Scheme</h4>
+                            <form id="fd-rd-form" onsubmit="saveFdRd(event)">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Type</label>
-                                    <select class="form-select" id="fdrd-type">
+                                    <select class="form-select" id="fr-type" onchange="toggleRdFields()">
                                         <option value="FD">Fixed Deposit (FD)</option>
                                         <option value="RD">Recurring Deposit (RD)</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Name / Reference</label>
-                                    <input type="text" class="form-control" id="fdrd-name" placeholder="e.g. HDFC FD #1" required>
+                                    <label class="form-label fw-semibold">Scheme Name</label>
+                                    <input type="text" class="form-control" id="fr-name" placeholder="e.g. SBI Tax Saver FD" required>
+                                </div>
+                                <div class="mb-3" id="fr-principal-group">
+                                    <label class="form-label fw-semibold" id="fr-principal-label">Principal Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="fr-amount" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Amount Invested (₹)</label>
-                                    <input type="number" step="any" class="form-control" id="fdrd-amount" required>
+                                    <label class="form-label fw-semibold">Interest Rate (% p.a.)</label>
+                                    <input type="number" step="0.01" class="form-control" id="fr-rate" placeholder="e.g. 7.1" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Interest Rate (%) / Maturity Details</label>
-                                    <input type="text" class="form-control" id="fdrd-details" placeholder="e.g. 7.1% p.a. - 1 Year">
+                                    <label class="form-label fw-semibold">Start Date</label>
+                                    <input type="date" class="form-control" id="fr-start-date" required>
                                 </div>
-                                <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Attach FD/RD</button>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tenure (Months)</label>
+                                    <input type="number" class="form-control" id="fr-tenure" placeholder="e.g. 12" required>
+                                </div>
+                                <div class="mb-3" id="rd-monthly-date-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Monthly Deduction Date (1-31)</label>
+                                    <input type="number" min="1" max="31" class="form-control" id="fr-rd-day" placeholder="e.g. 5">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Linked Bank Account (for debits/payouts)</label>
+                                    <select class="form-select" id="fr-linked-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Save Scheme</button>
                             </form>
                         </div>
                     </div>
 
-                    <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Active Bank Accounts & Linked Deposits</h4>
-                            <div id="accounts-list"></div>
+                    <div class="col-md-7">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-wallet2 me-2"></i>Bank Accounts</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Account Name</th>
+                                            <th>Balance</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="accounts-table-body"></tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 4. INVESTMENTS & SIP/LUMPSUM -->
-            <div id="section-master-investments" class="section-view">
-                <div class="row">
-                    <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Add Investment / SIP</h4>
-                            <form id="investment-form" onsubmit="saveInvestment(event)">
-                                <input type="hidden" id="inv-id">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Investment Name</label>
-                                    <input type="text" class="form-control" id="inv-name" placeholder="e.g. Nifty 50 Index Fund" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Investment Type</label>
-                                    <select class="form-select" id="inv-type">
-                                        <option value="Mutual Fund SIP">Mutual Fund SIP</option>
-                                        <option value="Mutual Fund Lumpsum">Mutual Fund Lumpsum</option>
-                                        <option value="Stocks">Stocks</option>
-                                        <option value="Gold">Gold</option>
-                                        <option value="Crypto">Crypto</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Initial/Current Value (₹)</label>
-                                    <input type="number" step="any" class="form-control" id="inv-amount" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">SIP Frequency</label>
-                                    <select class="form-select" id="inv-frequency">
-                                        <option value="None">None (Lumpsum)</option>
-                                        <option value="Daily">Daily</option>
-                                        <option value="Weekly">Weekly</option>
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="Yearly">Yearly</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">SIP Due Date (Day of Month / Date)</label>
-                                    <input type="number" min="1" max="31" class="form-control" id="inv-duedate" placeholder="e.g. 5">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Debit Bank Account</label>
-                                    <select class="form-select" id="inv-account-id" required></select>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Investment</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Portfolio Holdings & SIP Schedule</h4>
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-bank me-2"></i>Fixed & Recurring Deposits</h4>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Type</th>
-                                            <th>Value / Invested</th>
-                                            <th>SIP Info</th>
-                                            <th>Debit Account</th>
-                                            <th class="text-end">Actions</th>
+                                            <th>Invested / Present Value</th>
+                                            <th>Rate / Tenure</th>
+                                            <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="investments-table-body"></tbody>
+                                    <tbody id="fd-rd-table-body"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -458,89 +425,160 @@
                 </div>
             </div>
 
-            <!-- 5. CREDIT CARDS & EMIS -->
-            <div id="section-master-cards" class="section-view">
+            <!-- 4. MUTUAL FUNDS & SIPs -->
+            <div id="section-master-investments" class="section-view">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Add Credit Card / EMI</h4>
-                            <form id="card-form" onsubmit="saveCard(event)">
-                                <input type="hidden" id="card-id">
+                            <h4 class="mb-3 text-primary fw-bold">Add Mutual Fund / SIP</h4>
+                            <form id="mf-form" onsubmit="saveMutualFund(event)">
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Card / Loan Name</label>
-                                    <input type="text" class="form-control" id="card-name" placeholder="e.g. HDFC Regalia / Laptop EMI" required>
+                                    <label class="form-label fw-semibold">Fund Name</label>
+                                    <input type="text" class="form-control" id="mf-name" placeholder="e.g. Parag Parikh Flexi Cap" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Credit Limit / Total Loan</label>
-                                    <input type="number" step="any" class="form-control" id="card-limit" required>
+                                    <label class="form-label fw-semibold">Investment Mode</label>
+                                    <select class="form-select" id="mf-mode" onchange="toggleMfFields()">
+                                        <option value="Lumpsum">Lumpsum</option>
+                                        <option value="SIP">SIP (Systematic Investment)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="mf-amount-group">
+                                    <label class="form-label fw-semibold" id="mf-amount-label">Invested Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="mf-amount" required>
+                                </div>
+                                <div class="mb-3" id="mf-freq-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Frequency</label>
+                                    <select class="form-select" id="mf-freq" onchange="toggleMfFreqFields()">
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Weekly">Weekly</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="mf-due-group" style="display:none;">
+                                    <label class="form-label fw-semibold" id="mf-due-label">Monthly Date (1-31)</label>
+                                    <input type="number" class="form-control" id="mf-due-val" placeholder="e.g. 10">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Current Outstanding Balance</label>
-                                    <input type="number" step="any" class="form-control" id="card-outstanding" value="0" required>
+                                    <label class="form-label fw-semibold">Linked Bank Account</label>
+                                    <select class="form-select" id="mf-linked-account" required></select>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Due Date / Billing Date</label>
-                                    <input type="text" class="form-control" id="card-duedate" placeholder="e.g. 15th of every month">
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Card / Loan</button>
+                                <button type="submit" class="btn btn-primary w-100">Save Fund</button>
                             </form>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Credit Cards & Active EMIs</h4>
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>Mutual Funds & SIP Portfolio</h4>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Limit / Total</th>
+                                            <th>Fund Name</th>
+                                            <th>Mode</th>
+                                            <th>Value / Installment</th>
+                                            <th>Details</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mf-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. CARDS & EMIs -->
+            <div id="section-master-cards" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Credit Card</h4>
+                            <form id="card-form" onsubmit="saveCard(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Card Name</label>
+                                    <input type="text" class="form-control" id="card-name" placeholder="e.g. HDFC Regalia" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Billing Date</label>
+                                        <input type="number" min="1" max="31" class="form-control" id="card-bill-date" placeholder="e.g. 15" required>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Due Date</label>
+                                        <input type="number" min="1" max="31" class="form-control" id="card-due-date" placeholder="e.g. 5" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Card</button>
+                            </form>
+                        </div>
+
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add EMI Plan</h4>
+                            <form id="emi-form" onsubmit="saveEmi(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">EMI Name / Item</label>
+                                    <input type="text" class="form-control" id="emi-name" placeholder="e.g. iPhone 15 Pro" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Assign to Credit Card</label>
+                                    <select class="form-select" id="emi-card-id" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Principal Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="emi-principal" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Interest Rate (% p.a.)</label>
+                                        <input type="number" step="0.01" class="form-control" id="emi-rate" placeholder="e.g. 12" required>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Tenure (Months)</label>
+                                        <input type="number" class="form-control" id="emi-tenure" placeholder="e.g. 6" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Start Date</label>
+                                    <input type="date" class="form-control" id="emi-start-date" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Add EMI</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-credit-card me-2"></i>Credit Cards & Outstanding</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Card Name</th>
+                                            <th>Bill / Due Date</th>
                                             <th>Outstanding</th>
-                                            <th>Due Date</th>
-                                            <th class="text-end">Action</th>
+                                            <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="cards-table-body"></tbody>
                                 </table>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- 6. CASH & WALLETS -->
-            <div id="section-master-wallets" class="section-view">
-                <div class="row">
-                    <div class="col-md-4">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Add Cash / Wallet</h4>
-                            <form id="wallet-form" onsubmit="saveWallet(event)">
-                                <input type="hidden" id="wallet-id">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Wallet Name</label>
-                                    <input type="text" class="form-control" id="wallet-name" placeholder="e.g. Paytm Wallet / Cash in Hand" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Current Balance (₹)</label>
-                                    <input type="number" step="any" class="form-control" id="wallet-balance" value="0" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Wallet</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Wallets & Physical Cash</h4>
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-list-check me-2"></i>Active EMIs</h4>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Balance</th>
+                                            <th>Item</th>
+                                            <th>Card</th>
+                                            <th>Monthly EMI</th>
+                                            <th>Tenure / Finish</th>
                                             <th class="text-end">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="wallets-table-body"></tbody>
+                                    <tbody id="emi-table-body"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -548,14 +586,13 @@
                 </div>
             </div>
 
-            <!-- 7. RECURRING PAYMENTS -->
+            <!-- 6. RECURRING PAYMENTS -->
             <div id="section-recurring" class="section-view">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Setup Recurring Payment</h4>
+                            <h4 class="mb-3 text-primary fw-bold">Add Recurring Payment</h4>
                             <form id="recurring-form" onsubmit="saveRecurring(event)">
-                                <input type="hidden" id="rec-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Title</label>
                                     <input type="text" class="form-control" id="rec-title" placeholder="e.g. Netflix Subscription" required>
@@ -565,28 +602,30 @@
                                     <input type="number" step="any" class="form-control" id="rec-amount" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Frequency</label>
-                                    <select class="form-select" id="rec-frequency">
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="Yearly">Yearly</option>
-                                        <option value="Weekly">Weekly</option>
-                                    </select>
+                                    <label class="form-label fw-semibold">Due Date (1-31 of month)</label>
+                                    <input type="number" min="1" max="31" class="form-control" id="rec-duedate" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Recurring</button>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Debit Source Account</label>
+                                    <select class="form-select" id="rec-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Recurring Item</button>
                             </form>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Scheduled Recurring Payments</h4>
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Recurring Payments</h4>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
                                     <thead>
                                         <tr>
                                             <th>Title</th>
                                             <th>Amount</th>
-                                            <th>Frequency</th>
-                                            <th class="text-end">Action</th>
+                                            <th>Due Date</th>
+                                            <th>Account</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="recurring-table-body"></tbody>
@@ -597,46 +636,49 @@
                 </div>
             </div>
 
+            <!-- 7. INVESTMENTS / SAVINGS STATUS -->
+            <div id="section-investments-status" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-pie-chart-fill me-2"></i>Wealth & Savings Overview</h4>
+                    <div class="row g-3" id="wealth-summary-cards"></div>
+                </div>
+            </div>
+
             <!-- 8. ANALYTICS -->
             <div id="section-analytics" class="section-view">
-                <div class="card p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="fw-bold m-0"><i class="bi bi-bar-chart-line me-2"></i>Spend Analysis & Summary</h4>
-                        <div class="d-flex align-items-center gap-2">
-                            <label class="fw-semibold small">Filter:</label>
-                            <select class="form-select form-select-sm" id="analytics-filter" onchange="renderAnalytics()">
-                                <option value="all">All Time</option>
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                                <option value="quarterly">Quarterly</option>
-                                <option value="yearly">Yearly</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row g-4" id="analytics-content">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Income & Expense Analytics</h4>
+                    <div class="row g-3 mb-4">
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-input">
-                                <h6 class="text-muted mb-1">Total Income</h6>
-                                <h3 class="text-success fw-bold" id="analytics-income">₹0.00</h3>
+                                <span class="text-muted small">Total Income</span>
+                                <h3 class="text-success m-0" id="analytics-total-income">₹0</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-input">
-                                <h6 class="text-muted mb-1">Total Expenses</h6>
-                                <h3 class="text-danger fw-bold" id="analytics-expense">₹0.00</h3>
+                                <span class="text-muted small">Total Expense</span>
+                                <h3 class="text-danger m-0" id="analytics-total-expense">₹0</h3>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="p-3 border rounded bg-input">
-                                <h6 class="text-muted mb-1">Net Savings</h6>
-                                <h3 class="text-primary fw-bold" id="analytics-net">₹0.00</h3>
+                                <span class="text-muted small">Net Balance Change</span>
+                                <h3 class="text-primary m-0" id="analytics-net">₹0</h3>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <h5 class="fw-bold mb-3">Expenses Breakdown by Category</h5>
-                        <div id="analytics-categories-breakdown"></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-table-body"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -644,27 +686,42 @@
             <!-- 9. BUDGETS -->
             <div id="section-budgets" class="section-view">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-5">
                         <div class="card p-4">
-                            <h4 class="mb-3 text-primary fw-bold">Set Category Budget</h4>
+                            <h4 class="mb-3 text-primary fw-bold">Set Budget Limits</h4>
                             <form id="budget-form" onsubmit="saveBudget(event)">
-                                <input type="hidden" id="budget-id">
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Category</label>
                                     <select class="form-select" id="budget-category" required></select>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">Monthly Limit (₹)</label>
-                                    <input type="number" step="any" class="form-control" id="budget-limit" required>
+                                    <input type="number" step="any" class="form-control" id="budget-monthly" required>
                                 </div>
-                                <button type="submit" class="btn btn-primary w-100 fw-semibold text-white">Save Budget</button>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Annual Limit (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="budget-annual" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Budget</button>
                             </form>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card p-4">
-                            <h4 class="mb-3 fw-bold">Active Budgets vs Actual Spend</h4>
-                            <div id="budgets-list"></div>
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-calculator me-2"></i>Budget Performance</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Monthly (Spent/Limit)</th>
+                                            <th>Annual (Spent/Limit)</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="budgets-table-body"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -674,780 +731,856 @@
     </div>
 
     <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get, update, remove, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Firebase Configuration
         const firebaseConfig = {
-          apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
-          authDomain: "passbook-229d7.firebaseapp.com",
-          databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
-          projectId: "passbook-229d7",
-          storageBucket: "passbook-229d7.firebasestorage.app",
-          messagingSenderId: "1020688201249",
-          appId: "1:1020688201249:web:57d42542d59471f303d560"
+            apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
+            authDomain: "passbook-229d7.firebaseapp.com",
+            databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "passbook-229d7",
+            storageBucket: "passbook-229d7.firebasestorage.app",
+            messagingSenderId: "1020688201249",
+            appId: "1:1020688201249:web:57d42542d59471f303d560"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        window.db = db;
-        window.dbRefs = { ref, set, get, update, remove, push, onValue };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // Connection status indicator
-        const connectedRef = ref(db, ".info/connected");
-        onValue(connectedRef, (snap) => {
-            const statusEl = document.getElementById("db-status");
-            if (snap.val() === true) {
-                statusEl.innerHTML = `<i class="bi bi-circle-fill fs-7 text-success"></i> Connected`;
-                statusEl.className = "text-success";
-            } else {
-                statusEl.innerHTML = `<i class="bi bi-circle-fill fs-7 text-danger"></i> Disconnected`;
-                statusEl.className = "text-danger";
-            }
-        });
-
-        // Initial Data Sync
-        initApp();
-    </script>
-
-    <!-- App Logic Script -->
-    <script>
-        // App State Globals
+        // Application State Data Storage
         let appData = {
-            categories: {},
             accounts: {},
-            fdrd: {},
-            investments: {},
-            cards: {},
-            wallets: {},
-            recurring: {},
+            categories: {},
             transactions: {},
+            fdRd: {},
+            mutualFunds: {},
+            cards: {},
+            emis: {},
+            recurring: {},
             budgets: {}
         };
 
+        // UI State variables
         let currentAppType = 'Expense';
-        let selectedAccount = null;
-        let selectedCategory = null;
-        let calcExpression = "0";
+        let selectedAccountId = '';
+        let selectedCategorySub = '';
+        let calcExpression = '';
+        let accountModalTarget = 'primary'; // 'primary' or 'withdraw' or 'payment'
 
-        function initApp() {
-            if (!window.db) {
-                setTimeout(initApp, 200);
-                return;
-            }
-            const rootRef = window.dbRefs.ref(window.db, '/');
-            window.dbRefs.onValue(rootRef, (snapshot) => {
-                const data = snapshot.val() || {};
-                appData.categories = data.categories || {};
-                appData.accounts = data.accounts || {};
-                appData.fdrd = data.fdrd || {};
-                appData.investments = data.investments || {};
-                appData.cards = data.cards || {};
-                appData.wallets = data.wallets || {};
-                appData.recurring = data.recurring || {};
-                appData.transactions = data.transactions || {};
-                appData.budgets = data.budgets || {};
+        // Initialization & Realtime Listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            initSidebar();
+            updateDateTimeDisplay();
+            setInterval(updateDateTimeDisplay, 60000);
 
-                refreshUI();
+            // Connect Firebase real-time sync
+            const statusBadge = document.getElementById('db-status');
+            db.ref('.info/connected').on('value', (snap) => {
+                if (snap.val() === true) {
+                    statusBadge.innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Connected';
+                    statusBadge.className = 'text-success';
+                } else {
+                    statusBadge.innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Disconnected';
+                    statusBadge.className = 'text-danger';
+                }
             });
-        }
 
-        function refreshUI() {
-            renderCategories();
+            // Load data nodes
+            const keys = ['accounts', 'categories', 'transactions', 'fdRd', 'mutualFunds', 'cards', 'emis', 'recurring', 'budgets'];
+            keys.forEach(key => {
+                db.ref(key).on('value', (snapshot) => {
+                    appData[key] = snapshot.val() || {};
+                    refreshAllUI();
+                });
+            });
+
+            // Set default date for FdRd/EMI
+            const todayStr = new Date().toISOString().split('T')[0];
+            if(document.getElementById('fr-start-date')) document.getElementById('fr-start-date').value = todayStr;
+            if(document.getElementById('emi-start-date')) document.getElementById('emi-start-date').value = todayStr;
+        });
+
+        function refreshAllUI() {
             renderAccounts();
-            renderInvestments();
-            renderCards();
-            renderWallets();
-            renderRecurring();
+            renderCategories();
             renderTransactions();
-            renderAnalytics();
+            renderFdRd();
+            renderMutualFunds();
+            renderCards();
+            renderEmis();
+            renderRecurring();
             renderBudgets();
-            populateDropdowns();
+            renderWealthSummary();
+            renderAnalytics();
+            updateDropdownOptions();
         }
 
-        // Section Switching
+        // Sidebar and Theme controls
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            document.getElementById('sidebarCollapse').addEventListener('click', () => {
+                sidebar.classList.add('active');
+                backdrop.classList.add('active');
+            });
+            document.getElementById('sidebarClose').addEventListener('click', toggleSidebar);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebar-backdrop').classList.remove('active');
+        }
+
         function switchSection(sectionId, el) {
             document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
             document.getElementById('section-' + sectionId).classList.add('active');
-
-            document.querySelectorAll('#sidebar ul.components li').forEach(li => li.classList.remove('active'));
+            
+            document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
             if(el) el.parentElement.classList.add('active');
 
             const titles = {
                 'home': 'Home & Logs',
                 'master-categories': 'Categories & Linked Subs',
                 'master-accounts': 'Bank Accounts & FD/RD',
-                'master-investments': 'Investments & SIP/Lumpsum',
-                'master-cards': 'Credit Cards & EMIs',
-                'master-wallets': 'Cash & Wallets',
+                'master-investments': 'Mutual Funds & SIPs',
+                'master-cards': 'Cards & EMIs',
                 'recurring': 'Recurring Payments',
+                'investments-status': 'Investments / Savings Status',
                 'analytics': 'Analytics',
                 'budgets': 'Budgets'
             };
-            document.getElementById('page-title').innerText = titles[sectionId] || 'Dashboard';
-            
-            // Auto-hide sidebar on mobile/desktop selection
-            toggleSidebar(false);
+            document.getElementById('page-title').innerText = titles[sectionId] || 'Passbook';
+            toggleSidebar();
         }
 
-        // Theme Toggle
         function toggleTheme() {
             const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-bs-theme', newTheme);
-            const icon = document.getElementById('theme-icon');
-            icon.className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+            const current = html.getAttribute('data-bs-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', next);
+            document.getElementById('theme-icon').className = next === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
         }
 
-        // Sidebar Toggles (Auto-hide behavior)
-        function toggleSidebar(forceState) {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            
-            const isOpen = forceState !== undefined ? forceState : !sidebar.classList.contains('active');
-            
-            if (isOpen) {
-                sidebar.classList.add('active');
-                backdrop.classList.add('active');
-            } else {
-                sidebar.classList.remove('active');
-                backdrop.classList.remove('active');
-            }
+        function updateDateTimeDisplay() {
+            const now = new Date();
+            const dateOpts = { month: 'short', day: 'numeric', year: 'numeric' };
+            const timeOpts = { hour: 'numeric', minute: '2-digit', hour12: true };
+            if(document.getElementById('current-date-display')) document.getElementById('current-date-display').innerText = now.toLocaleDateString('en-US', dateOpts);
+            if(document.getElementById('current-time-display')) document.getElementById('current-time-display').innerText = now.toLocaleTimeString('en-US', timeOpts);
         }
 
-        document.getElementById('sidebarCollapse').addEventListener('click', () => toggleSidebar(true));
-        document.getElementById('sidebarClose').addEventListener('click', () => toggleSidebar(false));
-
-        // App Simulator Logic
+        // --- APP CALCULATOR & TRANSACTION ENGINE ---
         function setAppType(type) {
             currentAppType = type;
-            document.querySelectorAll('.type-selector .type-option').forEach(opt => {
-                opt.classList.remove('active');
-                opt.innerHTML = opt.innerText.replace('<i class="bi bi-check-circle-fill"></i>', '');
-            });
-            const activeEl = document.getElementById('type-' + type.toLowerCase());
-            activeEl.classList.add('active');
-            activeEl.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${type.toUpperCase()}`;
-
+            document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('active'));
+            document.getElementById('type-' + type.toLowerCase()).classList.add('active');
+            
             const accBox = document.getElementById('box-primary-account');
             const catBox = document.getElementById('box-secondary-category');
-
             if (type === 'Transfer') {
-                accBox.className = "col-6";
-                catBox.className = "col-6";
-                document.querySelector('#box-secondary-category .selector-box span').innerText = "To Account";
+                accBox.className = 'col-12';
+                catBox.style.display = 'none';
             } else {
-                accBox.className = "col-6";
-                catBox.className = "col-6";
-                document.querySelector('#box-secondary-category .selector-box span').innerText = selectedCategory || "Subcategory";
+                accBox.className = 'col-6';
+                catBox.style.display = 'block';
             }
         }
 
         function appendCalc(val) {
-            if (calcExpression === "0" && val !== '.') {
-                calcExpression = val;
-            } else {
-                calcExpression += val;
-            }
-            document.getElementById('calc-display').innerText = calcExpression;
+            if(calcExpression === '0' && val !== '.') calcExpression = '';
+            calcExpression += val;
+            document.getElementById('calc-display').innerText = calcExpression || '0';
         }
 
         function calculateResult() {
             try {
-                let res = eval(calcExpression);
-                calcExpression = String(res);
+                let res = eval(calcExpression.replace(/×/g, '*').replace(/÷/g, '/'));
+                calcExpression = String(Math.round(res * 100) / 100);
                 document.getElementById('calc-display').innerText = calcExpression;
             } catch(e) {
-                document.getElementById('calc-display').innerText = "Error";
-                calcExpression = "0";
+                document.getElementById('calc-display').innerText = 'Error';
+                calcExpression = '';
             }
         }
 
         function resetAppInput() {
-            calcExpression = "0";
-            document.getElementById('calc-display').innerText = "0";
-            document.getElementById('app-notes').value = "";
-            selectedAccount = null;
-            selectedCategory = null;
-            document.getElementById('selected-account-label').innerText = "Account";
-            document.getElementById('selected-category-label').innerText = "Subcategory";
+            calcExpression = '';
+            document.getElementById('calc-display').innerText = '0';
+            document.getElementById('app-notes').value = '';
+            selectedAccountId = '';
+            selectedCategorySub = '';
+            document.getElementById('selected-account-label').innerText = 'Account';
+            document.getElementById('selected-category-label').innerText = 'Subcategory';
         }
 
-        // Account Modal
-        function openAccountModal(mode) {
-            const listEl = document.getElementById('account-modal-list');
-            listEl.innerHTML = '';
-            
-            // Combine Accounts + Wallets
-            const combined = {...appData.accounts, ...appData.wallets};
-            for (let id in combined) {
-                const item = combined[id];
-                const row = document.createElement('div');
-                row.className = 'account-select-row';
-                row.innerHTML = `<span><i class="bi bi-wallet2 me-2 text-primary"></i>${item.name}</span><span class="text-muted">₹${item.balance || item.initialBalance || 0}</span>`;
-                row.onclick = () => {
-                    selectedAccount = item.name;
-                    document.getElementById('selected-account-label').innerText = item.name;
-                    closeAccountModal();
-                };
-                listEl.appendChild(row);
-            }
-            document.getElementById('account-modal').style.display = 'flex';
-        }
-        function closeAccountModal() { document.getElementById('account-modal').style.display = 'none'; }
-
-        // Category Modal
-        function openCategoryModal() {
-            const listEl = document.getElementById('category-modal-list');
-            listEl.innerHTML = '';
-
-            for (let catId in appData.categories) {
-                const cat = appData.categories[catId];
-                const header = document.createElement('div');
-                header.className = 'fw-bold text-primary px-3 py-2 bg-input mt-2 rounded';
-                header.innerText = cat.name;
-                listEl.appendChild(header);
-
-                if (cat.subcategories) {
-                    const subs = cat.subcategories.split(',');
-                    subs.forEach(sub => {
-                        const subTrim = sub.trim();
-                        if(!subTrim) return;
-                        const item = document.createElement('a');
-                        item.className = 'list-group-item list-group-item-action ps-4';
-                        item.innerText = subTrim;
-                        item.onclick = () => {
-                            selectedCategory = subTrim;
-                            document.getElementById('selected-category-label').innerText = subTrim;
-                            document.getElementById('app-notes').value = subTrim;
-                            closeCategoryModal();
-                        };
-                        listEl.appendChild(item);
-                    });
-                }
-            }
-            document.getElementById('category-modal').style.display = 'flex';
-        }
-        function closeCategoryModal() { document.getElementById('category-modal').style.display = 'none'; }
-
-        // Submit Transaction from App Simulator
         function submitAppTransaction() {
-            const amount = parseFloat(calcExpression);
-            if(isNaN(amount) || amount <= 0) {
-                alert("Please enter a valid amount");
-                return;
-            }
-            if(!selectedAccount) {
-                alert("Please select an account");
-                return;
-            }
+            const amount = parseFloat(calcExpression || document.getElementById('calc-display').innerText);
+            if(isNaN(amount) || amount <= 0) { alert('Please enter a valid amount.'); return; }
+            if(!selectedAccountId) { alert('Please select an account.'); return; }
+            if(currentAppType !== 'Transfer' && !selectedCategorySub) { alert('Please select a subcategory.'); return; }
 
-            const notes = document.getElementById('app-notes').value || selectedCategory || currentAppType;
-            const newTx = {
-                date: new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}),
-                type: currentAppType,
-                amount: amount,
-                account: selectedAccount,
-                notes: notes,
-                timestamp: Date.now()
-            };
+            const notes = document.getElementById('app-notes').value || selectedCategorySub || currentAppType;
+            const dateStr = new Date().toISOString();
 
-            const txRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'transactions'));
-            window.dbRefs.set(txRef, newTx);
-            resetAppInput();
-            alert("Transaction saved successfully!");
-        }
+            // Update Account Balance
+            let accRef = db.ref('accounts/' + selectedAccountId);
+            accRef.once('value').then(snap => {
+                let acc = snap.val();
+                if(!acc) return;
+                let newBal = acc.balance;
+                if(currentAppType === 'Income') newBal += amount;
+                else if(currentAppType === 'Expense') newBal -= amount;
+                accRef.update({ balance: newBal });
 
-        // Populate Dropdowns
-        function populateDropdowns() {
-            const accSelects = [
-                document.getElementById('fdrd-account-id'),
-                document.getElementById('inv-account-id'),
-                document.getElementById('redeem-target-account')
-            ];
+                // Push transaction
+                db.ref('transactions').push({
+                    type: currentAppType,
+                    amount: amount,
+                    accountId: selectedAccountId,
+                    accountName: acc.name,
+                    notes: notes,
+                    category: selectedCategorySub,
+                    date: dateStr
+                });
 
-            accSelects.forEach(sel => {
-                if(!sel) return;
-                sel.innerHTML = '';
-                for(let id in appData.accounts) {
-                    const acc = appData.accounts[id];
-                    const opt = document.createElement('option');
-                    opt.value = acc.name;
-                    opt.innerText = acc.name;
-                    sel.appendChild(opt);
-                }
+                resetAppInput();
+                alert('Transaction saved successfully!');
             });
-
-            const budCatSel = document.getElementById('budget-category');
-            if(budCatSel) {
-                budCatSel.innerHTML = '';
-                for(let id in appData.categories) {
-                    const cat = appData.categories[id];
-                    const opt = document.createElement('option');
-                    opt.value = cat.name;
-                    opt.innerText = cat.name;
-                    budCatSel.appendChild(opt);
-                }
-            }
         }
 
-        // --- CRUD: Categories ---
+        // --- MODAL SELECTORS ---
+        function openAccountModal(target) {
+            accountModalTarget = target;
+            document.getElementById('account-modal').style.display = 'flex';
+            let listHtml = '';
+            const accs = appData.accounts;
+            for(let id in accs) {
+                listHtml += `<div class="account-select-row" onclick="selectAccount('${id}', '${accs[id].name}')">
+                    <span class="fw-semibold">${accs[id].name}</span>
+                    <span class="text-success">₹${accs[id].balance.toLocaleString()}</span>
+                </div>`;
+            }
+            document.getElementById('account-modal-list').innerHTML = listHtml || '<p class="text-muted p-3">No accounts available.</p>';
+        }
+
+        function closeAccountModal() {
+            document.getElementById('account-modal').style.display = 'none';
+        }
+
+        function selectAccount(id, name) {
+            if(accountModalTarget === 'primary') {
+                selectedAccountId = id;
+                document.getElementById('selected-account-label').innerText = name;
+            } else if(accountModalTarget === 'withdraw') {
+                document.getElementById('withdraw-target-account').value = id;
+            } else if(accountModalTarget === 'payment') {
+                executeCardPayment(accountModalTargetParamCardId, id);
+            }
+            closeAccountModal();
+        }
+
+        function openCategoryModal() {
+            document.getElementById('category-modal').style.display = 'flex';
+            let html = '';
+            const cats = appData.categories;
+            for(let catId in cats) {
+                let cat = cats[catId];
+                html += `<div class="p-2 fw-bold text-primary border-bottom">${cat.name}</div>`;
+                let subs = (cat.sub || '').split(',');
+                subs.forEach(sub => {
+                    let s = sub.trim();
+                    if(s) {
+                        html += `<a href="#" class="list-group-item list-group-item-action ps-4" onclick="selectCategory('${cat.name} > ${s}')">${s}</a>`;
+                    }
+                });
+            }
+            document.getElementById('category-modal-list').innerHTML = html || '<p class="text-muted p-3">No categories configured.</p>';
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('category-modal').style.display = 'none';
+        }
+
+        function selectCategory(val) {
+            selectedCategorySub = val;
+            document.getElementById('selected-category-label').innerText = val;
+            document.getElementById('app-notes').value = val;
+            closeCategoryModal();
+        }
+
+        // --- 1. CATEGORIES MANAGEMENT ---
         function saveCategory(e) {
             e.preventDefault();
             const id = document.getElementById('cat-id').value;
             const name = document.getElementById('cat-name').value;
             const sub = document.getElementById('cat-sub').value;
+            const ref = id ? db.ref('categories/' + id) : db.ref('categories').push();
+            ref.set({ name, sub }, () => {
+                resetCategoryForm();
+            });
+        }
 
-            const data = { name, subcategories: sub };
-            if(id) {
-                window.dbRefs.update(window.dbRefs.ref(window.db, `categories/${id}`), data);
-            } else {
-                const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'categories'));
-                window.dbRefs.set(newRef, data);
-            }
-            resetCategoryForm();
-        }
-        function editCategory(id, name, sub) {
+        function editCategory(id) {
+            const cat = appData.categories[id];
+            if(!cat) return;
             document.getElementById('cat-id').value = id;
-            document.getElementById('cat-name').value = name;
-            document.getElementById('cat-sub').value = sub;
-            document.getElementById('cat-cancel').style.display = 'block';
-            document.getElementById('cat-form-title').innerText = "Edit Category";
+            document.getElementById('cat-name').value = cat.name;
+            document.getElementById('cat-sub').value = cat.sub;
+            document.getElementById('cat-form-title').innerText = 'Edit Category';
         }
+
+        function deleteCategory(id) {
+            if(confirm('Delete category?')) db.ref('categories/' + id).remove();
+        }
+
         function resetCategoryForm() {
             document.getElementById('category-form').reset();
             document.getElementById('cat-id').value = '';
-            document.getElementById('cat-cancel').style.display = 'none';
-            document.getElementById('cat-form-title').innerText = "Manage Categories";
-        }
-        function deleteCategory(id) {
-            if(confirm("Delete this category?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `categories/${id}`));
-        }
-        function renderCategories() {
-            const list = document.getElementById('categories-list');
-            list.innerHTML = '';
-            for(let id in appData.categories) {
-                const cat = appData.categories[id];
-                const item = document.createElement('div');
-                item.className = 'list-group-item d-flex justify-content-between align-items-center bg-card text-color border-bottom';
-                item.innerHTML = `
-                    <div>
-                        <h6 class="fw-bold mb-1">${cat.name}</h6>
-                        <small class="text-muted">Subs: ${cat.subcategories || 'None'}</small>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-primary" onclick="editCategory('${id}', '${cat.name}', '${cat.subcategories || ''}')"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${id}')"><i class="bi bi-trash"></i></button>
-                    </div>
-                `;
-                list.appendChild(item);
-            }
+            document.getElementById('cat-form-title').innerText = 'Manage Categories';
         }
 
-        // --- CRUD: Accounts & FD/RD ---
+        function renderCategories() {
+            let html = '';
+            const cats = appData.categories;
+            for(let id in cats) {
+                html += `<tr>
+                    <td class="fw-semibold">${cats[id].name}</td>
+                    <td>${cats[id].sub || ''}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('categories-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No categories found.</td></tr>';
+        }
+
+        // --- 2. ACCOUNTS, FD & RD ---
         function saveAccount(e) {
             e.preventDefault();
             const id = document.getElementById('acc-id').value;
             const name = document.getElementById('acc-name').value;
-            const type = document.getElementById('acc-type').value;
             const balance = parseFloat(document.getElementById('acc-balance').value);
+            const ref = id ? db.ref('accounts/' + id) : db.ref('accounts').push();
+            ref.set({ name, balance }, () => {
+                document.getElementById('account-form').reset();
+                document.getElementById('acc-id').value = '';
+            });
+        }
 
-            const data = { name, type, balance };
-            if(id) {
-                window.dbRefs.update(window.dbRefs.ref(window.db, `accounts/${id}`), data);
-            } else {
-                const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'accounts'));
-                window.dbRefs.set(newRef, data);
+        function renderAccounts() {
+            let html = '';
+            const accs = appData.accounts;
+            for(let id in accs) {
+                html += `<tr>
+                    <td class="fw-semibold">${accs[id].name}</td>
+                    <td class="text-success fw-bold">₹${accs[id].balance.toLocaleString()}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteAccount('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
             }
-            resetAccountForm();
+            document.getElementById('accounts-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No accounts found.</td></tr>';
         }
-        function editAccount(id, name, type, balance) {
-            document.getElementById('acc-id').value = id;
-            document.getElementById('acc-name').value = name;
-            document.getElementById('acc-type').value = type;
-            document.getElementById('acc-balance').value = balance;
-            document.getElementById('acc-cancel').style.display = 'block';
-            document.getElementById('acc-form-title').innerText = "Edit Bank Account";
-        }
-        function resetAccountForm() {
-            document.getElementById('account-form').reset();
-            document.getElementById('acc-id').value = '';
-            document.getElementById('acc-cancel').style.display = 'none';
-            document.getElementById('acc-form-title').innerText = "Add Bank Account";
-        }
+
         function deleteAccount(id) {
-            if(confirm("Delete account?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `accounts/${id}`));
+            if(confirm('Delete bank account?')) db.ref('accounts/' + id).remove();
+        }
+
+        function toggleRdFields() {
+            const type = document.getElementById('fr-type').value;
+            document.getElementById('rd-monthly-date-group').style.display = type === 'RD' ? 'block' : 'none';
+            document.getElementById('fr-principal-label').innerText = type === 'RD' ? 'Monthly Installment Amount (₹)' : 'Principal Amount (₹)';
         }
 
         function saveFdRd(e) {
             e.preventDefault();
-            const accountName = document.getElementById('fdrd-account-id').value;
-            const type = document.getElementById('fdrd-type').value;
-            const name = document.getElementById('fdrd-name').value;
-            const amount = parseFloat(document.getElementById('fdrd-amount').value);
-            const details = document.getElementById('fdrd-details').value;
+            const type = document.getElementById('fr-type').value;
+            const name = document.getElementById('fr-name').value;
+            const amount = parseFloat(document.getElementById('fr-amount').value);
+            const rate = parseFloat(document.getElementById('fr-rate').value);
+            const startDate = document.getElementById('fr-start-date').value;
+            const tenure = parseInt(document.getElementById('fr-tenure').value);
+            const rdDay = type === 'RD' ? parseInt(document.getElementById('fr-rd-day').value || 1) : 0;
+            const linkedAccount = document.getElementById('fr-linked-account').value;
 
-            const data = { accountName, type, name, amount, details };
-            const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'fdrd'));
-            window.dbRefs.set(newRef, data);
-            document.getElementById('fdrd-form').reset();
-            alert("FD/RD attached successfully!");
-        }
-        function deleteFdRd(id) {
-            if(confirm("Delete this deposit?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `fdrd/${id}`));
-        }
-
-        function renderAccounts() {
-            const list = document.getElementById('accounts-list');
-            list.innerHTML = '';
-            for(let id in appData.accounts) {
-                const acc = appData.accounts[id];
-                
-                // Find linked FDs/RDs
-                let fdrdHtml = '';
-                for(let fId in appData.fdrd) {
-                    const fd = appData.fdrd[fId];
-                    if(fd.accountName === acc.name) {
-                        fdrdHtml += `<div class="ms-3 mt-2 p-2 border rounded bg-input d-flex justify-content-between align-items-center">
-                            <div><span class="badge bg-success me-2">${fd.type}</span><strong>${fd.name}</strong> - ₹${fd.amount} (${fd.details || ''})</div>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteFdRd('${fId}')"><i class="bi bi-x"></i></button>
-                        </div>`;
-                    }
-                }
-
-                const card = document.createElement('div');
-                card.className = 'p-3 border rounded mb-3 bg-card';
-                card.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="fw-bold mb-1">${acc.name} <span class="badge bg-primary fs-7">${acc.type}</span></h5>
-                            <span class="text-muted">Balance: ₹${acc.balance}</span>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-primary" onclick="editAccount('${id}', '${acc.name}', '${acc.type}', ${acc.balance})"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAccount('${id}')"><i class="bi bi-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="mt-2">${fdrdHtml || '<small class="text-muted ms-3">No linked FD/RD</small>'}</div>
-                `;
-                list.appendChild(card);
-            }
-        }
-
-        // --- CRUD: Investments & SIP ---
-        function saveInvestment(e) {
-            e.preventDefault();
-            const id = document.getElementById('inv-id').value;
-            const name = document.getElementById('inv-name').value;
-            const type = document.getElementById('inv-type').value;
-            const amount = parseFloat(document.getElementById('inv-amount').value);
-            const frequency = document.getElementById('inv-frequency').value;
-            const dueDate = document.getElementById('inv-duedate').value;
-            const accountName = document.getElementById('inv-account-id').value;
-
-            const data = { name, type, amount, frequency, dueDate, accountName };
-            if(id) {
-                window.dbRefs.update(window.dbRefs.ref(window.db, `investments/${id}`), data);
-            } else {
-                const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'investments'));
-                window.dbRefs.set(newRef, data);
-            }
-            document.getElementById('investment-form').reset();
-            document.getElementById('inv-id').value = '';
-        }
-        function deleteInvestment(id) {
-            if(confirm("Delete investment?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `investments/${id}`));
-        }
-        function openRedeemModal(id) {
-            document.getElementById('redeem-inv-id').value = id;
-            document.getElementById('redeem-modal').style.display = 'flex';
-        }
-        function closeRedeemModal() { document.getElementById('redeem-modal').style.display = 'none'; }
-        function executeRedeem(e) {
-            e.preventDefault();
-            const id = document.getElementById('redeem-inv-id').value;
-            const amt = parseFloat(document.getElementById('redeem-amount').value);
-            const targetAcc = document.getElementById('redeem-target-account').value;
-            
-            // Add to transaction log
-            const newTx = {
-                date: new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}),
-                type: 'Income',
-                amount: amt,
-                account: targetAcc,
-                notes: `Redemption from Investment`,
-                timestamp: Date.now()
-            };
-            window.dbRefs.set(window.dbRefs.push(window.dbRefs.ref(window.db, 'transactions')), newTx);
-            closeRedeemModal();
-            alert("Redemption completed successfully!");
-        }
-
-        function renderInvestments() {
-            const tbody = document.getElementById('investments-table-body');
-            tbody.innerHTML = '';
-            for(let id in appData.investments) {
-                const inv = appData.investments[id];
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="fw-bold">${inv.name}</td>
-                    <td><span class="badge bg-secondary">${inv.type}</span></td>
-                    <td>₹${inv.amount}</td>
-                    <td>${inv.frequency !== 'None' ? `${inv.frequency} (Due: ${inv.dueDate || '-'})` : 'Lumpsum'}</td>
-                    <td>${inv.accountName || '-'}</td>
-                    <td class="text-end">
-                        <button class="btn btn-sm btn-success me-1" onclick="openRedeemModal('${id}')">Redeem</button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteInvestment('${id}')"><i class="bi bi-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        // --- CRUD: Cards ---
-        function saveCard(e) {
-            e.preventDefault();
-            const id = document.getElementById('card-id').value;
-            const name = document.getElementById('card-name').value;
-            const limit = parseFloat(document.getElementById('card-limit').value);
-            const outstanding = parseFloat(document.getElementById('card-outstanding').value);
-            const dueDate = document.getElementById('card-duedate').value;
-
-            const data = { name, limit, outstanding, dueDate };
-            if(id) {
-                window.dbRefs.update(window.dbRefs.ref(window.db, `cards/${id}`), data);
-            } else {
-                const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'cards'));
-                window.dbRefs.set(newRef, data);
-            }
-            document.getElementById('card-form').reset();
-            document.getElementById('card-id').value = '';
-        }
-        function deleteCard(id) {
-            if(confirm("Delete card/loan?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `cards/${id}`));
-        }
-        function renderCards() {
-            const tbody = document.getElementById('cards-table-body');
-            tbody.innerHTML = '';
-            for(let id in appData.cards) {
-                const c = appData.cards[id];
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="fw-bold">${c.name}</td>
-                    <td>₹${c.limit}</td>
-                    <td class="text-danger fw-semibold">₹${c.outstanding}</td>
-                    <td>${c.dueDate || '-'}</td>
-                    <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${id}')"><i class="bi bi-trash"></i></button></td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        // --- CRUD: Wallets ---
-        function saveWallet(e) {
-            e.preventDefault();
-            const id = document.getElementById('wallet-id').value;
-            const name = document.getElementById('wallet-name').value;
-            const balance = parseFloat(document.getElementById('wallet-balance').value);
-
-            const data = { name, balance };
-            if(id) {
-                window.dbRefs.update(window.dbRefs.ref(window.db, `wallets/${id}`), data);
-            } else {
-                const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'wallets'));
-                window.dbRefs.set(newRef, data);
-            }
-            document.getElementById('wallet-form').reset();
-            document.getElementById('wallet-id').value = '';
-        }
-        function deleteWallet(id) {
-            if(confirm("Delete wallet?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `wallets/${id}`));
-        }
-        function renderWallets() {
-            const tbody = document.getElementById('wallets-table-body');
-            tbody.innerHTML = '';
-            for(let id in appData.wallets) {
-                const w = appData.wallets[id];
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="fw-bold">${w.name}</td>
-                    <td>₹${w.balance}</td>
-                    <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteWallet('${id}')"><i class="bi bi-trash"></i></button></td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        // --- CRUD: Recurring ---
-        function saveRecurring(e) {
-            e.preventDefault();
-            const id = document.getElementById('rec-id').value;
-            const title = document.getElementById('rec-title').value;
-            const amount = parseFloat(document.getElementById('rec-amount').value);
-            const frequency = document.getElementById('rec-frequency').value;
-
-            const data = { title, amount, frequency };
-            if(id) {
-                window.dbRefs.update(window.dbRefs.ref(window.db, `recurring/${id}`), data);
-            } else {
-                const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'recurring'));
-                window.dbRefs.set(newRef, data);
-            }
-            document.getElementById('recurring-form').reset();
-            document.getElementById('rec-id').value = '';
-        }
-        function deleteRecurring(id) {
-            if(confirm("Delete recurring?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `recurring/${id}`));
-        }
-        function renderRecurring() {
-            const tbody = document.getElementById('recurring-table-body');
-            tbody.innerHTML = '';
-            for(let id in appData.recurring) {
-                const r = appData.recurring[id];
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="fw-bold">${r.title}</td>
-                    <td>₹${r.amount}</td>
-                    <td><span class="badge bg-info">${r.frequency}</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring('${id}')"><i class="bi bi-trash"></i></button></td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        // --- Transactions List ---
-        function deleteTransaction(id) {
-            if(confirm("Delete transaction?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `transactions/${id}`));
-        }
-        function renderTransactions() {
-            const tbody = document.getElementById('transactions-table-body');
-            tbody.innerHTML = '';
-            
-            // Sort by timestamp desc
-            const txArray = [];
-            for(let id in appData.transactions) {
-                txArray.push({ id, ...appData.transactions[id] });
-            }
-            txArray.sort((a,b) => b.timestamp - a.timestamp);
-
-            txArray.forEach(tx => {
-                const tr = document.createElement('tr');
-                const badgeClass = tx.type === 'Income' ? 'bg-success' : tx.type === 'Expense' ? 'bg-danger' : 'bg-primary';
-                tr.innerHTML = `
-                    <td>${tx.date}</td>
-                    <td><span class="badge ${badgeClass}">${tx.type}</span></td>
-                    <td class="fw-bold">₹${tx.amount}</td>
-                    <td>${tx.account}</td>
-                    <td>${tx.notes || '-'}</td>
-                    <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${tx.id}')"><i class="bi bi-trash"></i></button></td>
-                `;
-                tbody.appendChild(tr);
+            db.ref('fdRd').push({
+                type, name, amount, rate, startDate, tenure, rdDay, linkedAccount
+            }, () => {
+                document.getElementById('fd-rd-form').reset();
+                alert('Scheme saved successfully!');
             });
         }
 
-        // --- Analytics & Filters ---
-        function renderAnalytics() {
-            const filter = document.getElementById('analytics-filter').value;
-            let totalIncome = 0;
-            let totalExpense = 0;
-            const catTotals = {};
-
-            const now = Date.now();
-            const filterMap = {
-                'daily': 24 * 60 * 60 * 1000,
-                'weekly': 7 * 24 * 60 * 60 * 1000,
-                'monthly': 30 * 24 * 60 * 60 * 1000,
-                'quarterly': 90 * 24 * 60 * 60 * 1000,
-                'yearly': 365 * 24 * 60 * 60 * 1000
-            };
-
-            for(let id in appData.transactions) {
-                const tx = appData.transactions[id];
-                if(filter !== 'all' && filterMap[filter]) {
-                    if((now - tx.timestamp) > filterMap[filter]) continue;
+        function calculateFdRdValue(item) {
+            const start = new Date(item.startDate);
+            const now = new Date();
+            const diffMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+            const monthsElapsed = Math.max(0, Math.min(item.tenure, diffMonths));
+            
+            if(item.type === 'FD') {
+                // Compound Interest A = P (1 + r/100)^(t/12)
+                let years = monthsElapsed / 12;
+                let maturityVal = item.amount * Math.pow((1 + item.rate / 100), years);
+                return { invested: item.amount, current: Math.round(maturityVal) };
+            } else {
+                // RD cumulative calculation
+                let totalInvested = item.amount * monthsElapsed;
+                let monthlyRate = item.rate / (12 * 100);
+                let currentVal = 0;
+                for(let i = 1; i <= monthsElapsed; i++) {
+                    currentVal += item.amount * Math.pow(1 + monthlyRate, item.tenure - i + 1);
                 }
-
-                if(tx.type === 'Income') totalIncome += tx.amount;
-                if(tx.type === 'Expense') {
-                    totalExpense += tx.amount;
-                    catTotals[tx.notes] = (catTotals[tx.notes] || 0) + tx.amount;
-                }
-            }
-
-            document.getElementById('analytics-income').innerText = `₹${totalIncome.toFixed(2)}`;
-            document.getElementById('analytics-expense').innerText = `₹${totalExpense.toFixed(2)}`;
-            document.getElementById('analytics-net').innerText = `₹${(totalIncome - totalExpense).toFixed(2)}`;
-
-            const breakdownEl = document.getElementById('analytics-categories-breakdown');
-            breakdownEl.innerHTML = '';
-            for(let cat in catTotals) {
-                const amt = catTotals[cat];
-                const pct = totalExpense > 0 ? ((amt / totalExpense) * 100).toFixed(1) : 0;
-                breakdownEl.innerHTML += `
-                    <div class="mb-2">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>${cat}</span>
-                            <span class="fw-bold">₹${amt} (${pct}%)</span>
-                        </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
-                `;
+                return { invested: totalInvested, current: Math.round(currentVal || totalInvested) };
             }
         }
 
-        // --- Budgets ---
+        function renderFdRd() {
+            let html = '';
+            const items = appData.fdRd;
+            for(let id in items) {
+                let item = items[id];
+                let calc = calculateFdRdValue(item);
+                html += `<tr>
+                    <td><div class="fw-semibold">${item.name}</div><small class="text-muted">Start: ${item.startDate}</small></td>
+                    <td><span class="badge bg-secondary">${item.type}</span></td>
+                    <td><div>Inv: ₹${calc.invested.toLocaleString()}</div><div class="text-success fw-bold">Val: ₹${calc.current.toLocaleString()}</div></td>
+                    <td><div>${item.rate}% p.a.</div><small class="text-muted">${item.tenure} mos</small></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-success" onclick="openWithdrawModalForFdRd('${id}', ${calc.current})">Withdraw</button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('fd-rd-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No FD/RD schemes found.</td></tr>';
+        }
+
+        let withdrawTargetId = '';
+        let withdrawTargetType = '';
+        function openWithdrawModalForFdRd(id, maxVal) {
+            withdrawTargetId = id;
+            withdrawTargetType = 'fdRd';
+            document.getElementById('withdraw-title').innerText = 'Premature Withdrawal / Payout';
+            document.getElementById('withdraw-inv-id').value = id;
+            document.getElementById('withdraw-type').value = 'fdRd';
+            document.getElementById('withdraw-amount').value = maxVal;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdraw-modal').style.display = 'none';
+        }
+
+        function executeWithdraw(e) {
+            e.preventDefault();
+            const id = document.getElementById('withdraw-inv-id').value;
+            const type = document.getElementById('withdraw-type').value;
+            const amt = parseFloat(document.getElementById('withdraw-amount').value);
+            const targetAccId = document.getElementById('withdraw-target-account').value;
+
+            if(type === 'fdRd') {
+                db.ref('accounts/' + targetAccId).once('value').then(snap => {
+                    let acc = snap.val();
+                    if(acc) {
+                        db.ref('accounts/' + targetAccId).update({ balance: acc.balance + amt });
+                        db.ref('fdRd/' + id).remove();
+                        closeWithdrawModal();
+                        alert(`Successfully transferred ₹${amt} to ${acc.name}`);
+                    }
+                });
+            } else if(type === 'mf') {
+                db.ref('accounts/' + targetAccId).once('value').then(snap => {
+                    let acc = snap.val();
+                    if(acc) {
+                        db.ref('accounts/' + targetAccId).update({ balance: acc.balance + amt });
+                        db.ref('mutualFunds/' + id).remove();
+                        closeWithdrawModal();
+                        alert(`Successfully redeemed ₹${amt} to ${acc.name}`);
+                    }
+                });
+            }
+        }
+
+        // --- 3. MUTUAL FUNDS & SIPs ---
+        function toggleMfFields() {
+            const mode = document.getElementById('mf-mode').value;
+            document.getElementById('mf-freq-group').style.display = mode === 'SIP' ? 'block' : 'none';
+            document.getElementById('mf-due-group').style.display = mode === 'SIP' ? 'block' : 'none';
+            document.getElementById('mf-amount-label').innerText = mode === 'SIP' ? 'Monthly/Weekly SIP Amount (₹)' : 'Invested Lumpsum (₹)';
+            if(mode === 'SIP') toggleMfFreqFields();
+        }
+
+        function toggleMfFreqFields() {
+            const freq = document.getElementById('mf-freq').value;
+            document.getElementById('mf-due-label').innerText = freq === 'Weekly' ? 'Select Weekday (1=Mon..7=Sun)' : 'Monthly Date (1-31)';
+        }
+
+        function saveMutualFund(e) {
+            e.preventDefault();
+            const name = document.getElementById('mf-name').value;
+            const mode = document.getElementById('mf-mode').value;
+            const amount = parseFloat(document.getElementById('mf-amount').value);
+            const freq = mode === 'SIP' ? document.getElementById('mf-freq').value : '';
+            const dueVal = mode === 'SIP' ? parseInt(document.getElementById('mf-due-val').value || 1) : 0;
+            const linkedAccount = document.getElementById('mf-linked-account').value;
+
+            db.ref('mutualFunds').push({
+                name, mode, amount, freq, dueVal, linkedAccount
+            }, () => {
+                document.getElementById('mf-form').reset();
+                toggleMfFields();
+                alert('Mutual fund saved!');
+            });
+        }
+
+        function renderMutualFunds() {
+            let html = '';
+            const mfs = appData.mutualFunds;
+            for(let id in mfs) {
+                let mf = mfs[id];
+                html += `<tr>
+                    <td class="fw-semibold">${mf.name}</td>
+                    <td><span class="badge bg-primary">${mf.mode}</span></td>
+                    <td>₹${mf.amount.toLocaleString()}</td>
+                    <td><small class="text-muted">${mf.freq ? mf.freq + ' (Day ' + mf.dueVal + ')' : 'One-time'}</small></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-success" onclick="openWithdrawModalForMf('${id}', ${mf.amount})">Withdraw</button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('mf-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No mutual funds found.</td></tr>';
+        }
+
+        function openWithdrawModalForMf(id, estVal) {
+            document.getElementById('withdraw-title').innerText = 'Withdraw Mutual Fund';
+            document.getElementById('withdraw-inv-id').value = id;
+            document.getElementById('withdraw-type').value = 'mf';
+            document.getElementById('withdraw-amount').value = estVal;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        // --- 4. CARDS & EMIs ---
+        function saveCard(e) {
+            e.preventDefault();
+            const name = document.getElementById('card-name').value;
+            const billDate = parseInt(document.getElementById('card-bill-date').value);
+            const dueDate = parseInt(document.getElementById('card-due-date').value);
+            db.ref('cards').push({ name, billDate, dueDate }, () => {
+                document.getElementById('card-form').reset();
+            });
+        }
+
+        function saveEmi(e) {
+            e.preventDefault();
+            const name = document.getElementById('emi-name').value;
+            const cardId = document.getElementById('emi-card-id').value;
+            const principal = parseFloat(document.getElementById('emi-principal').value);
+            const rate = parseFloat(document.getElementById('emi-rate').value);
+            const tenure = parseInt(document.getElementById('emi-tenure').value);
+            const startDate = document.getElementById('emi-start-date').value;
+
+            // Calculate monthly EMI formula: P * r * (1+r)^n / ((1+r)^n - 1)
+            let rMonthly = rate / (12 * 100);
+            let emiAmt = principal * rMonthly * Math.pow(1 + rMonthly, tenure) / (Math.pow(1 + rMonthly, tenure) - 1);
+            emiAmt = Math.round(emiAmt * 100) / 100;
+
+            db.ref('emis').push({
+                name, cardId, principal, rate, tenure, startDate, emiAmt
+            }, () => {
+                document.getElementById('emi-form').reset();
+                alert(`EMI scheduled successfully! Monthly amount: ₹${emiAmt}`);
+            });
+        }
+
+        let accountModalTargetParamCardId = '';
+        function promptCardPayment(cardId) {
+            accountModalTargetParamCardId = cardId;
+            accountModalTarget = 'payment';
+            openAccountModal('payment');
+        }
+
+        function executeCardPayment(cardId, bankAccId) {
+            // Find total outstanding for card
+            let totalOut = 0;
+            const emis = appData.emis;
+            for(let id in emis) {
+                if(emis[id].cardId === cardId) totalOut += emis[id].emiAmt;
+            }
+            if(totalOut <= 0) { alert('No pending EMIs/outstanding on card.'); return; }
+
+            db.ref('accounts/' + bankAccId).once('value').then(snap => {
+                let acc = snap.val();
+                if(acc && acc.balance >= totalOut) {
+                    db.ref('accounts/' + bankAccId).update({ balance: acc.balance - totalOut });
+                    alert(`Paid card statement of ₹${totalOut} from ${acc.name}`);
+                } else {
+                    alert('Insufficient balance in selected bank account.');
+                }
+            });
+        }
+
+        function renderCards() {
+            let html = '';
+            const cards = appData.cards;
+            const emis = appData.emis;
+            for(let cardId in cards) {
+                let card = cards[cardId];
+                let out = 0;
+                for(let emId in emis) {
+                    if(emis[emId].cardId === cardId) out += emis[emId].emiAmt;
+                }
+                html += `<tr>
+                    <td class="fw-semibold">${card.name}</td>
+                    <td><small>Bill: ${card.billDate}th | Due: ${card.dueDate}th</small></td>
+                    <td class="text-danger fw-bold">₹${out.toLocaleString()}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary" onclick="promptCardPayment('${cardId}')">Pay Bill</button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('cards-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No credit cards found.</td></tr>';
+        }
+
+        function renderEmis() {
+            let html = '';
+            const emis = appData.emis;
+            const cards = appData.cards;
+            for(let id in emis) {
+                let em = emis[id];
+                let cName = cards[em.cardId] ? cards[em.cardId].name : 'Unknown Card';
+                html += `<tr>
+                    <td class="fw-semibold">${em.name}</td>
+                    <td>${cName}</td>
+                    <td class="text-primary fw-bold">₹${em.emiAmt.toLocaleString()}</td>
+                    <td>${em.tenure} mos (${em.startDate})</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmi('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('emi-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No active EMIs found.</td></tr>';
+        }
+
+        function deleteEmi(id) {
+            if(confirm('Delete EMI?')) db.ref('emis/' + id).remove();
+        }
+
+        // --- 5. RECURRING PAYMENTS ---
+        function saveRecurring(e) {
+            e.preventDefault();
+            const title = document.getElementById('rec-title').value;
+            const amount = parseFloat(document.getElementById('rec-amount').value);
+            const dueDate = parseInt(document.getElementById('rec-duedate').value);
+            const account = document.getElementById('rec-account').value;
+
+            db.ref('recurring').push({
+                title, amount, dueDate, account, status: 'Active'
+            }, () => {
+                document.getElementById('recurring-form').reset();
+                alert('Recurring payment saved!');
+            });
+        }
+
+        function toggleRecurringStatus(id, currentStatus) {
+            const next = currentStatus === 'Active' ? 'Paused' : 'Active';
+            db.ref('recurring/' + id).update({ status: next });
+        }
+
+        function deleteRecurring(id) {
+            if(confirm('Delete recurring payment?')) db.ref('recurring/' + id).remove();
+        }
+
+        function renderRecurring() {
+            let html = '';
+            const recs = appData.recurring;
+            const accs = appData.accounts;
+            for(let id in recs) {
+                let rec = recs[id];
+                let aName = accs[rec.account] ? accs[rec.account].name : 'Account';
+                let badgeClass = rec.status === 'Active' ? 'bg-success' : 'bg-warning text-dark';
+                html += `<tr>
+                    <td class="fw-semibold">${rec.title}</td>
+                    <td>₹${rec.amount.toLocaleString()}</td>
+                    <td>Day ${rec.dueDate}</td>
+                    <td><small>${aName}</small></td>
+                    <td><span class="badge ${badgeClass}" style="cursor:pointer;" onclick="toggleRecurringStatus('${id}', '${rec.status}')">${rec.status}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-secondary me-1" onclick="toggleRecurringStatus('${id}', '${rec.status}')"><i class="bi bi-pause-fill"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('recurring-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No recurring payments configured.</td></tr>';
+        }
+
+        // --- 6. INVESTMENTS / SAVINGS STATUS ---
+        function renderWealthSummary() {
+            let totalBank = 0;
+            for(let id in appData.accounts) totalBank += appData.accounts[id].balance;
+
+            let totalFdRd = 0;
+            for(let id in appData.fdRd) totalFdRd += calculateFdRdValue(appData.fdRd[id]).current;
+
+            let totalMf = 0;
+            for(let id in appData.mutualFunds) totalMf += appData.mutualFunds[id].amount;
+
+            let totalCardsOut = 0;
+            for(let id in appData.emis) totalCardsOut += appData.emis[id].emiAmt;
+
+            let netWorth = totalBank + totalFdRd + totalMf - totalCardsOut;
+
+            let html = `
+                <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Bank Balances</span><h4 class="text-success m-0">₹${totalBank.toLocaleString()}</h4></div></div>
+                <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">FD / RD Value</span><h4 class="text-primary m-0">₹${totalFdRd.toLocaleString()}</h4></div></div>
+                <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Mutual Funds</span><h4 class="text-info m-0">₹${totalMf.toLocaleString()}</h4></div></div>
+                <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Net Worth</span><h4 class="text-warning m-0">₹${netWorth.toLocaleString()}</h4></div></div>
+            `;
+            document.getElementById('wealth-summary-cards').innerHTML = html;
+        }
+
+        // --- 7. ANALYTICS ---
+        function renderAnalytics() {
+            let income = 0;
+            let expense = 0;
+            let catSummary = {};
+
+            const txs = appData.transactions;
+            for(let id in txs) {
+                let tx = txs[id];
+                if(tx.type === 'Income') income += tx.amount;
+                if(tx.type === 'Expense') {
+                    expense += tx.amount;
+                    catSummary[tx.category] = (catSummary[tx.category] || 0) + tx.amount;
+                }
+            }
+
+            document.getElementById('analytics-total-income').innerText = '₹' + income.toLocaleString();
+            document.getElementById('analytics-total-expense').innerText = '₹' + expense.toLocaleString();
+            document.getElementById('analytics-net').innerText = '₹' + (income - expense).toLocaleString();
+
+            let html = '';
+            for(let cat in catSummary) {
+                html += `<tr><td>${cat}</td><td>Expense</td><td>₹${catSummary[cat].toLocaleString()}</td></tr>`;
+            }
+            document.getElementById('analytics-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No expense analytics available.</td></tr>';
+        }
+
+        // --- 8. BUDGETS ---
         function saveBudget(e) {
             e.preventDefault();
             const category = document.getElementById('budget-category').value;
-            const limit = parseFloat(document.getElementById('budget-limit').value);
+            const monthly = parseFloat(document.getElementById('budget-monthly').value);
+            const annual = parseFloat(document.getElementById('budget-annual').value);
 
-            const data = { category, limit };
-            const newRef = window.dbRefs.push(window.dbRefs.ref(window.db, 'budgets'));
-            window.dbRefs.set(newRef, data);
-            document.getElementById('budget-form').reset();
-            alert("Budget saved successfully!");
+            db.ref('budgets').push({ category, monthly, annual }, () => {
+                document.getElementById('budget-form').reset();
+                alert('Budget saved successfully!');
+            });
         }
+
         function deleteBudget(id) {
-            if(confirm("Delete budget?")) window.dbRefs.remove(window.dbRefs.ref(window.db, `budgets/${id}`));
+            if(confirm('Delete budget rule?')) db.ref('budgets/' + id).remove();
         }
-        function renderBudgets() {
-            const list = document.getElementById('budgets-list');
-            list.innerHTML = '';
 
-            // Calculate actual spend per category
-            const spends = {};
-            for(let id in appData.transactions) {
-                const tx = appData.transactions[id];
-                if(tx.type === 'Expense') {
-                    spends[tx.notes] = (spends[tx.notes] || 0) + tx.amount;
+        function renderBudgets() {
+            let html = '';
+            const budgets = appData.budgets;
+            const txs = appData.transactions;
+
+            // Calculate current month/year spend per category
+            let monthlySpent = {};
+            let annualSpent = {};
+            const now = new Date();
+            for(let id in txs) {
+                let tx = txs[id];
+                if(tx.type === 'Expense' && tx.category) {
+                    let txDate = new Date(tx.date);
+                    if(txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
+                        monthlySpent[tx.category] = (monthlySpent[tx.category] || 0) + tx.amount;
+                    }
+                    if(txDate.getFullYear() === now.getFullYear()) {
+                        annualSpent[tx.category] = (annualSpent[tx.category] || 0) + tx.amount;
+                    }
                 }
             }
 
-            for(let id in appData.budgets) {
-                const b = appData.budgets[id];
-                const spent = spends[b.category] || 0;
-                const pct = Math.min(100, ((spent / b.limit) * 100)).toFixed(1);
-                const barColor = spent > b.limit ? 'bg-danger' : 'bg-success';
-
-                list.innerHTML += `
-                    <div class="p-3 border rounded mb-3 bg-card">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="fw-bold m-0">${b.category}</h5>
-                            <div>
-                                <span class="fw-semibold">Spent: ₹${spent} / ₹${b.limit}</span>
-                                <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteBudget('${id}')"><i class="bi bi-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div class="progress-bar ${barColor}" role="progressbar" style="width: ${pct}%"></div>
-                        </div>
-                        <small class="text-muted mt-1 d-block">${pct}% of monthly limit utilized</small>
-                    </div>
-                `;
+            for(let id in budgets) {
+                let b = budgets[id];
+                let mSpent = monthlySpent[b.category] || 0;
+                let aSpent = annualSpent[b.category] || 0;
+                html += `<tr>
+                    <td class="fw-semibold">${b.category}</td>
+                    <td>₹${mSpent.toLocaleString()} / ₹${b.monthly.toLocaleString()}</td>
+                    <td>₹${aSpent.toLocaleString()} / ₹${b.annual.toLocaleString()}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteBudget('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
             }
+            document.getElementById('budgets-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No budgets configured.</td></tr>';
+        }
+
+        // --- UTILITY DROPDOWN BINDINGS ---
+        function updateDropdownOptions() {
+            // Account Selectors
+            let accOptions = '<option value="">Select Account</option>';
+            for(let id in appData.accounts) {
+                accOptions += `<option value="${id}">${appData.accounts[id].name} (₹${appData.accounts[id].balance})</option>`;
+            }
+            if(document.getElementById('fr-linked-account')) document.getElementById('fr-linked-account').innerHTML = accOptions;
+            if(document.getElementById('mf-linked-account')) document.getElementById('mf-linked-account').innerHTML = accOptions;
+            if(document.getElementById('rec-account')) document.getElementById('rec-account').innerHTML = accOptions;
+
+            // Card Selectors for EMI
+            let cardOptions = '<option value="">Select Card</option>';
+            for(let id in appData.cards) {
+                cardOptions += `<option value="${id}">${appData.cards[id].name}</option>`;
+            }
+            if(document.getElementById('emi-card-id')) document.getElementById('emi-card-id').innerHTML = cardOptions;
+
+            // Category Selectors for Budget
+            let catOptions = '<option value="">Select Category/Subcategory</option>';
+            for(let id in appData.categories) {
+                let cat = appData.categories[id];
+                let subs = (cat.sub || '').split(',');
+                subs.forEach(sub => {
+                    let s = sub.trim();
+                    if(s) catOptions += `<option value="${cat.name} > ${s}">${cat.name} > ${s}</option>`;
+                });
+            }
+            if(document.getElementById('budget-category')) document.getElementById('budget-category').innerHTML = catOptions;
+        }
+
+        // --- TRANSACTIONS LOGS TABLE RENDER ---
+        function renderTransactions() {
+            let html = '';
+            const txs = appData.transactions;
+            const sortedKeys = Object.keys(txs).sort((a,b) => new Date(txs[b].date) - new Date(txs[a].date));
+            
+            sortedKeys.forEach(id => {
+                let tx = txs[id];
+                let dateFormatted = new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                let typeBadge = tx.type === 'Income' ? 'bg-success' : (tx.type === 'Expense' ? 'bg-danger' : 'bg-primary');
+                html += `<tr>
+                    <td><small>${dateFormatted}</small></td>
+                    <td><span class="badge ${typeBadge}">${tx.type}</span></td>
+                    <td class="fw-bold">₹${tx.amount.toLocaleString()}</td>
+                    <td><small>${tx.accountName || 'Account'}</small></td>
+                    <td>${tx.notes || ''}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('transactions-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No transactions logged yet.</td></tr>';
+        }
+
+        function deleteTransaction(id) {
+            if(confirm('Delete transaction record?')) db.ref('transactions/' + id).remove();
         }
     </script>
 </body>
