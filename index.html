@@ -118,6 +118,7 @@
                 <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Subs</a></li>
                 <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Accounts, FD & RD</a></li>
                 <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Mutual Funds & SIPs</a></li>
+                <li><a href="#" onclick="switchSection('master-stocks', this)"><i class="bi bi-currency-exchange me-3"></i> Stocks & Trading</a></li>
                 <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Cards & EMIs</a></li>
                 <li><a href="#" onclick="switchSection('recurring', this)"><i class="bi bi-arrow-repeat me-3"></i> Recurring Payments</a></li>
                 <li><a href="#" onclick="switchSection('investments-status', this)"><i class="bi bi-pie-chart-fill me-3"></i> Investments / Savings</a></li>
@@ -343,6 +344,70 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Linked Bank Account</label>
                             <select class="form-select" id="edit-fdrd-linked-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT MUTUAL FUND MODAL -->
+            <div class="custom-modal-overlay" id="edit-mf-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Mutual Fund / SIP</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditMfModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedMutualFund(event)">
+                        <input type="hidden" id="edit-mf-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Fund Name</label>
+                            <input type="text" class="form-control" id="edit-mf-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" id="edit-mf-amount-label">Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-mf-amount" required>
+                        </div>
+                        <div class="mb-3" id="edit-mf-lumpsum-group" style="display:none;">
+                            <label class="form-label fw-semibold">Initial Lumpsum Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-mf-lumpsum">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Linked Bank Account</label>
+                            <select class="form-select" id="edit-mf-linked-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT STOCK MODAL -->
+            <div class="custom-modal-overlay" id="edit-stock-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Stock Investment</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditStockModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedStock(event)">
+                        <input type="hidden" id="edit-stock-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Stock Name / Symbol</label>
+                            <input type="text" class="form-control" id="edit-stock-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Quantity</label>
+                            <input type="number" step="any" class="form-control" id="edit-stock-qty" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Total Invested Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-stock-invested" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Current Value (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-stock-current" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Linked Bank Account</label>
+                            <select class="form-select" id="edit-stock-linked-account" required></select>
                         </div>
                         <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
                     </form>
@@ -628,6 +693,10 @@
                                     <label class="form-label fw-semibold" id="mf-amount-label">Invested Amount (₹)</label>
                                     <input type="number" step="any" class="form-control" id="mf-amount" required>
                                 </div>
+                                <div class="mb-3" id="mf-lumpsum-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Initial Lumpsum Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="mf-lumpsum" placeholder="e.g. 10000">
+                                </div>
                                 <div class="mb-3" id="mf-freq-group" style="display:none;">
                                     <label class="form-label fw-semibold">Frequency</label>
                                     <select class="form-select" id="mf-freq" onchange="toggleMfFreqFields()">
@@ -662,6 +731,58 @@
                                         </tr>
                                     </thead>
                                     <tbody id="mf-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STOCKS & TRADING -->
+            <div id="section-master-stocks" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Stock Investment</h4>
+                            <form id="stock-form" onsubmit="saveStock(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Stock Name / Symbol</label>
+                                    <input type="text" class="form-control" id="stock-name" placeholder="e.g. Reliance Industries" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Quantity</label>
+                                    <input type="number" step="any" class="form-control" id="stock-qty" placeholder="e.g. 15" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Total Invested Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="stock-invested" placeholder="e.g. 35000" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Current Value (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="stock-current" placeholder="e.g. 40000" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Linked Bank Account</label>
+                                    <select class="form-select" id="stock-linked-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Stock</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-currency-exchange me-2"></i>Stocks Portfolio</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Stock</th>
+                                            <th>Qty / Inv</th>
+                                            <th>Current Value</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="stocks-table-body"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -954,6 +1075,7 @@
             transactions: {},
             fdRd: {},
             mutualFunds: {},
+            stocks: {},
             cards: {},
             emis: {},
             recurring: {},
@@ -982,7 +1104,7 @@
                 }
             });
 
-            const keys = ['accounts', 'categories', 'transactions', 'fdRd', 'mutualFunds', 'cards', 'emis', 'recurring', 'budgets'];
+            const keys = ['accounts', 'categories', 'transactions', 'fdRd', 'mutualFunds', 'stocks', 'cards', 'emis', 'recurring', 'budgets'];
             keys.forEach(key => {
                 db.ref(key).on('value', (snapshot) => {
                     appData[key] = snapshot.val() || {};
@@ -1001,6 +1123,7 @@
             renderTransactions();
             renderFdRd();
             renderMutualFunds();
+            renderStocks();
             renderCards();
             renderEmis();
             renderRecurring();
@@ -1037,6 +1160,7 @@
                 'master-categories': 'Categories & Linked Subs',
                 'master-accounts': 'Bank Accounts & FD/RD',
                 'master-investments': 'Mutual Funds & SIPs',
+                'master-stocks': 'Stocks & Trading',
                 'master-cards': 'Cards & EMIs',
                 'recurring': 'Recurring Payments',
                 'investments-status': 'Investments / Savings Status',
@@ -1477,6 +1601,16 @@
                         alert(`Successfully redeemed ₹${amt} to ${acc.name}`);
                     }
                 });
+            } else if(type === 'stock') {
+                db.ref('accounts/' + targetAccId).once('value').then(snap => {
+                    let acc = snap.val();
+                    if(acc) {
+                        db.ref('accounts/' + targetAccId).update({ balance: acc.balance + amt });
+                        db.ref('stocks/' + id).remove();
+                        closeWithdrawModal();
+                        alert(`Successfully sold and transferred ₹${amt} to ${acc.name}`);
+                    }
+                });
             }
         }
 
@@ -1527,11 +1661,12 @@
             document.getElementById('categories-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No categories found.</td></tr>';
         }
 
-        // MUTUAL FUNDS EDIT & WITHDRAW
+        // MUTUAL FUNDS EDIT & WITHDRAW WITH INITIAL LUMPSUM
         function toggleMfFields() {
             const mode = document.getElementById('mf-mode').value;
             document.getElementById('mf-freq-group').style.display = mode === 'SIP' ? 'block' : 'none';
             document.getElementById('mf-due-group').style.display = mode === 'SIP' ? 'block' : 'none';
+            document.getElementById('mf-lumpsum-group').style.display = mode === 'SIP' ? 'block' : 'none';
             document.getElementById('mf-amount-label').innerText = mode === 'SIP' ? 'Monthly/Weekly SIP Amount (₹)' : 'Invested Lumpsum (₹)';
             if(mode === 'SIP') toggleMfFreqFields();
         }
@@ -1546,12 +1681,13 @@
             const name = document.getElementById('mf-name').value;
             const mode = document.getElementById('mf-mode').value;
             const amount = parseFloat(document.getElementById('mf-amount').value);
+            const lumpsum = mode === 'SIP' ? parseFloat(document.getElementById('mf-lumpsum').value || 0) : 0;
             const freq = mode === 'SIP' ? document.getElementById('mf-freq').value : '';
             const dueVal = mode === 'SIP' ? parseInt(document.getElementById('mf-due-val').value || 1) : 0;
             const linkedAccount = document.getElementById('mf-linked-account').value;
 
             db.ref('mutualFunds').push({
-                name, mode, amount, freq, dueVal, linkedAccount
+                name, mode, amount, lumpsum, freq, dueVal, linkedAccount
             }, () => {
                 document.getElementById('mf-form').reset();
                 toggleMfFields();
@@ -1559,18 +1695,69 @@
             });
         }
 
+        function editMutualFund(id) {
+            const mf = appData.mutualFunds[id];
+            if(!mf) return;
+            document.getElementById('edit-mf-id').value = id;
+            document.getElementById('edit-mf-name').value = mf.name;
+            document.getElementById('edit-mf-amount').value = mf.amount;
+            document.getElementById('edit-mf-amount-label').innerText = mf.mode === 'SIP' ? 'SIP Installment Amount (₹)' : 'Invested Amount (₹)';
+            
+            const lumpsumGroup = document.getElementById('edit-mf-lumpsum-group');
+            if(mf.mode === 'SIP') {
+                lumpsumGroup.style.display = 'block';
+                document.getElementById('edit-mf-lumpsum').value = mf.lumpsum || 0;
+            } else {
+                lumpsumGroup.style.display = 'none';
+            }
+
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === mf.linkedAccount ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name}</option>`;
+            }
+            document.getElementById('edit-mf-linked-account').innerHTML = accOptions;
+            document.getElementById('edit-mf-modal').style.display = 'flex';
+        }
+
+        function closeEditMfModal() {
+            document.getElementById('edit-mf-modal').style.display = 'none';
+        }
+
+        function saveEditedMutualFund(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-mf-id').value;
+            const name = document.getElementById('edit-mf-name').value;
+            const amount = parseFloat(document.getElementById('edit-mf-amount').value);
+            const lumpsum = parseFloat(document.getElementById('edit-mf-lumpsum').value || 0);
+            const linkedAccount = document.getElementById('edit-mf-linked-account').value;
+
+            db.ref('mutualFunds/' + id).update({ name, amount, lumpsum, linkedAccount }, () => {
+                closeEditMfModal();
+                alert('Mutual Fund updated successfully!');
+            });
+        }
+
+        function deleteMutualFund(id) {
+            if(confirm('Delete mutual fund record?')) db.ref('mutualFunds/' + id).remove();
+        }
+
         function renderMutualFunds() {
             let html = '';
             const mfs = appData.mutualFunds;
             for(let id in mfs) {
                 let mf = mfs[id];
+                let detailText = mf.freq ? `${mf.freq} (Day ${mf.dueVal})` : 'One-time';
+                if(mf.lumpsum > 0) detailText += ` + Lumpsum: ₹${mf.lumpsum}`;
                 html += `<tr>
                     <td class="fw-semibold">${mf.name}</td>
                     <td><span class="badge bg-primary">${mf.mode}</span></td>
                     <td>₹${mf.amount.toLocaleString()}</td>
-                    <td><small class="text-muted">${mf.freq ? mf.freq + ' (Day ' + mf.dueVal + ')' : 'One-time'}</small></td>
+                    <td><small class="text-muted">${detailText}</small></td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-success" onclick="openWithdrawModalForMf('${id}', ${mf.amount}, '${mf.linkedAccount}')">Withdraw</button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editMutualFund('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="openWithdrawModalForMf('${id}', ${(mf.amount + (mf.lumpsum || 0))}, '${mf.linkedAccount}')">Withdraw</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteMutualFund('${id}')"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>`;
             }
@@ -1590,6 +1777,98 @@
             }
             document.getElementById('withdraw-target-account').innerHTML = accOptions;
             document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        // STOCKS PORTFOLIO MANAGEMENT
+        function saveStock(e) {
+            e.preventDefault();
+            const name = document.getElementById('stock-name').value;
+            const qty = parseFloat(document.getElementById('stock-qty').value);
+            const invested = parseFloat(document.getElementById('stock-invested').value);
+            const current = parseFloat(document.getElementById('stock-current').value);
+            const linkedAccount = document.getElementById('stock-linked-account').value;
+
+            db.ref('stocks').push({ name, qty, invested, current, linkedAccount }, () => {
+                document.getElementById('stock-form').reset();
+                alert('Stock saved successfully!');
+            });
+        }
+
+        function editStock(id) {
+            const st = appData.stocks[id];
+            if(!st) return;
+            document.getElementById('edit-stock-id').value = id;
+            document.getElementById('edit-stock-name').value = st.name;
+            document.getElementById('edit-stock-qty').value = st.qty;
+            document.getElementById('edit-stock-invested').value = st.invested;
+            document.getElementById('edit-stock-current').value = st.current;
+
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === st.linkedAccount ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name}</option>`;
+            }
+            document.getElementById('edit-stock-linked-account').innerHTML = accOptions;
+            document.getElementById('edit-stock-modal').style.display = 'flex';
+        }
+
+        function closeEditStockModal() {
+            document.getElementById('edit-stock-modal').style.display = 'none';
+        }
+
+        function saveEditedStock(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-stock-id').value;
+            const name = document.getElementById('edit-stock-name').value;
+            const qty = parseFloat(document.getElementById('edit-stock-qty').value);
+            const invested = parseFloat(document.getElementById('edit-stock-invested').value);
+            const current = parseFloat(document.getElementById('edit-stock-current').value);
+            const linkedAccount = document.getElementById('edit-stock-linked-account').value;
+
+            db.ref('stocks/' + id).update({ name, qty, invested, current, linkedAccount }, () => {
+                closeEditStockModal();
+                alert('Stock updated successfully!');
+            });
+        }
+
+        function deleteStock(id) {
+            if(confirm('Delete stock entry?')) db.ref('stocks/' + id).remove();
+        }
+
+        function openWithdrawModalForStock(id, currentVal, linkedAccId) {
+            document.getElementById('withdraw-title').innerText = 'Sell / Withdraw Stock';
+            document.getElementById('withdraw-inv-id').value = id;
+            document.getElementById('withdraw-type').value = 'stock';
+            document.getElementById('withdraw-amount').value = currentVal;
+            
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === linkedAccId ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name} (₹${appData.accounts[accId].balance})</option>`;
+            }
+            document.getElementById('withdraw-target-account').innerHTML = accOptions;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        function renderStocks() {
+            let html = '';
+            const stocks = appData.stocks;
+            for(let id in stocks) {
+                let st = stocks[id];
+                let diff = st.current - st.invested;
+                let colorClass = diff >= 0 ? 'text-success' : 'text-danger';
+                html += `<tr>
+                    <td><div class="fw-semibold">${st.name}</div><small class="text-muted">Inv: ₹${st.invested.toLocaleString()}</small></td>
+                    <td>${st.qty} units</td>
+                    <td><div class="${colorClass} fw-bold">₹${st.current.toLocaleString()}</div></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editStock('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="openWithdrawModalForStock('${id}', ${st.current}, '${st.linkedAccount}')">Withdraw</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStock('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('stocks-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No stocks found.</td></tr>';
         }
 
         // CARDS & EMIS EDIT & DELETE
@@ -1855,17 +2134,20 @@
             for(let id in appData.fdRd) totalFdRd += calculateFdRdValue(appData.fdRd[id]).current;
 
             let totalMf = 0;
-            for(let id in appData.mutualFunds) totalMf += appData.mutualFunds[id].amount;
+            for(let id in appData.mutualFunds) totalMf += (appData.mutualFunds[id].amount + (appData.mutualFunds[id].lumpsum || 0));
+
+            let totalStocks = 0;
+            for(let id in appData.stocks) totalStocks += appData.stocks[id].current;
 
             let totalCardsOut = 0;
             for(let id in appData.emis) totalCardsOut += appData.emis[id].emiAmt;
 
-            let netWorth = totalBank + totalFdRd + totalMf - totalCardsOut;
+            let netWorth = totalBank + totalFdRd + totalMf + totalStocks - totalCardsOut;
 
             let html = `
                 <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Bank Balances</span><h4 class="text-success m-0">₹${totalBank.toLocaleString()}</h4></div></div>
                 <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">FD / RD Value</span><h4 class="text-primary m-0">₹${totalFdRd.toLocaleString()}</h4></div></div>
-                <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Mutual Funds</span><h4 class="text-info m-0">₹${totalMf.toLocaleString()}</h4></div></div>
+                <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Mutual Funds & Stocks</span><h4 class="text-info m-0">₹${(totalMf + totalStocks).toLocaleString()}</h4></div></div>
                 <div class="col-md-3"><div class="p-3 border rounded bg-input"><span class="text-muted small">Net Worth</span><h4 class="text-warning m-0">₹${netWorth.toLocaleString()}</h4></div></div>
             `;
             document.getElementById('wealth-summary-cards').innerHTML = html;
@@ -1983,6 +2265,7 @@
             }
             if(document.getElementById('fr-linked-account')) document.getElementById('fr-linked-account').innerHTML = accOptions;
             if(document.getElementById('mf-linked-account')) document.getElementById('mf-linked-account').innerHTML = accOptions;
+            if(document.getElementById('stock-linked-account')) document.getElementById('stock-linked-account').innerHTML = accOptions;
             if(document.getElementById('rec-account')) document.getElementById('rec-account').innerHTML = accOptions;
             if(document.getElementById('transfer-from-acc')) document.getElementById('transfer-from-acc').innerHTML = accOptions;
             if(document.getElementById('transfer-to-acc')) document.getElementById('transfer-to-acc').innerHTML = accOptions;
