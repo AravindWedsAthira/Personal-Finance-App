@@ -1,12 +1,3 @@
-Const firebaseConfig = {
-  apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
-  authDomain: "passbook-229d7.firebaseapp.com",
-  databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "passbook-229d7",
-  storageBucket: "passbook-229d7.firebasestorage.app",
-  messagingSenderId: "1020688201249",
-  appId: "1:1020688201249:web:57d42542d59471f303d560"
-};
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -307,5 +298,2249 @@ Const firebaseConfig = {
             <div class="custom-modal-overlay" id="edit-bank-modal">
                 <div class="custom-modal-content">
                     <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 cl
-  
+                        <h5 class="fw-bold m-0 text-primary">Edit Bank Account</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditBankModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedBank(event)">
+                        <input type="hidden" id="edit-bank-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Account Name</label>
+                            <input type="text" class="form-control" id="edit-bank-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Balance (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-bank-balance" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT WALLET MODAL -->
+            <div class="custom-modal-overlay" id="edit-wallet-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Wallet</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditWalletModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedWallet(event)">
+                        <input type="hidden" id="edit-wallet-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Wallet Name</label>
+                            <input type="text" class="form-control" id="edit-wallet-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Balance (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-wallet-balance" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- LOAD WALLET MODAL -->
+            <div class="custom-modal-overlay" id="load-wallet-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Load Money into Wallet</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeLoadWalletModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="executeLoadWallet(event)">
+                        <input type="hidden" id="load-wallet-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Wallet: <span id="load-wallet-name-label" class="text-info"></span></label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Select Bank Account (Source)</label>
+                            <select class="form-select" id="load-wallet-source-bank" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Amount to Load (₹)</label>
+                            <input type="number" step="any" class="form-control" id="load-wallet-amount" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Load Money</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT FD / RD MODAL -->
+            <div class="custom-modal-overlay" id="edit-fdrd-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit FD / RD Scheme</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditFdRdModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedFdRd(event)">
+                        <input type="hidden" id="edit-fdrd-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Scheme Name</label>
+                            <input type="text" class="form-control" id="edit-fdrd-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Principal / Installment Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-fdrd-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Interest Rate (% p.a.)</label>
+                            <input type="number" step="0.01" class="form-control" id="edit-fdrd-rate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tenure (Months)</label>
+                            <input type="number" class="form-control" id="edit-fdrd-tenure" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Linked Bank Account</label>
+                            <select class="form-select" id="edit-fdrd-linked-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT MUTUAL FUND MODAL -->
+            <div class="custom-modal-overlay" id="edit-mf-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Mutual Fund / SIP</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditMfModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedMutualFund(event)">
+                        <input type="hidden" id="edit-mf-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Fund Name</label>
+                            <input type="text" class="form-control" id="edit-mf-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" id="edit-mf-amount-label">Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-mf-amount" required>
+                        </div>
+                        <div class="mb-3" id="edit-mf-lumpsum-group" style="display:none;">
+                            <label class="form-label fw-semibold">Initial Lumpsum Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-mf-lumpsum">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Linked Bank Account</label>
+                            <select class="form-select" id="edit-mf-linked-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT STOCK MODAL -->
+            <div class="custom-modal-overlay" id="edit-stock-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Stock Investment</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditStockModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedStock(event)">
+                        <input type="hidden" id="edit-stock-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Stock Name / Symbol</label>
+                            <input type="text" class="form-control" id="edit-stock-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Quantity</label>
+                            <input type="number" step="any" class="form-control" id="edit-stock-qty" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Total Invested Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-stock-invested" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Current Value (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-stock-current" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Linked Bank Account</label>
+                            <select class="form-select" id="edit-stock-linked-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT CREDIT CARD MODAL -->
+            <div class="custom-modal-overlay" id="edit-card-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Credit Card</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditCardModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedCard(event)">
+                        <input type="hidden" id="edit-card-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Card Name</label>
+                            <input type="text" class="form-control" id="edit-card-name" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold">Card Limit (₹)</label>
+                                <input type="number" step="any" class="form-control" id="edit-card-limit" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold">Initial Unbilled Amount (₹)</label>
+                                <input type="number" step="any" class="form-control" id="edit-card-initial-unbilled" placeholder="e.g. 5000" value="0">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold">Billing Date</label>
+                                <input type="number" min="1" max="31" class="form-control" id="edit-card-bill-date" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold">Due Date</label>
+                                <input type="number" min="1" max="31" class="form-control" id="edit-card-due-date" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT EMI MODAL -->
+            <div class="custom-modal-overlay" id="edit-emi-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit EMI Plan</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditEmiModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedEmi(event)">
+                        <input type="hidden" id="edit-emi-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Item Name</label>
+                            <input type="text" class="form-control" id="edit-emi-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Link to Credit Card</label>
+                            <select class="form-select" id="edit-emi-card-id" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Principal Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-emi-principal" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold">Interest Rate (% p.a.)</label>
+                                <input type="number" step="0.01" class="form-control" id="edit-emi-rate" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold">Tenure (Months)</label>
+                                <input type="number" class="form-control" id="edit-emi-tenure" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- EDIT RECURRING PAYMENT MODAL -->
+            <div class="custom-modal-overlay" id="edit-rec-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Recurring Payment</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditRecModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedRec(event)">
+                        <input type="hidden" id="edit-rec-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Title</label>
+                            <input type="text" class="form-control" id="edit-rec-title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-rec-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Due Date (1-31)</label>
+                            <input type="number" min="1" max="31" class="form-control" id="edit-rec-duedate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Debit Source Account</label>
+                            <select class="form-select" id="edit-rec-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- WITHDRAW INVESTMENT MODAL -->
+            <div class="custom-modal-overlay" id="withdraw-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary" id="withdraw-title">Withdraw Investment</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeWithdrawModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="executeWithdraw(event)">
+                        <input type="hidden" id="withdraw-inv-id">
+                        <input type="hidden" id="withdraw-type">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Withdraw Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="withdraw-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Deposit into Bank Account</label>
+                            <select class="form-select" id="withdraw-target-account" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Confirm Transfer</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. CATEGORIES & SUB-CATEGORIES -->
+            <div id="section-master-categories" class="section-view">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold" id="cat-form-title">Manage Categories</h4>
+                            <form id="category-form" onsubmit="saveCategory(event)">
+                                <input type="hidden" id="cat-id">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Category Name</label>
+                                    <input type="text" class="form-control" id="cat-name" placeholder="e.g. Food" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Linked Subcategories (Comma Separated)</label>
+                                    <textarea class="form-control" id="cat-sub" rows="3" placeholder="Groceries, Restaurants, Coffee"></textarea>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary flex-grow-1">Save Category</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="resetCategoryForm()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-tags me-2"></i>Existing Categories & Subs</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Subcategories</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categories-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. ACCOUNTS, WALLETS, FD & RD -->
+            <div id="section-master-accounts" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Bank Account</h4>
+                            <form id="account-form" onsubmit="saveAccount(event)">
+                                <input type="hidden" id="acc-id">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Account Name</label>
+                                    <input type="text" class="form-control" id="acc-name" placeholder="e.g. HDFC Salary" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Opening Balance (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="acc-balance" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Account</button>
+                            </form>
+                        </div>
+
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Wallet (Cash / GPay / PhonePe)</h4>
+                            <form id="wallet-form" onsubmit="saveWallet(event)">
+                                <input type="hidden" id="wallet-id">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Wallet Name</label>
+                                    <input type="text" class="form-control" id="wallet-name" placeholder="e.g. In Hand Cash, GPay, PhonePe" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Opening Balance (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="wallet-balance" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Wallet</button>
+                            </form>
+                        </div>
+
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add FD / RD Scheme</h4>
+                            <form id="fd-rd-form" onsubmit="saveFdRd(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Type</label>
+                                    <select class="form-select" id="fr-type" onchange="toggleRdFields()">
+                                        <option value="FD">Fixed Deposit (FD)</option>
+                                        <option value="RD">Recurring Deposit (RD)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Scheme Name</label>
+                                    <input type="text" class="form-control" id="fr-name" placeholder="e.g. SBI Tax Saver FD" required>
+                                </div>
+                                <div class="mb-3" id="fr-principal-group">
+                                    <label class="form-label fw-semibold" id="fr-principal-label">Principal Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="fr-amount" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Interest Rate (% p.a.)</label>
+                                    <input type="number" step="0.01" class="form-control" id="fr-rate" placeholder="e.g. 7.1" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Start Date</label>
+                                    <input type="date" class="form-control" id="fr-start-date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tenure (Months)</label>
+                                    <input type="number" class="form-control" id="fr-tenure" placeholder="e.g. 12" required>
+                                </div>
+                                <div class="mb-3" id="rd-monthly-date-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Monthly Deduction Date (1-31)</label>
+                                    <input type="number" min="1" max="31" class="form-control" id="fr-rd-day" placeholder="e.g. 5">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Linked Bank Account (for debits/payouts)</label>
+                                    <select class="form-select" id="fr-linked-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Save Scheme</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-wallet2 me-2"></i>Bank Accounts</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Account Name</th>
+                                            <th>Balance</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="accounts-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-cash-stack me-2"></i>Wallets (In Hand Cash, GPay, PhonePe...)</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Wallet Name</th>
+                                            <th>Balance</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="wallets-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-bank me-2"></i>Fixed & Recurring Deposits</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Invested / Present Value</th>
+                                            <th>Rate / Tenure</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fd-rd-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. MUTUAL FUNDS & SIPs -->
+            <div id="section-master-investments" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Mutual Fund / SIP</h4>
+                            <form id="mf-form" onsubmit="saveMutualFund(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Fund Name</label>
+                                    <input type="text" class="form-control" id="mf-name" placeholder="e.g. Parag Parikh Flexi Cap" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Investment Mode</label>
+                                    <select class="form-select" id="mf-mode" onchange="toggleMfFields()">
+                                        <option value="Lumpsum">Lumpsum</option>
+                                        <option value="SIP">SIP (Systematic Investment)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="mf-amount-group">
+                                    <label class="form-label fw-semibold" id="mf-amount-label">Invested Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="mf-amount" required>
+                                </div>
+                                <div class="mb-3" id="mf-lumpsum-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Initial Lumpsum Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="mf-lumpsum" placeholder="e.g. 10000">
+                                </div>
+                                <div class="mb-3" id="mf-freq-group" style="display:none;">
+                                    <label class="form-label fw-semibold">Frequency</label>
+                                    <select class="form-select" id="mf-freq" onchange="toggleMfFreqFields()">
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Weekly">Weekly</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="mf-due-group" style="display:none;">
+                                    <label class="form-label fw-semibold" id="mf-due-label">Monthly Date (1-31)</label>
+                                    <input type="number" class="form-control" id="mf-due-val" placeholder="e.g. 10">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Linked Bank Account</label>
+                                    <select class="form-select" id="mf-linked-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Fund</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-graph-up-arrow me-2"></i>Mutual Funds & SIP Portfolio</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Fund Name</th>
+                                            <th>Mode</th>
+                                            <th>Value / Installment</th>
+                                            <th>Details</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mf-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STOCKS & TRADING -->
+            <div id="section-master-stocks" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Stock Investment</h4>
+                            <form id="stock-form" onsubmit="saveStock(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Stock Name / Symbol</label>
+                                    <input type="text" class="form-control" id="stock-name" placeholder="e.g. Reliance Industries" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Quantity</label>
+                                    <input type="number" step="any" class="form-control" id="stock-qty" placeholder="e.g. 15" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Total Invested Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="stock-invested" placeholder="e.g. 35000" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Current Value (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="stock-current" placeholder="e.g. 40000" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Linked Bank Account</label>
+                                    <select class="form-select" id="stock-linked-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Stock</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-currency-exchange me-2"></i>Stocks Portfolio</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Stock</th>
+                                            <th>Qty / Inv</th>
+                                            <th>Current Value</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="stocks-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. CARDS & EMIs -->
+            <div id="section-master-cards" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Credit Card</h4>
+                            <form id="card-form" onsubmit="saveCard(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Card Name</label>
+                                    <input type="text" class="form-control" id="card-name" placeholder="e.g. HDFC Regalia" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Card Limit (₹)</label>
+                                        <input type="number" step="any" class="form-control" id="card-limit" placeholder="e.g. 100000" required>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Initial Unbilled Amount (₹)</label>
+                                        <input type="number" step="any" class="form-control" id="card-initial-unbilled" placeholder="e.g. 5000" value="0">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Billing Date</label>
+                                        <input type="number" min="1" max="31" class="form-control" id="card-bill-date" placeholder="e.g. 15" required>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Due Date</label>
+                                        <input type="number" min="1" max="31" class="form-control" id="card-due-date" placeholder="e.g. 5" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Card</button>
+                            </form>
+                        </div>
+
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add EMI Plan</h4>
+                            <form id="emi-form" onsubmit="saveEmi(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">EMI Name / Item</label>
+                                    <input type="text" class="form-control" id="emi-name" placeholder="e.g. iPhone 15 Pro" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Assign to Credit Card</label>
+                                    <select class="form-select" id="emi-card-id" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Principal Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="emi-principal" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Interest Rate (% p.a.)</label>
+                                        <input type="number" step="0.01" class="form-control" id="emi-rate" placeholder="e.g. 12" required>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-semibold">Tenure (Months)</label>
+                                        <input type="number" class="form-control" id="emi-tenure" placeholder="e.g. 6" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Start Date</label>
+                                    <input type="date" class="form-control" id="emi-start-date" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Add EMI</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div class="card p-4 mb-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-credit-card me-2"></i>Credit Cards & Outstanding</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Card Name</th>
+                                            <th>Limit & Out. Limit</th>
+                                            <th>Bill / Due Date</th>
+                                            <th>Unbilled / Outstanding</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cards-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-list-check me-2"></i>Active EMIs</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Card</th>
+                                            <th>Monthly EMI</th>
+                                            <th>Tenure / Finish</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="emi-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. RECURRING PAYMENTS -->
+            <div id="section-recurring" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Add Recurring Payment</h4>
+                            <form id="recurring-form" onsubmit="saveRecurring(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Title</label>
+                                    <input type="text" class="form-control" id="rec-title" placeholder="e.g. Netflix Subscription" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Amount (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="rec-amount" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Due Date (1-31 of month)</label>
+                                    <input type="number" min="1" max="31" class="form-control" id="rec-duedate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Debit Source Account</label>
+                                    <select class="form-select" id="rec-account" required></select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Recurring Item</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-arrow-repeat me-2"></i>Recurring Payments</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Amount</th>
+                                            <th>Due Date</th>
+                                            <th>Account</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recurring-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. INVESTMENTS / SAVINGS STATUS -->
+            <div id="section-investments-status" class="section-view">
+                <div class="card p-4 mb-4">
+                    <h4 class="mb-3 fw-bold"><i class="bi bi-pie-chart-fill me-2"></i>Wealth & Savings Overview</h4>
+                    <div class="row g-3" id="wealth-summary-cards"></div>
+                </div>
+            </div>
+
+            <!-- 8. ANALYTICS -->
+            <div id="section-analytics" class="section-view">
+                <div class="card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="m-0 fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Income & Expense Analytics</h4>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-daily" autocomplete="off" onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-daily">Daily</label>
+
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-weekly" autocomplete="off" onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-weekly">Weekly</label>
+
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-monthly" autocomplete="off" checked onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-monthly">Monthly</label>
+
+                            <input type="radio" class="btn-check" name="analyticsFilter" id="filter-annual" autocomplete="off" onchange="renderAnalytics()">
+                            <label class="btn btn-outline-primary btn-sm" for="filter-annual">Annual</label>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded bg-input">
+                                <span class="text-muted small">Total Income</span>
+                                <h3 class="text-success m-0" id="analytics-total-income">₹0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded bg-input">
+                                <span class="text-muted small">Total Expense</span>
+                                <h3 class="text-danger m-0" id="analytics-total-expense">₹0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded bg-input">
+                                <span class="text-muted small">Net Balance Change</span>
+                                <h3 class="text-primary m-0" id="analytics-net">₹0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Type</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. BUDGETS -->
+            <div id="section-budgets" class="section-view">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="card p-4">
+                            <h4 class="mb-3 text-primary fw-bold">Set Category Budgets</h4>
+                            <form id="budget-form" onsubmit="saveBudget(event)">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Main Category</label>
+                                    <select class="form-select" id="budget-category" required></select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Monthly Limit (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="budget-monthly" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Annual Limit (₹)</label>
+                                    <input type="number" step="any" class="form-control" id="budget-annual" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Save Budget</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-calculator me-2"></i>Budget Performance</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Monthly (Spent/Limit)</th>
+                                            <th>Annual (Spent/Limit)</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="budgets-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
+            authDomain: "passbook-229d7.firebaseapp.com",
+            databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "passbook-229d7",
+            storageBucket: "passbook-229d7.firebasestorage.app",
+            messagingSenderId: "1020688201249",
+            appId: "1:1020688201249:web:57d42542d59471f303d560"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let appData = {
+            accounts: {},
+            wallets: {},
+            categories: {},
+            transactions: {},
+            fdRd: {},
+            mutualFunds: {},
+            stocks: {},
+            cards: {},
+            emis: {},
+            recurring: {},
+            budgets: {}
+        };
+
+        let currentAppType = 'Expense';
+        let selectedAccountId = '';
+        let selectedCategorySub = '';
+        let calcExpression = '';
+        let accountModalTarget = 'primary';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initSidebar();
+            updateDateTimeDisplay();
+            setInterval(updateDateTimeDisplay, 60000);
+
+            const statusBadge = document.getElementById('db-status');
+            db.ref('.info/connected').on('value', (snap) => {
+                if (snap.val() === true) {
+                    statusBadge.innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Connected';
+                    statusBadge.className = 'text-success';
+                } else {
+                    statusBadge.innerHTML = '<i class="bi bi-circle-fill fs-7"></i> Disconnected';
+                    statusBadge.className = 'text-danger';
+                }
+            });
+
+            const keys = ['accounts', 'wallets', 'categories', 'transactions', 'fdRd', 'mutualFunds', 'stocks', 'cards', 'emis', 'recurring', 'budgets'];
+            keys.forEach(key => {
+                db.ref(key).on('value', (snapshot) => {
+                    appData[key] = snapshot.val() || {};
+                    refreshAllUI();
+                });
+            });
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            if(document.getElementById('fr-start-date')) document.getElementById('fr-start-date').value = todayStr;
+            if(document.getElementById('emi-start-date')) document.getElementById('emi-start-date').value = todayStr;
+        });
+
+        function refreshAllUI() {
+            renderAccounts();
+            renderWallets();
+            renderCategories();
+            renderTransactions();
+            renderFdRd();
+            renderMutualFunds();
+            renderStocks();
+            renderCards();
+            renderEmis();
+            renderRecurring();
+            renderBudgets();
+            renderWealthSummary();
+            renderAnalytics();
+            updateDropdownOptions();
+        }
+
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            document.getElementById('sidebarCollapse').addEventListener('click', () => {
+                sidebar.classList.add('active');
+                backdrop.classList.add('active');
+            });
+            document.getElementById('sidebarClose').addEventListener('click', toggleSidebar);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebar-backdrop').classList.remove('active');
+        }
+
+        function switchSection(sectionId, el) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + sectionId).classList.add('active');
+            
+            document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
+            if(el) el.parentElement.classList.add('active');
+
+            const titles = {
+                'home': 'Home & Logs',
+                'master-categories': 'Categories & Linked Subs',
+                'master-accounts': 'Bank Accounts, Wallets & FD/RD',
+                'master-investments': 'Mutual Funds & SIPs',
+                'master-stocks': 'Stocks & Trading',
+                'master-cards': 'Cards & EMIs',
+                'recurring': 'Recurring Payments',
+                'investments-status': 'Investments / Savings Status',
+                'analytics': 'Analytics',
+                'budgets': 'Budgets'
+            };
+            document.getElementById('page-title').innerText = titles[sectionId] || 'Passbook';
+            toggleSidebar();
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-bs-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-bs-theme', next);
+            document.getElementById('theme-icon').className = next === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill';
+        }
+
+        function updateDateTimeDisplay() {
+            const now = new Date();
+            const dateOpts = { month: 'short', day: 'numeric', year: 'numeric' };
+            const timeOpts = { hour: 'numeric', minute: '2-digit', hour12: true };
+            if(document.getElementById('current-date-display')) document.getElementById('current-date-display').innerText = now.toLocaleDateString('en-US', dateOpts);
+            if(document.getElementById('current-time-display')) document.getElementById('current-time-display').innerText = now.toLocaleTimeString('en-US', timeOpts);
+        }
+
+        function setAppType(type) {
+            currentAppType = type;
+            document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('active'));
+            document.getElementById('type-' + type.toLowerCase()).classList.add('active');
+            
+            const accBox = document.getElementById('box-primary-account');
+            const catBox = document.getElementById('box-secondary-category');
+            const transferRow = document.getElementById('transfer-accounts-row');
+
+            if (type === 'Transfer') {
+                accBox.style.display = 'none';
+                catBox.style.display = 'none';
+                transferRow.style.display = 'block';
+            } else {
+                accBox.style.display = 'block';
+                accBox.className = 'col-6';
+                catBox.style.display = 'block';
+                transferRow.style.display = 'none';
+            }
+        }
+
+        function appendCalc(val) {
+            if(calcExpression === '0' && val !== '.') calcExpression = '';
+            calcExpression += val;
+            document.getElementById('calc-display').innerText = calcExpression || '0';
+        }
+
+        function calculateResult() {
+            try {
+                let res = eval(calcExpression.replace(/×/g, '*').replace(/÷/g, '/'));
+                calcExpression = String(Math.round(res * 100) / 100);
+                document.getElementById('calc-display').innerText = calcExpression;
+            } catch(e) {
+                document.getElementById('calc-display').innerText = 'Error';
+                calcExpression = '';
+            }
+        }
+
+        function resetAppInput() {
+            calcExpression = '';
+            document.getElementById('calc-display').innerText = '0';
+            document.getElementById('app-notes').value = '';
+            selectedAccountId = '';
+            selectedCategorySub = '';
+            document.getElementById('selected-account-label').innerText = 'Account/Card';
+            document.getElementById('selected-category-label').innerText = 'Subcategory';
+        }
+
+        function submitAppTransaction() {
+            const amount = parseFloat(calcExpression || document.getElementById('calc-display').innerText);
+            if(isNaN(amount) || amount <= 0) { alert('Please enter a valid amount.'); return; }
+            
+            const dateStr = new Date().toISOString();
+
+            if(currentAppType === 'Transfer') {
+                const fromId = document.getElementById('transfer-from-acc').value;
+                const toId = document.getElementById('transfer-to-acc').value;
+                if(!fromId || !toId) { alert('Please select both From and To accounts.'); return; }
+                if(fromId === toId) { alert('From and To accounts cannot be the same.'); return; }
+
+                const getEntityRef = (id) => {
+                    if(appData.accounts[id]) return { ref: db.ref('accounts/' + id), data: appData.accounts[id], type: 'account' };
+                    if(appData.wallets[id]) return { ref: db.ref('wallets/' + id), data: appData.wallets[id], type: 'wallet' };
+                    return null;
+                };
+
+                let fromEnt = getEntityRef(fromId);
+                let toEnt = getEntityRef(toId);
+
+                if(fromEnt && toEnt) {
+                    fromEnt.ref.update({ balance: fromEnt.data.balance - amount });
+                    toEnt.ref.update({ balance: toEnt.data.balance + amount });
+
+                    db.ref('transactions').push({
+                        type: 'Transfer',
+                        amount: amount,
+                        accountId: fromId,
+                        accountName: `${fromEnt.data.name} ➔ ${toEnt.data.name}`,
+                        notes: `Transfer from ${fromEnt.data.name} to ${toEnt.data.name}`,
+                        category: 'Transfer',
+                        date: dateStr
+                    });
+
+                    resetAppInput();
+                    alert('Transfer completed successfully!');
+                }
+            } else {
+                if(!selectedAccountId) { alert('Please select an account, wallet or credit card.'); return; }
+                if(!selectedCategorySub) { alert('Please select a subcategory.'); return; }
+
+                const notes = document.getElementById('app-notes').value || selectedCategorySub;
+                
+                let entRef = null;
+                let entData = null;
+                let isCard = false;
+
+                if(appData.accounts[selectedAccountId]) {
+                    entRef = db.ref('accounts/' + selectedAccountId);
+                    entData = appData.accounts[selectedAccountId];
+                } else if(appData.wallets[selectedAccountId]) {
+                    entRef = db.ref('wallets/' + selectedAccountId);
+                    entData = appData.wallets[selectedAccountId];
+                } else if(appData.cards[selectedAccountId]) {
+                    entRef = db.ref('cards/' + selectedAccountId);
+                    entData = appData.cards[selectedAccountId];
+                    isCard = true;
+                }
+
+                if(!entData) return;
+
+                if(isCard) {
+                    if(currentAppType === 'Income') {
+                        alert('Credit cards can only log expenses or be paid off.');
+                        return;
+                    }
+                } else {
+                    let newBal = entData.balance;
+                    if(currentAppType === 'Income') newBal += amount;
+                    else if(currentAppType === 'Expense') newBal -= amount;
+                    entRef.update({ balance: newBal });
+                }
+
+                db.ref('transactions').push({
+                    type: currentAppType,
+                    amount: amount,
+                    accountId: selectedAccountId,
+                    accountName: entData.name,
+                    notes: notes,
+                    category: selectedCategorySub,
+                    date: dateStr
+                });
+
+                resetAppInput();
+                alert('Transaction saved successfully!');
+            }
+        }
+
+        function openAccountModal(target) {
+            accountModalTarget = target;
+            document.getElementById('account-modal').style.display = 'flex';
+            let listHtml = '';
+            
+            listHtml += `<div class="p-2 fw-bold text-primary border-bottom">Bank Accounts</div>`;
+            const accs = appData.accounts;
+            for(let id in accs) {
+                listHtml += `<div class="account-select-row" onclick="selectAccount('${id}', '${accs[id].name}')">
+                    <span class="fw-semibold">${accs[id].name}</span>
+                    <span class="text-success">₹${accs[id].balance.toLocaleString()}</span>
+                </div>`;
+            }
+
+            listHtml += `<div class="p-2 fw-bold text-primary border-bottom mt-2">Wallets</div>`;
+            const wals = appData.wallets;
+            for(let id in wals) {
+                listHtml += `<div class="account-select-row" onclick="selectAccount('${id}', '${wals[id].name}')">
+                    <span class="fw-semibold">${wals[id].name}</span>
+                    <span class="text-success">₹${wals[id].balance.toLocaleString()}</span>
+                </div>`;
+            }
+
+            listHtml += `<div class="p-2 fw-bold text-primary border-bottom mt-2">Credit Cards</div>`;
+            const cards = appData.cards;
+            for(let id in cards) {
+                listHtml += `<div class="account-select-row" onclick="selectAccount('${id}', '${cards[id].name}')">
+                    <span class="fw-semibold">${cards[id].name}</span>
+                    <span class="text-warning">Credit Card</span>
+                </div>`;
+            }
+
+            document.getElementById('account-modal-list').innerHTML = listHtml || '<p class="text-muted p-3">No accounts, wallets or cards available.</p>';
+        }
+
+        function closeAccountModal() {
+            document.getElementById('account-modal').style.display = 'none';
+        }
+
+        function selectAccount(id, name) {
+            if(accountModalTarget === 'primary') {
+                selectedAccountId = id;
+                document.getElementById('selected-account-label').innerText = name;
+            } else if(accountModalTarget === 'withdraw') {
+                document.getElementById('withdraw-target-account').value = id;
+            } else if(accountModalTarget === 'payment') {
+                executeCardPayment(accountModalTargetParamCardId, id);
+            }
+            closeAccountModal();
+        }
+
+        function openCategoryModal() {
+            document.getElementById('category-modal').style.display = 'flex';
+            let html = '';
+            const cats = appData.categories;
+            for(let catId in cats) {
+                let cat = cats[catId];
+                html += `<div class="p-2 fw-bold text-primary border-bottom">${cat.name}</div>`;
+                let subs = (cat.sub || '').split(',');
+                subs.forEach(sub => {
+                    let s = sub.trim();
+                    if(s) {
+                        html += `<a href="#" class="list-group-item list-group-item-action ps-4" onclick="selectCategory('${cat.name} > ${s}')">${s}</a>`;
+                    }
+                });
+            }
+            document.getElementById('category-modal-list').innerHTML = html || '<p class="text-muted p-3">No categories configured.</p>';
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('category-modal').style.display = 'none';
+        }
+
+        function selectCategory(val) {
+            selectedCategorySub = val;
+            document.getElementById('selected-category-label').innerText = val;
+            document.getElementById('app-notes').value = val;
+            closeCategoryModal();
+        }
+
+        function editTransaction(id) {
+            const tx = appData.transactions[id];
+            if(!tx) return;
+            document.getElementById('edit-tx-id').value = id;
+            document.getElementById('edit-tx-amount').value = tx.amount;
+            document.getElementById('edit-tx-notes').value = tx.notes;
+            document.getElementById('edit-tx-modal').style.display = 'flex';
+        }
+
+        function closeEditTxModal() {
+            document.getElementById('edit-tx-modal').style.display = 'none';
+        }
+
+        function saveEditedTransaction(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-tx-id').value;
+            const newAmount = parseFloat(document.getElementById('edit-tx-amount').value);
+            const newNotes = document.getElementById('edit-tx-notes').value;
+
+            db.ref('transactions/' + id).update({
+                amount: newAmount,
+                notes: newNotes
+            }, () => {
+                closeEditTxModal();
+                alert('Transaction updated successfully!');
+            });
+        }
+
+        function deleteTransaction(id) {
+            if(confirm('Delete transaction record?')) db.ref('transactions/' + id).remove();
+        }
+
+        function editAccount(id) {
+            const acc = appData.accounts[id];
+            if(!acc) return;
+            document.getElementById('edit-bank-id').value = id;
+            document.getElementById('edit-bank-name').value = acc.name;
+            document.getElementById('edit-bank-balance').value = acc.balance;
+            document.getElementById('edit-bank-modal').style.display = 'flex';
+        }
+
+        function closeEditBankModal() {
+            document.getElementById('edit-bank-modal').style.display = 'none';
+        }
+
+        function saveEditedBank(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-bank-id').value;
+            const name = document.getElementById('edit-bank-name').value;
+            const balance = parseFloat(document.getElementById('edit-bank-balance').value);
+
+            db.ref('accounts/' + id).update({ name, balance }, () => {
+                closeEditBankModal();
+                alert('Bank account updated successfully!');
+            });
+        }
+
+        function deleteAccount(id) {
+            if(confirm('Delete bank account?')) db.ref('accounts/' + id).remove();
+        }
+
+        function saveAccount(e) {
+            e.preventDefault();
+            const id = document.getElementById('acc-id').value;
+            const name = document.getElementById('acc-name').value;
+            const balance = parseFloat(document.getElementById('acc-balance').value);
+            const ref = id ? db.ref('accounts/' + id) : db.ref('accounts').push();
+            ref.set({ name, balance }, () => {
+                document.getElementById('account-form').reset();
+                document.getElementById('acc-id').value = '';
+            });
+        }
+
+        function renderAccounts() {
+            let html = '';
+            const accs = appData.accounts;
+            for(let id in accs) {
+                html += `<tr>
+                    <td class="fw-semibold">${accs[id].name}</td>
+                    <td class="text-success fw-bold">₹${accs[id].balance.toLocaleString()}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editAccount('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteAccount('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('accounts-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No accounts found.</td></tr>';
+        }
+
+        function saveWallet(e) {
+            e.preventDefault();
+            const id = document.getElementById('wallet-id').value;
+            const name = document.getElementById('wallet-name').value;
+            const balance = parseFloat(document.getElementById('wallet-balance').value);
+            const ref = id ? db.ref('wallets/' + id) : db.ref('wallets').push();
+            ref.set({ name, balance }, () => {
+                document.getElementById('wallet-form').reset();
+                document.getElementById('wallet-id').value = '';
+                alert('Wallet saved successfully!');
+            });
+        }
+
+        function editWallet(id) {
+            const wal = appData.wallets[id];
+            if(!wal) return;
+            document.getElementById('edit-wallet-id').value = id;
+            document.getElementById('edit-wallet-name').value = wal.name;
+            document.getElementById('edit-wallet-balance').value = wal.balance;
+            document.getElementById('edit-wallet-modal').style.display = 'flex';
+        }
+
+        function closeEditWalletModal() {
+            document.getElementById('edit-wallet-modal').style.display = 'none';
+        }
+
+        function saveEditedWallet(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-wallet-id').value;
+            const name = document.getElementById('edit-wallet-name').value;
+            const balance = parseFloat(document.getElementById('edit-wallet-balance').value);
+
+            db.ref('wallets/' + id).update({ name, balance }, () => {
+                closeEditWalletModal();
+                alert('Wallet updated successfully!');
+            });
+        }
+
+        function deleteWallet(id) {
+            if(confirm('Delete wallet?')) db.ref('wallets/' + id).remove();
+        }
+
+        function openLoadWalletModal(walletId) {
+            const wal = appData.wallets[walletId];
+            if(!wal) return;
+            document.getElementById('load-wallet-id').value = walletId;
+            document.getElementById('load-wallet-name-label').innerText = wal.name;
+            document.getElementById('load-wallet-amount').value = '';
+
+            let bankOpts = '';
+            const accs = appData.accounts;
+            for(let accId in accs) {
+                bankOpts += `<option value="${accId}">${accs[accId].name} (₹${accs[accId].balance.toLocaleString()})</option>`;
+            }
+            document.getElementById('load-wallet-source-bank').innerHTML = bankOpts || '<option value="">No bank accounts available</option>';
+            document.getElementById('load-wallet-modal').style.display = 'flex';
+        }
+
+        function closeLoadWalletModal() {
+            document.getElementById('load-wallet-modal').style.display = 'none';
+        }
+
+        function executeLoadWallet(e) {
+            e.preventDefault();
+            const walletId = document.getElementById('load-wallet-id').value;
+            const bankId = document.getElementById('load-wallet-source-bank').value;
+            const amount = parseFloat(document.getElementById('load-wallet-amount').value);
+
+            if(!bankId) { alert('Please select a valid bank account.'); return; }
+            if(isNaN(amount) || amount <= 0) { alert('Please enter a valid amount.'); return; }
+
+            const wal = appData.wallets[walletId];
+            const acc = appData.accounts[bankId];
+
+            if(wal && acc) {
+                if(acc.balance < amount) {
+                    alert('Insufficient balance in the selected bank account!');
+                    return;
+                }
+
+                db.ref('accounts/' + bankId).update({ balance: acc.balance - amount });
+                db.ref('wallets/' + walletId).update({ balance: wal.balance + amount });
+
+                db.ref('transactions').push({
+                    type: 'Transfer',
+                    amount: amount,
+                    accountId: bankId,
+                    accountName: `${acc.name} ➔ ${wal.name}`,
+                    notes: `Loaded wallet ${wal.name} from ${acc.name}`,
+                    category: 'Transfer',
+                    date: new Date().toISOString()
+                });
+
+                closeLoadWalletModal();
+                alert(`Successfully loaded ₹${amount} into ${wal.name} from ${acc.name}`);
+            }
+        }
+
+        function renderWallets() {
+            let html = '';
+            const wals = appData.wallets;
+            for(let id in wals) {
+                html += `<tr>
+                    <td class="fw-semibold">${wals[id].name}</td>
+                    <td class="text-success fw-bold">₹${wals[id].balance.toLocaleString()}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="openLoadWalletModal('${id}')"><i class="bi bi-plus-circle"></i> Load</button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editWallet('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteWallet('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('wallets-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No wallets found.</td></tr>';
+        }
+
+        function toggleRdFields() {
+            const type = document.getElementById('fr-type').value;
+            document.getElementById('rd-monthly-date-group').style.display = type === 'RD' ? 'block' : 'none';
+            document.getElementById('fr-principal-label').innerText = type === 'RD' ? 'Monthly Installment Amount (₹)' : 'Principal Amount (₹)';
+        }
+
+        function saveFdRd(e) {
+            e.preventDefault();
+            const type = document.getElementById('fr-type').value;
+            const name = document.getElementById('fr-name').value;
+            const amount = parseFloat(document.getElementById('fr-amount').value);
+            const rate = parseFloat(document.getElementById('fr-rate').value);
+            const startDate = document.getElementById('fr-start-date').value;
+            const tenure = parseInt(document.getElementById('fr-tenure').value);
+            const rdDay = type === 'RD' ? parseInt(document.getElementById('fr-rd-day').value || 1) : 0;
+            const linkedAccount = document.getElementById('fr-linked-account').value;
+
+            db.ref('fdRd').push({
+                type, name, amount, rate, startDate, tenure, rdDay, linkedAccount
+            }, () => {
+                document.getElementById('fd-rd-form').reset();
+                alert('Scheme saved successfully!');
+            });
+        }
+
+        function editFdRd(id) {
+            const item = appData.fdRd[id];
+            if(!item) return;
+            document.getElementById('edit-fdrd-id').value = id;
+            document.getElementById('edit-fdrd-name').value = item.name;
+            document.getElementById('edit-fdrd-amount').value = item.amount;
+            document.getElementById('edit-fdrd-rate').value = item.rate;
+            document.getElementById('edit-fdrd-tenure').value = item.tenure;
+
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === item.linkedAccount ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name}</option>`;
+            }
+            document.getElementById('edit-fdrd-linked-account').innerHTML = accOptions;
+            document.getElementById('edit-fdrd-modal').style.display = 'flex';
+        }
+
+        function closeEditFdRdModal() {
+            document.getElementById('edit-fdrd-modal').style.display = 'none';
+        }
+
+        function saveEditedFdRd(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-fdrd-id').value;
+            const name = document.getElementById('edit-fdrd-name').value;
+            const amount = parseFloat(document.getElementById('edit-fdrd-amount').value);
+            const rate = parseFloat(document.getElementById('edit-fdrd-rate').value);
+            const tenure = parseInt(document.getElementById('edit-fdrd-tenure').value);
+            const linkedAccount = document.getElementById('edit-fdrd-linked-account').value;
+
+            db.ref('fdRd/' + id).update({ name, amount, rate, tenure, linkedAccount }, () => {
+                closeEditFdRdModal();
+                alert('Scheme updated successfully!');
+            });
+        }
+
+        function calculateFdRdValue(item) {
+            const start = new Date(item.startDate);
+            const now = new Date();
+            const diffMonths = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+            const monthsElapsed = Math.max(0, Math.min(item.tenure, diffMonths));
+            
+            if(item.type === 'FD') {
+                let years = monthsElapsed / 12;
+                let maturityVal = item.amount * Math.pow((1 + item.rate / 100), years);
+                return { invested: item.amount, current: Math.round(maturityVal) };
+            } else {
+                let totalInvested = item.amount * monthsElapsed;
+                let monthlyRate = item.rate / (12 * 100);
+                let currentVal = 0;
+                for(let i = 1; i <= monthsElapsed; i++) {
+                    currentVal += item.amount * Math.pow(1 + monthlyRate, item.tenure - i + 1);
+                }
+                return { invested: totalInvested, current: Math.round(currentVal || totalInvested) };
+            }
+        }
+
+        function renderFdRd() {
+            let html = '';
+            const items = appData.fdRd;
+            for(let id in items) {
+                let item = items[id];
+                let calc = calculateFdRdValue(item);
+                let linkedAccName = appData.accounts[item.linkedAccount] ? appData.accounts[item.linkedAccount].name : 'Unlinked';
+                html += `<tr>
+                    <td><div class="fw-semibold">${item.name}</div><small class="text-muted">Start: ${item.startDate} | Linked: ${linkedAccName}</small></td>
+                    <td><span class="badge bg-secondary">${item.type}</span></td>
+                    <td><div>Inv: ₹${calc.invested.toLocaleString()}</div><div class="text-success fw-bold">Val: ₹${calc.current.toLocaleString()}</div></td>
+                    <td><div>${item.rate}% p.a.</div><small class="text-muted">${item.tenure} mos</small></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editFdRd('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-success" onclick="openWithdrawModalForFdRd('${id}', ${calc.current}, '${item.linkedAccount}')">Withdraw</button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('fd-rd-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No FD/RD schemes found.</td></tr>';
+        }
+
+        function openWithdrawModalForFdRd(id, maxVal, linkedAccId) {
+            document.getElementById('withdraw-title').innerText = 'Premature Withdrawal / Payout';
+            document.getElementById('withdraw-inv-id').value = id;
+            document.getElementById('withdraw-type').value = 'fdRd';
+            document.getElementById('withdraw-amount').value = maxVal;
+            
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === linkedAccId ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name} (₹${appData.accounts[accId].balance})</option>`;
+            }
+            document.getElementById('withdraw-target-account').innerHTML = accOptions;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdraw-modal').style.display = 'none';
+        }
+
+        function executeWithdraw(e) {
+            e.preventDefault();
+            const id = document.getElementById('withdraw-inv-id').value;
+            const type = document.getElementById('withdraw-type').value;
+            const amt = parseFloat(document.getElementById('withdraw-amount').value);
+            const targetAccId = document.getElementById('withdraw-target-account').value;
+
+            if(type === 'fdRd') {
+                db.ref('accounts/' + targetAccId).once('value').then(snap => {
+                    let acc = snap.val();
+                    if(acc) {
+                        db.ref('accounts/' + targetAccId).update({ balance: acc.balance + amt });
+                        db.ref('fdRd/' + id).remove();
+                        closeWithdrawModal();
+                        alert(`Successfully transferred ₹${amt} to ${acc.name}`);
+                    }
+                });
+            } else if(type === 'mf') {
+                db.ref('accounts/' + targetAccId).once('value').then(snap => {
+                    let acc = snap.val();
+                    if(acc) {
+                        db.ref('accounts/' + targetAccId).update({ balance: acc.balance + amt });
+                        db.ref('mutualFunds/' + id).remove();
+                        closeWithdrawModal();
+                        alert(`Successfully redeemed ₹${amt} to ${acc.name}`);
+                    }
+                });
+            } else if(type === 'stock') {
+                db.ref('accounts/' + targetAccId).once('value').then(snap => {
+                    let acc = snap.val();
+                    if(acc) {
+                        db.ref('accounts/' + targetAccId).update({ balance: acc.balance + amt });
+                        db.ref('stocks/' + id).remove();
+                        closeWithdrawModal();
+                        alert(`Successfully sold and transferred ₹${amt} to ${acc.name}`);
+                    }
+                });
+            }
+        }
+
+        function saveCategory(e) {
+            e.preventDefault();
+            const id = document.getElementById('cat-id').value;
+            const name = document.getElementById('cat-name').value;
+            const sub = document.getElementById('cat-sub').value;
+            const ref = id ? db.ref('categories/' + id) : db.ref('categories').push();
+            ref.set({ name, sub }, () => {
+                resetCategoryForm();
+            });
+        }
+
+        function editCategory(id) {
+            const cat = appData.categories[id];
+            if(!cat) return;
+            document.getElementById('cat-id').value = id;
+            document.getElementById('cat-name').value = cat.name;
+            document.getElementById('cat-sub').value = cat.sub;
+            document.getElementById('cat-form-title').innerText = 'Edit Category';
+        }
+
+        function deleteCategory(id) {
+            if(confirm('Delete category?')) db.ref('categories/' + id).remove();
+        }
+
+        function resetCategoryForm() {
+            document.getElementById('category-form').reset();
+            document.getElementById('cat-id').value = '';
+            document.getElementById('cat-form-title').innerText = 'Manage Categories';
+        }
+
+        function renderCategories() {
+            let html = '';
+            const cats = appData.categories;
+            for(let id in cats) {
+                html += `<tr>
+                    <td class="fw-semibold">${cats[id].name}</td>
+                    <td>${cats[id].sub || ''}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('categories-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No categories found.</td></tr>';
+        }
+
+        function toggleMfFields() {
+            const mode = document.getElementById('mf-mode').value;
+            document.getElementById('mf-freq-group').style.display = mode === 'SIP' ? 'block' : 'none';
+            document.getElementById('mf-due-group').style.display = mode === 'SIP' ? 'block' : 'none';
+            document.getElementById('mf-lumpsum-group').style.display = mode === 'SIP' ? 'block' : 'none';
+            document.getElementById('mf-amount-label').innerText = mode === 'SIP' ? 'Monthly/Weekly SIP Amount (₹)' : 'Invested Lumpsum (₹)';
+            if(mode === 'SIP') toggleMfFreqFields();
+        }
+
+        function toggleMfFreqFields() {
+            const freq = document.getElementById('mf-freq').value;
+            document.getElementById('mf-due-label').innerText = freq === 'Weekly' ? 'Select Weekday (1=Mon..7=Sun)' : 'Monthly Date (1-31)';
+        }
+
+        function saveMutualFund(e) {
+            e.preventDefault();
+            const name = document.getElementById('mf-name').value;
+            const mode = document.getElementById('mf-mode').value;
+            const amount = parseFloat(document.getElementById('mf-amount').value);
+            const lumpsum = mode === 'SIP' ? parseFloat(document.getElementById('mf-lumpsum').value || 0) : 0;
+            const freq = mode === 'SIP' ? document.getElementById('mf-freq').value : '';
+            const dueVal = mode === 'SIP' ? parseInt(document.getElementById('mf-due-val').value || 1) : 0;
+            const linkedAccount = document.getElementById('mf-linked-account').value;
+
+            db.ref('mutualFunds').push({
+                name, mode, amount, lumpsum, freq, dueVal, linkedAccount
+            }, () => {
+                document.getElementById('mf-form').reset();
+                toggleMfFields();
+                alert('Mutual fund saved!');
+            });
+        }
+
+        function editMutualFund(id) {
+            const mf = appData.mutualFunds[id];
+            if(!mf) return;
+            document.getElementById('edit-mf-id').value = id;
+            document.getElementById('edit-mf-name').value = mf.name;
+            document.getElementById('edit-mf-amount').value = mf.amount;
+            document.getElementById('edit-mf-amount-label').innerText = mf.mode === 'SIP' ? 'SIP Installment Amount (₹)' : 'Invested Amount (₹)';
+            
+            const lumpsumGroup = document.getElementById('edit-mf-lumpsum-group');
+            if(mf.mode === 'SIP') {
+                lumpsumGroup.style.display = 'block';
+                document.getElementById('edit-mf-lumpsum').value = mf.lumpsum || 0;
+            } else {
+                lumpsumGroup.style.display = 'none';
+            }
+
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === mf.linkedAccount ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name}</option>`;
+            }
+            document.getElementById('edit-mf-linked-account').innerHTML = accOptions;
+            document.getElementById('edit-mf-modal').style.display = 'flex';
+        }
+
+        function closeEditMfModal() {
+            document.getElementById('edit-mf-modal').style.display = 'none';
+        }
+
+        function saveEditedMutualFund(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-mf-id').value;
+            const name = document.getElementById('edit-mf-name').value;
+            const amount = parseFloat(document.getElementById('edit-mf-amount').value);
+            const lumpsum = parseFloat(document.getElementById('edit-mf-lumpsum').value || 0);
+            const linkedAccount = document.getElementById('edit-mf-linked-account').value;
+
+            db.ref('mutualFunds/' + id).update({ name, amount, lumpsum, linkedAccount }, () => {
+                closeEditMfModal();
+                alert('Mutual Fund updated successfully!');
+            });
+        }
+
+        function deleteMutualFund(id) {
+            if(confirm('Delete mutual fund record?')) db.ref('mutualFunds/' + id).remove();
+        }
+
+        function renderMutualFunds() {
+            let html = '';
+            const mfs = appData.mutualFunds;
+            for(let id in mfs) {
+                let mf = mfs[id];
+                let detailText = mf.freq ? `${mf.freq} (Day ${mf.dueVal})` : 'One-time';
+                if(mf.lumpsum > 0) detailText += ` + Lumpsum: ₹${mf.lumpsum}`;
+                html += `<tr>
+                    <td class="fw-semibold">${mf.name}</td>
+                    <td><span class="badge bg-primary">${mf.mode}</span></td>
+                    <td>₹${mf.amount.toLocaleString()}</td>
+                    <td><small class="text-muted">${detailText}</small></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editMutualFund('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="openWithdrawModalForMf('${id}', ${(mf.amount + (mf.lumpsum || 0))}, '${mf.linkedAccount}')">Withdraw</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteMutualFund('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('mf-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No mutual funds found.</td></tr>';
+        }
+
+        function openWithdrawModalForMf(id, estVal, linkedAccId) {
+            document.getElementById('withdraw-title').innerText = 'Withdraw Mutual Fund';
+            document.getElementById('withdraw-inv-id').value = id;
+            document.getElementById('withdraw-type').value = 'mf';
+            document.getElementById('withdraw-amount').value = estVal;
+            
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === linkedAccId ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name} (₹${appData.accounts[accId].balance})</option>`;
+            }
+            document.getElementById('withdraw-target-account').innerHTML = accOptions;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        function saveStock(e) {
+            e.preventDefault();
+            const name = document.getElementById('stock-name').value;
+            const qty = parseFloat(document.getElementById('stock-qty').value);
+            const invested = parseFloat(document.getElementById('stock-invested').value);
+            const current = parseFloat(document.getElementById('stock-current').value);
+            const linkedAccount = document.getElementById('stock-linked-account').value;
+
+            db.ref('stocks').push({ name, qty, invested, current, linkedAccount }, () => {
+                document.getElementById('stock-form').reset();
+                alert('Stock saved successfully!');
+            });
+        }
+
+        function editStock(id) {
+            const st = appData.stocks[id];
+            if(!st) return;
+            document.getElementById('edit-stock-id').value = id;
+            document.getElementById('edit-stock-name').value = st.name;
+            document.getElementById('edit-stock-qty').value = st.qty;
+            document.getElementById('edit-stock-invested').value = st.invested;
+            document.getElementById('edit-stock-current').value = st.current;
+
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === st.linkedAccount ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name}</option>`;
+            }
+            document.getElementById('edit-stock-linked-account').innerHTML = accOptions;
+            document.getElementById('edit-stock-modal').style.display = 'flex';
+        }
+
+        function closeEditStockModal() {
+            document.getElementById('edit-stock-modal').style.display = 'none';
+        }
+
+        function saveEditedStock(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-stock-id').value;
+            const name = document.getElementById('edit-stock-name').value;
+            const qty = parseFloat(document.getElementById('edit-stock-qty').value);
+            const invested = parseFloat(document.getElementById('edit-stock-invested').value);
+            const current = parseFloat(document.getElementById('edit-stock-current').value);
+            const linkedAccount = document.getElementById('edit-stock-linked-account').value;
+
+            db.ref('stocks/' + id).update({ name, qty, invested, current, linkedAccount }, () => {
+                closeEditStockModal();
+                alert('Stock updated successfully!');
+            });
+        }
+
+        function deleteStock(id) {
+            if(confirm('Delete stock entry?')) db.ref('stocks/' + id).remove();
+        }
+
+        function openWithdrawModalForStock(id, currentVal, linkedAccId) {
+            document.getElementById('withdraw-title').innerText = 'Sell / Withdraw Stock';
+            document.getElementById('withdraw-inv-id').value = id;
+            document.getElementById('withdraw-type').value = 'stock';
+            document.getElementById('withdraw-amount').value = currentVal;
+            
+            let accOptions = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === linkedAccId ? 'selected' : '';
+                accOptions += `<option value="${accId}" ${selected}>${appData.accounts[accId].name} (₹${appData.accounts[accId].balance})</option>`;
+            }
+            document.getElementById('withdraw-target-account').innerHTML = accOptions;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+        }
+
+        function renderStocks() {
+            let html = '';
+            const stocks = appData.stocks;
+            for(let id in stocks) {
+                let st = stocks[id];
+                let diff = st.current - st.invested;
+                let colorClass = diff >= 0 ? 'text-success' : 'text-danger';
+                html += `<tr>
+                    <td><div class="fw-semibold">${st.name}</div><small class="text-muted">Inv: ₹${st.invested.toLocaleString()}</small></td>
+                    <td>${st.qty} units</td>
+                    <td><div class="${colorClass} fw-bold">₹${st.current.toLocaleString()}</div></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editStock('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="openWithdrawModalForStock('${id}', ${st.current}, '${st.linkedAccount}')">Withdraw</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteStock('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('stocks-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No stocks found.</td></tr>';
+        }
+
+        function saveCard(e) {
+            e.preventDefault();
+            const name = document.getElementById('card-name').value;
+            const limit = parseFloat(document.getElementById('card-limit').value || 0);
+            const initialUnbilled = parseFloat(document.getElementById('card-initial-unbilled').value || 0);
+            const billDate = parseInt(document.getElementById('card-bill-date').value);
+            const dueDate = parseInt(document.getElementById('card-due-date').value);
+            db.ref('cards').push({ name, limit, initialUnbilled, billDate, dueDate }, () => {
+                document.getElementById('card-form').reset();
+                document.getElementById('card-initial-unbilled').value = '0';
+                alert('Card saved successfully!');
+            });
+        }
+
+        function editCard(id) {
+            const card = appData.cards[id];
+            if(!card) return;
+            document.getElementById('edit-card-id').value = id;
+            document.getElementById('edit-card-name').value = card.name;
+            document.getElementById('edit-card-limit').value = card.limit || 0;
+            document.getElementById('edit-card-initial-unbilled').value = card.initialUnbilled || 0;
+            document.getElementById('edit-card-bill-date').value = card.billDate;
+            document.getElementById('edit-card-due-date').value = card.dueDate;
+            document.getElementById('edit-card-modal').style.display = 'flex';
+        }
+
+        function closeEditCardModal() {
+            document.getElementById('edit-card-modal').style.display = 'none';
+        }
+
+        function saveEditedCard(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-card-id').value;
+            const name = document.getElementById('edit-card-name').value;
+            const limit = parseFloat(document.getElementById('edit-card-limit').value || 0);
+            const initialUnbilled = parseFloat(document.getElementById('edit-card-initial-unbilled').value || 0);
+            const billDate = parseInt(document.getElementById('edit-card-bill-date').value);
+            const dueDate = parseInt(document.getElementById('edit-card-due-date').value);
+
+            db.ref('cards/' + id).update({ name, limit, initialUnbilled, billDate, dueDate }, () => {
+                closeEditCardModal();
+                alert('Card updated successfully!');
+            });
+        }
+
+        function deleteCard(id) {
+            if(confirm('Delete card?')) db.ref('cards/' + id).remove();
+        }
+
+        function saveEmi(e) {
+            e.preventDefault();
+            const name = document.getElementById('emi-name').value;
+            const cardId = document.getElementById('emi-card-id').value;
+            const principal = parseFloat(document.getElementById('emi-principal').value);
+            const rate = parseFloat(document.getElementById('emi-rate').value);
+            const tenure = parseInt(document.getElementById('emi-tenure').value);
+            const startDate = document.getElementById('emi-start-date').value;
+
+            let rMonthly = rate / (12 * 100);
+            let emiAmt = principal * rMonthly * Math.pow(1 + rMonthly, tenure) / (Math.pow(1 + rMonthly, tenure) - 1);
+            emiAmt = Math.round(emiAmt * 100) / 100;
+
+            db.ref('emis').push({
+                name, cardId, principal, rate, tenure, startDate, emiAmt
+            }, () => {
+                document.getElementById('emi-form').reset();
+                alert(`EMI scheduled successfully and auto-calculated! Monthly installment: ₹${emiAmt}`);
+            });
+        }
+
+        function editEmi(id) {
+            const em = appData.emis[id];
+            if(!em) return;
+            document.getElementById('edit-emi-id').value = id;
+            document.getElementById('edit-emi-name').value = em.name;
+            document.getElementById('edit-emi-principal').value = em.principal;
+            document.getElementById('edit-emi-rate').value = em.rate;
+            document.getElementById('edit-emi-tenure').value = em.tenure;
+
+            let cardOpts = '';
+            for(let cardId in appData.cards) {
+                let selected = cardId === em.cardId ? 'selected' : '';
+                cardOpts += `<option value="${cardId}" ${selected}>${appData.cards[cardId].name}</option>`;
+            }
+            document.getElementById('edit-emi-card-id').innerHTML = cardOpts;
+            document.getElementById('edit-emi-modal').style.display = 'flex';
+        }
+
+        function closeEditEmiModal() {
+            document.getElementById('edit-emi-modal').style.display = 'none';
+        }
+
+        function saveEditedEmi(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-emi-id').value;
+            const name = document.getElementById('edit-emi-name').value;
+            const cardId = document.getElementById('edit-emi-card-id').value;
+            const principal = parseFloat(document.getElementById('edit-emi-principal').value);
+            const rate = parseFloat(document.getElementById('edit-emi-rate').value);
+            const tenure = parseInt(document.getElementById('edit-emi-tenure').value);
+
+            let rMonthly = rate / (12 * 100);
+            let emiAmt = principal * rMonthly * Math.pow(1 + rMonthly, tenure) / (Math.pow(1 + rMonthly, tenure) - 1);
+            emiAmt = Math.round(emiAmt * 100) / 100;
+
+            db.ref('emis/' + id).update({ name, cardId, principal, rate, tenure, emiAmt }, () => {
+                closeEditEmiModal();
+                alert('EMI updated successfully!');
+            });
+        }
+
+        function deleteEmi(id) {
+            if(confirm('Delete EMI entry?')) db.ref('emis/' + id).remove();
+        }
+
+        function renderCards() {
+            let html = '';
+            const cards = appData.cards;
+            
+            // Calculate expenses logged against each card from transactions
+            let cardExpenses = {};
+            const txs = appData.transactions;
+            for(let txId in txs) {
+                let tx = txs[txId];
+                if(tx.type === 'Expense' && cards[tx.accountId]) {
+                    cardExpenses[tx.accountId] = (cardExpenses[tx.accountId] || 0) + tx.amount;
+                }
+            }
+
+            for(let id in cards) {
+                let card = cards[id];
+                let initialUnbilled = card.initialUnbilled || 0;
+                let loggedExpenses = cardExpenses[id] || 0;
+                let totalUnbilled = initialUnbilled + loggedExpenses;
+
+                html += `<tr>
+                    <td><div class="fw-semibold">${card.name}</div></td>
+                    <td><div>Limit: ₹${(card.limit || 0).toLocaleString()}</div><small class="text-muted">Out. Limit: ₹${(card.outstandingLimit || 0).toLocaleString()}</small></td>
+                    <td><div>Bill: ${card.billDate}th</div><small class="text-muted">Due: ${card.dueDate}th</small></td>
+                    <td><span class="text-warning fw-bold">₹${totalUnbilled.toLocaleString()}</span> <small class="text-muted">(Init: ₹${initialUnbilled} + Log: ₹${loggedExpenses})</small></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editCard('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('cards-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No credit cards found.</td></tr>';
+        }
+
+        function renderEmis() {
+            let html = '';
+            const emis = appData.emis;
+            for(let id in emis) {
+                let em = emis[id];
+                let cardName = appData.cards[em.cardId] ? appData.cards[em.cardId].name : 'Unknown Card';
+                html += `<tr>
+                    <td class="fw-semibold">${em.name}</td>
+                    <td>${cardName}</td>
+                    <td class="text-primary fw-bold">₹${em.emiAmt.toLocaleString()}</td>
+                    <td>${em.tenure} mos</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editEmi('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEmi('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('emi-table-body').innerHTML = html || '<tr><td colspan="5" class="text-center text-muted">No active EMIs found.</td></tr>';
+        }
+
+        function saveRecurring(e) {
+            e.preventDefault();
+            const title = document.getElementById('rec-title').value;
+            const amount = parseFloat(document.getElementById('rec-amount').value);
+            const dueDate = parseInt(document.getElementById('rec-duedate').value);
+            const account = document.getElementById('rec-account').value;
+
+            db.ref('recurring').push({ title, amount, dueDate, account, status: 'Active' }, () => {
+                document.getElementById('recurring-form').reset();
+                alert('Recurring payment saved successfully!');
+            });
+        }
+
+        function editRec(id) {
+            const rec = appData.recurring[id];
+            if(!rec) return;
+            document.getElementById('edit-rec-id').value = id;
+            document.getElementById('edit-rec-title').value = rec.title;
+            document.getElementById('edit-rec-amount').value = rec.amount;
+            document.getElementById('edit-rec-duedate').value = rec.dueDate;
+
+            let accOpts = '';
+            for(let accId in appData.accounts) {
+                let selected = accId === rec.account ? 'selected' : '';
+                accOpts += `<option value="${accId}" ${selected}>${appData.accounts[accId].name}</option>`;
+            }
+            document.getElementById('edit-rec-account').innerHTML = accOpts;
+            document.getElementById('edit-rec-modal').style.display = 'flex';
+        }
+
+        function closeEditRecModal() {
+            document.getElementById('edit-rec-modal').style.display = 'none';
+        }
+
+        function saveEditedRec(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-rec-id').value;
+            const title = document.getElementById('edit-rec-title').value;
+            const amount = parseFloat(document.getElementById('edit-rec-amount').value);
+            const dueDate = parseInt(document.getElementById('edit-rec-duedate').value);
+            const account = document.getElementById('edit-rec-account').value;
+
+            db.ref('recurring/' + id).update({ title, amount, dueDate, account }, () => {
+                closeEditRecModal();
+                alert('Recurring payment updated successfully!');
+            });
+        }
+
+        function deleteRecurring(id) {
+            if(confirm('Delete recurring payment?')) db.ref('recurring/' + id).remove();
+        }
+
+        function renderRecurring() {
+            let html = '';
+            const recs = appData.recurring;
+            for(let id in recs) {
+                let rc = recs[id];
+                let accName = appData.accounts[rc.account] ? appData.accounts[rc.account].name : 'Account';
+                html += `<tr>
+                    <td class="fw-semibold">${rc.title}</td>
+                    <td class="text-danger fw-bold">₹${rc.amount.toLocaleString()}</td>
+                    <td>Day ${rc.dueDate}</td>
+                    <td>${accName}</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editRec('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRecurring('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('recurring-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No recurring payments found.</td></tr>';
+        }
+
+        function renderTransactions() {
+            let html = '';
+            const txs = appData.transactions;
+            let sortedKeys = Object.keys(txs).sort((a,b) => new Date(txs[b].date) - new Date(txs[a].date));
+            
+            sortedKeys.forEach(id => {
+                let tx = txs[id];
+                let dateFormatted = new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                let badgeClass = tx.type === 'Income' ? 'bg-success' : (tx.type === 'Expense' ? 'bg-danger' : 'bg-primary');
+                let amountPrefix = tx.type === 'Income' ? '+' : (tx.type === 'Expense' ? '-' : '');
+                
+                html += `<tr>
+                    <td>${dateFormatted}</td>
+                    <td><span class="badge ${badgeClass}">${tx.type}</span></td>
+                    <td class="fw-bold">₹${amountPrefix}${tx.amount.toLocaleString()}</td>
+                    <td>${tx.accountName || 'N/A'}</td>
+                    <td>${tx.notes || ''}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editTransaction('${id}')"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTransaction('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('transactions-table-body').innerHTML = html || '<tr><td colspan="6" class="text-center text-muted">No transactions logged yet.</td></tr>';
+        }
+
+        function renderWealthSummary() {
+            let totalBank = 0;
+            for(let id in appData.accounts) totalBank += appData.accounts[id].balance || 0;
+
+            let totalWallets = 0;
+            for(let id in appData.wallets) totalWallets += appData.wallets[id].balance || 0;
+
+            let totalFdRd = 0;
+            for(let id in appData.fdRd) totalFdRd += calculateFdRdValue(appData.fdRd[id]).current;
+
+            let totalMf = 0;
+            for(let id in appData.mutualFunds) totalMf += (appData.mutualFunds[id].amount + (appData.mutualFunds[id].lumpsum || 0));
+
+            let totalStocks = 0;
+            for(let id in appData.stocks) totalStocks += appData.stocks[id].current || 0;
+
+            let totalWealth = totalBank + totalWallets + totalFdRd + totalMf + totalStocks;
+
+            let html = `
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Total Bank Balance</span><h3 class="text-success m-0">₹${totalBank.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Wallets Balance</span><h3 class="text-success m-0">₹${totalWallets.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">FD & RD Value</span><h3 class="text-info m-0">₹${totalFdRd.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Mutual Funds Invested</span><h3 class="text-primary m-0">₹${totalMf.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input"><span class="text-muted small">Stocks Current Value</span><h3 class="text-warning m-0">₹${totalStocks.toLocaleString()}</h3></div></div>
+                <div class="col-md-4"><div class="p-3 border rounded bg-input border-primary"><span class="text-primary small fw-bold">Total Net Worth / Wealth</span><h3 class="text-primary m-0">₹${totalWealth.toLocaleString()}</h3></div></div>
+            `;
+            document.getElementById('wealth-summary-cards').innerHTML = html;
+        }
+
+        function renderAnalytics() {
+            let totalInc = 0;
+            let totalExp = 0;
+            let catTotals = {};
+
+            const txs = appData.transactions;
+            for(let id in txs) {
+                let tx = txs[id];
+                if(tx.type === 'Income') {
+                    totalInc += tx.amount;
+                } else if(tx.type === 'Expense') {
+                    totalExp += tx.amount;
+                    let cat = tx.category || 'General';
+                    catTotals[cat] = (catTotals[cat] || 0) + tx.amount;
+                }
+            }
+
+            document.getElementById('analytics-total-income').innerText = `₹${totalInc.toLocaleString()}`;
+            document.getElementById('analytics-total-expense').innerText = `₹${totalExp.toLocaleString()}`;
+            document.getElementById('analytics-net').innerText = `₹${(totalInc - totalExp).toLocaleString()}`;
+
+            let html = '';
+            for(let cat in catTotals) {
+                html += `<tr>
+                    <td class="fw-semibold">${cat}</td>
+                    <td><span class="badge bg-danger">Expense</span></td>
+                    <td class="fw-bold">₹${catTotals[cat].toLocaleString()}</td>
+                </tr>`;
+            }
+            document.getElementById('analytics-table-body').innerHTML = html || '<tr><td colspan="3" class="text-center text-muted">No expense records for analytics.</td></tr>';
+        }
+
+        function saveBudget(e) {
+            e.preventDefault();
+            const category = document.getElementById('budget-category').value;
+            const monthly = parseFloat(document.getElementById('budget-monthly').value);
+            const annual = parseFloat(document.getElementById('budget-annual').value);
+
+            db.ref('budgets').push({ category, monthly, annual }, () => {
+                document.getElementById('budget-form').reset();
+                alert('Budget saved successfully!');
+            });
+        }
+
+        function deleteBudget(id) {
+            if(confirm('Delete budget?')) db.ref('budgets/' + id).remove();
+        }
+
+        function renderBudgets() {
+            let html = '';
+            let catSpentMonthly = {};
+            
+            const txs = appData.transactions;
+            const now = new Date();
+            for(let id in txs) {
+                let tx = txs[id];
+                if(tx.type === 'Expense') {
+                    let txDate = new Date(tx.date);
+                    if(txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear()) {
+                        let mainCat = (tx.category || '').split('>')[0].trim();
+                        catSpentMonthly[mainCat] = (catSpentMonthly[mainCat] || 0) + tx.amount;
+                    }
+                }
+            }
+
+            const budgets = appData.budgets;
+            for(let id in budgets) {
+                let b = budgets[id];
+                let spentM = catSpentMonthly[b.category] || 0;
+                html += `<tr>
+                    <td class="fw-semibold">${b.category}</td>
+                    <td>₹${spentM.toLocaleString()} / ₹${b.monthly.toLocaleString()}</td>
+                    <td>- / ₹${b.annual.toLocaleString()}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteBudget('${id}')"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            }
+            document.getElementById('budgets-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center text-muted">No budgets set.</td></tr>';
+        }
+
+        function updateDropdownOptions() {
+            let accOptions = '';
+            for(let id in appData.accounts) {
+                accOptions += `<option value="${id}">${appData.accounts[id].name}</option>`;
+            }
+            
+            let cardOptions = '';
+            for(let id in appData.cards) {
+                cardOptions += `<option value="${id}">${appData.cards[id].name}</option>`;
+            }
+
+            if(document.getElementById('transfer-from-acc')) {
+                let transferAccs = accOptions;
+                for(let id in appData.wallets) {
+                    transferAccs += `<option value="${id}">${appData.wallets[id].name} (Wallet)</option>`;
+                }
+                document.getElementById('transfer-from-acc').innerHTML = transferAccs;
+                document.getElementById('transfer-to-acc').innerHTML = transferAccs;
+            }
+
+            if(document.getElementById('fr-linked-account')) document.getElementById('fr-linked-account').innerHTML = accOptions;
+            if(document.getElementById('mf-linked-account')) document.getElementById('mf-linked-account').innerHTML = accOptions;
+            if(document.getElementById('stock-linked-account')) document.getElementById('stock-linked-account').innerHTML = accOptions;
+            if(document.getElementById('emi-card-id')) document.getElementById('emi-card-id').innerHTML = cardOptions;
+            if(document.getElementById('rec-account')) document.getElementById('rec-account').innerHTML = accOptions;
+
+            let catOptions = '';
+            for(let id in appData.categories) {
+                catOptions += `<option value="${appData.categories[id].name}">${appData.categories[id].name}</option>`;
+            }
+            if(document.getElementById('budget-category')) document.getElementById('budget-category').innerHTML = catOptions;
+        }
+    </script>
+</body>
+</html>
