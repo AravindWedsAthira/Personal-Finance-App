@@ -1,652 +1,301 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Firebase Passbook & Expense Manager</title>
-  <!-- Firebase Compat SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
-  <!-- Chart.js for Interactive Analytics -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --success: #16a34a;
-      --warning: #ca8a04;
-      --danger: #dc2626;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 40px; }
-    header { background: var(--primary); color: white; padding: 1rem 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    header h1 { font-size: 1.5rem; }
-    nav { display: flex; gap: 10px; background: #1e40af; padding: 0.5rem 2rem; overflow-x: auto; }
-    nav button { background: transparent; border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap; }
-    nav button.active, nav button:hover { background: rgba(255,255,255,0.2); }
-    .container { max-width: 1200px; margin: 20px auto; padding: 0 1rem; }
-    .section { display: none; }
-    .section.active { display: block; }
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-    h2 { font-size: 1.25rem; margin-bottom: 1rem; color: var(--text); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; margin-top: 10px; margin-bottom: 4px; }
-    input, select, button { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.95rem; }
-    button.btn-primary { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; }
-    button.btn-primary:hover { background: var(--primary-dark); }
-    button.btn-success { background: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; }
-    button.btn-danger { background: var(--danger); color: white; border: none; font-weight: bold; cursor: pointer; }
-    .badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; color: white; }
-    .badge-expense { background: var(--danger); }
-    .badge-income { background: var(--success); }
-    .badge-settled { background: var(--primary); }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { background: #f1f5f9; }
-    .progress-bar-bg { background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin: 8px 0; }
-    .progress-bar-fill { height: 100%; transition: width 0.3s ease; }
-    .tab-group { display: flex; gap: 10px; margin-bottom: 15px; }
-    .tab-group button { width: auto; flex: 1; background: #e2e8f0; border: none; font-weight: 600; cursor: pointer; }
-    .tab-group button.active { background: var(--primary); color: white; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .modal-content { background: white; padding: 2rem; border-radius: 10px; width: 90%; max-width: 450px; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 15px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passbook - Smart Finance Manager</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { 
+            --sidebar-width: 260px;
+            --app-bg: #1a1d20;
+            --card-bg: #212529;
+            --input-bg: #2c3034;
+            --text-color: #f8f9fa;
+            --accent-blue: #0d6efd;
+            --calc-btn-bg: #343a40;
+            --calc-btn-active: #495057;
+            --border-color: #373b3e;
+        }
+        [data-bs-theme="light"] {
+            --app-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --input-bg: #e9ecef;
+            --text-color: #212529;
+            --accent-blue: #0d6efd;
+            --calc-btn-bg: #dee2e6;
+            --calc-btn-active: #ced4da;
+            --border-color: #ced4da;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; background-color: var(--app-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
+        #wrapper { display: flex; width: 100%; align-items: stretch; position: relative; }
+        
+        #sidebar { 
+            position: fixed;
+            top: 0;
+            left: calc(-1 * var(--sidebar-width));
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--card-bg); 
+            color: var(--text-color); 
+            transition: left 0.3s ease-in-out; 
+            z-index: 1050; 
+            border-right: 1px solid var(--border-color); 
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            overflow-y: auto;
+        }
+        #sidebar.active { left: 0; }
+        
+        #sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+            backdrop-filter: blur(2px);
+            transition: opacity 0.3s ease;
+        }
+        #sidebar-backdrop.active { display: block; }
+
+        #sidebar .sidebar-header { padding: 25px 20px; background: var(--input-bg); border-bottom: 1px solid var(--border-color); }
+        #sidebar ul.components { padding: 15px 0; }
+        #sidebar ul li a { padding: 12px 20px; font-size: 1.05em; display: flex; align-items: center; color: var(--text-color); opacity: 0.85; text-decoration: none; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover, #sidebar ul li.active > a { opacity: 1; background: rgba(13, 110, 253, 0.12); border-left: 4px solid var(--accent-blue); }
+        
+        #content { width: 100%; padding: 25px; min-height: 100vh; transition: all 0.3s; background-color: var(--app-bg); }
+        .card { margin-bottom: 20px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 0.75rem; background-color: var(--card-bg) !important; color: var(--text-color); }
+        .section-view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .section-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .app-container { max-width: 480px; margin: 0 auto; background-color: var(--app-bg); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .top-nav-bar { background-color: var(--input-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .type-selector { display: flex; justify-content: center; gap: 20px; background-color: var(--card-bg); padding: 12px; font-weight: 600; font-size: 0.95rem; border-bottom: 1px solid var(--border-color); }
+        .type-option { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; display: flex; align-items: center; gap: 6px; }
+        .type-option.active { opacity: 1; color: var(--accent-blue); border-bottom: 2px solid var(--accent-blue); padding-bottom: 2px; }
+        
+        .selector-box { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.2s; }
+        .selector-box:hover { border-color: var(--accent-blue); }
+        
+        .notes-box { background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; min-height: 85px; color: var(--text-color); font-size: 0.95rem; }
+        .calc-display { background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 20px; text-align: right; font-size: 2.2rem; font-weight: bold; color: var(--accent-blue); letter-spacing: 1px; }
+        
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; background-color: var(--input-bg); }
+        .calc-btn { background-color: var(--calc-btn-bg); border: none; border-radius: 6px; color: var(--text-color); font-size: 1.25rem; font-weight: 600; padding: 16px 0; cursor: pointer; transition: background-color 0.15s; }
+        .calc-btn:hover { background-color: var(--calc-btn-active); }
+        .calc-btn.operator { color: var(--accent-blue); font-size: 1.4rem; }
+        .calc-btn.equals { background-color: var(--accent-blue); color: #fff; }
+
+        .custom-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .custom-modal-content { background: var(--app-bg); border: 1px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        
+        .account-select-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; }
+        .account-select-row:hover { background: rgba(13, 110, 253, 0.08); }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>Passbook & Financial Manager</h1>
-  </header>
-  <nav>
-    <button class="nav-btn active" onclick="showSection('transactions-sec', this)">Transactions</button>
-    <button class="nav-btn" onclick="showSection('accounts-sec', this)">Bank Accounts</button>
-    <button class="nav-btn" onclick="showSection('creditcards-sec', this)">Credit Cards</button>
-    <button class="nav-btn" onclick="showSection('analytics-sec', this)">Analytics</button>
-    <button class="nav-btn" onclick="showSection('budgets-sec', this)">Budgets</button>
-  </nav>
+    <div id="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
-  <div class="container">
-    <!-- TRANSACTIONS SECTION -->
-    <div id="transactions-sec" class="section active">
-      <div class="card">
-        <h2>Add Transaction</h2>
-        <form id="tx-form" onsubmit="addTransaction(event)">
-          <div class="grid">
-            <div>
-              <label>Type</label>
-              <select id="tx-type" required>
-                <option value="Expense">Expense</option>
-                <option value="Income">Income</option>
-              </select>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="m-0 fw-bold text-primary">Passbook</h4>
+                    <small class="text-success" id="db-status"><i class="bi bi-circle-fill fs-7"></i> Connecting...</small>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" id="sidebarClose"><i class="bi bi-x-lg"></i></button>
             </div>
-            <div>
-              <label>Category</label>
-              <input type="text" id="tx-category" placeholder="e.g., Groceries, Fuel, Salary" required />
+            <ul class="list-unstyled components">
+                <li class="active"><a href="#" onclick="switchSection('home', this)"><i class="bi bi-house-door me-3"></i> Home & Logs</a></li>
+                <li><a href="#" onclick="switchSection('master-categories', this)"><i class="bi bi-tags me-3"></i> Categories & Subs</a></li>
+                <li><a href="#" onclick="switchSection('master-accounts', this)"><i class="bi bi-wallet2 me-3"></i> Accounts, Wallets & FD/RD</a></li>
+                <li><a href="#" onclick="switchSection('master-investments', this)"><i class="bi bi-graph-up-arrow me-3"></i> Mutual Funds & SIPs</a></li>
+                <li><a href="#" onclick="switchSection('master-stocks', this)"><i class="bi bi-currency-exchange me-3"></i> Stocks & Trading</a></li>
+                <li><a href="#" onclick="switchSection('master-cards', this)"><i class="bi bi-credit-card me-3"></i> Cards & EMIs</a></li>
+                <li><a href="#" onclick="switchSection('recurring', this)"><i class="bi bi-arrow-repeat me-3"></i> Recurring Payments</a></li>
+                <li><a href="#" onclick="switchSection('investments-status', this)"><i class="bi bi-pie-chart-fill me-3"></i> Investments / Savings</a></li>
+                <li><a href="#" onclick="switchSection('analytics', this)"><i class="bi bi-bar-chart-line me-3"></i> Analytics</a></li>
+                <li><a href="#" onclick="switchSection('budgets', this)"><i class="bi bi-calculator me-3"></i> Budgets</a></li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg rounded shadow-sm mb-4 px-4 py-3 bg-card border">
+                <div class="container-fluid p-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary border"><i class="bi bi-list fs-5"></i></button>
+                        <span class="navbar-brand fw-bold fs-4 m-0" id="page-title">Home & Logs</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-outline-primary btn-sm" onclick="toggleTheme()"><i class="bi bi-moon-stars-fill" id="theme-icon"></i> Theme</button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- 1. HOME / APP SIMULATOR INTERFACE -->
+            <div id="section-home" class="section-view active">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5 mb-4">
+                        <div class="app-container">
+                            <div class="top-nav-bar">
+                                <span class="text-primary fw-semibold" style="cursor:pointer;" onclick="resetAppInput()"><i class="bi bi-x-lg me-1"></i> CANCEL</span>
+                                <span class="text-primary fw-bold" style="cursor:pointer;" onclick="submitAppTransaction()"><i class="bi bi-check-lg me-1"></i> SAVE</span>
+                            </div>
+                            
+                            <div class="type-selector">
+                                <span class="type-option" id="type-income" onclick="setAppType('Income')">INCOME</span>
+                                <span class="type-option active" id="type-expense" onclick="setAppType('Expense')"><i class="bi bi-check-circle-fill"></i> EXPENSE</span>
+                                <span class="type-option" id="type-transfer" onclick="setAppType('Transfer')">TRANSFER</span>
+                            </div>
+
+                            <div class="p-3">
+                                <div class="row g-2 mb-3" id="selectors-container">
+                                    <div class="col-6" id="box-primary-account">
+                                        <div class="selector-box" onclick="openAccountModal('primary')">
+                                            <div class="d-flex align-items-center gap-2 text-truncate">
+                                                <i class="bi bi-wallet2 text-primary fs-5"></i>
+                                                <span id="selected-account-label" class="text-truncate">Account/Card</span>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted small"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-6" id="box-secondary-category">
+                                        <div class="selector-box" onclick="openCategoryModal()">
+                                            <div class="d-flex align-items-center gap-2 text-truncate">
+                                                <i class="bi bi-tag text-primary fs-5"></i>
+                                                <span id="selected-category-label" class="text-truncate">Subcategory</span>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted small"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3" id="transfer-accounts-row" style="display:none;">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label small text-muted">From Account</label>
+                                            <select class="form-select form-select-sm" id="transfer-from-acc"></select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small text-muted">To Account</label>
+                                            <select class="form-select form-select-sm" id="transfer-to-acc"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <input type="text" class="form-control notes-box" id="app-notes" placeholder="Subcategory / Notes">
+                                </div>
+
+                                <div class="calc-display mb-2" id="calc-display">0</div>
+                            </div>
+
+                            <div class="calc-grid">
+                                <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+                                <button class="calc-btn" onclick="appendCalc('7')">7</button>
+                                <button class="calc-btn" onclick="appendCalc('8')">8</button>
+                                <button class="calc-btn" onclick="appendCalc('9')">9</button>
+                                
+                                <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+                                <button class="calc-btn" onclick="appendCalc('4')">4</button>
+                                <button class="calc-btn" onclick="appendCalc('5')">5</button>
+                                <button class="calc-btn" onclick="appendCalc('6')">6</button>
+                                
+                                <button class="calc-btn operator" onclick="appendCalc('*')">&times;</button>
+                                <button class="calc-btn" onclick="appendCalc('1')">1</button>
+                                <button class="calc-btn" onclick="appendCalc('2')">2</button>
+                                <button class="calc-btn" onclick="appendCalc('3')">3</button>
+                                
+                                <button class="calc-btn operator" onclick="appendCalc('/')">&divide;</button>
+                                <button class="calc-btn" onclick="appendCalc('0')">0</button>
+                                <button class="calc-btn" onclick="appendCalc('.')">.</button>
+                                <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                            </div>
+
+                            <div class="d-flex justify-content-between px-3 py-2 bg-card text-muted small border-top">
+                                <span id="current-date-display">Aug 3, 2026</span>
+                                <span id="current-time-display">12:39 PM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7">
+                        <div class="card p-4">
+                            <h4 class="mb-3 fw-bold"><i class="bi bi-receipt me-2"></i>Transaction Logs</h4>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Account/Card</th>
+                                            <th>Notes</th>
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactions-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-              <label>Amount (₹)</label>
-              <input type="number" id="tx-amount" step="0.01" required />
+
+            <!-- MODALS FOR SELECTORS -->
+            <div class="custom-modal-overlay" id="account-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary" id="account-modal-title">Select an account or card</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeAccountModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div id="account-modal-list"></div>
+                </div>
             </div>
-            <div>
-              <label>Account / Source</label>
-              <select id="tx-source" required></select>
+
+            <div class="custom-modal-overlay" id="category-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Select a Subcategory</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeCategoryModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <div id="category-modal-list" class="list-group list-group-flush"></div>
+                </div>
             </div>
-            <div>
-              <label>Date</label>
-              <input type="date" id="tx-date" required />
+
+            <!-- EDIT TRANSACTION MODAL -->
+            <div class="custom-modal-overlay" id="edit-tx-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 class="fw-bold m-0 text-primary">Edit Transaction</h5>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="closeEditTxModal()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                    <form onsubmit="saveEditedTransaction(event)">
+                        <input type="hidden" id="edit-tx-id">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Amount (₹)</label>
+                            <input type="number" step="any" class="form-control" id="edit-tx-amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Notes / Details</label>
+                            <input type="text" class="form-control" id="edit-tx-notes" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 fw-semibold text-white">Save Changes</button>
+                    </form>
+                </div>
             </div>
-            <div>
-              <label>Description</label>
-              <input type="text" id="tx-desc" placeholder="Remarks..." />
-            </div>
-          </div>
-          <button type="submit" class="btn-primary">Record Transaction</button>
-        </form>
-      </div>
 
-      <div class="card">
-        <h2>Transaction History</h2>
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Category</th>
-                <th>Source</th>
-                <th>Description</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody id="tx-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- BANK ACCOUNTS SECTION -->
-    <div id="accounts-sec" class="section">
-      <div class="card">
-        <h2>Add Bank Account</h2>
-        <form onsubmit="addAccount(event)">
-          <div class="grid">
-            <div>
-              <label>Bank Name</label>
-              <input type="text" id="acc-bank" placeholder="e.g., SBI, HDFC" required />
-            </div>
-            <div>
-              <label>Account Number (Last 4 digits)</label>
-              <input type="text" id="acc-num" maxlength="4" required />
-            </div>
-            <div>
-              <label>Opening Balance (₹)</label>
-              <input type="number" id="acc-bal" step="0.01" required />
-            </div>
-          </div>
-          <button type="submit" class="btn-primary">Add Bank Account</button>
-        </form>
-      </div>
-      <h2>My Bank Accounts</h2>
-      <div class="grid" id="accounts-list"></div>
-    </div>
-
-    <!-- CREDIT CARDS SECTION (With Settlement Enhancement) -->
-    <div id="creditcards-sec" class="section">
-      <div class="card">
-        <h2>Add Credit Card</h2>
-        <form onsubmit="addCreditCard(event)">
-          <div class="grid">
-            <div>
-              <label>Card Name / Bank</label>
-              <input type="text" id="cc-name" placeholder="e.g., ICICI Sapphiro" required />
-            </div>
-            <div>
-              <label>Total Credit Limit (₹)</label>
-              <input type="number" id="cc-limit" step="0.01" required />
-            </div>
-            <div>
-              <label>Current Due Amount (₹)</label>
-              <input type="number" id="cc-due" step="0.01" value="0" required />
-            </div>
-          </div>
-          <button type="submit" class="btn-primary">Add Credit Card</button>
-        </form>
-      </div>
-      <h2>My Credit Cards</h2>
-      <div class="grid" id="cc-list"></div>
-    </div>
-
-    <!-- ANALYTICS SECTION (Daily, Monthly, Annual Interactive View) -->
-    <div id="analytics-sec" class="section">
-      <div class="card">
-        <h2>Expense Analytics</h2>
-        <div class="tab-group">
-          <button class="active" onclick="switchAnalytics('daily', this)">Daily</button>
-          <button onclick="switchAnalytics('monthly', this)">Monthly</button>
-          <button onclick="switchAnalytics('annual', this)">Annually</button>
-        </div>
-        <div>
-          <label id="analytics-filter-label">Select Period</label>
-          <input type="date" id="analytics-date-picker" onchange="renderAnalytics()" />
-          <select id="analytics-month-picker" style="display:none;" onchange="renderAnalytics()"></select>
-          <select id="analytics-year-picker" style="display:none;" onchange="renderAnalytics()"></select>
-        </div>
-        <div style="margin-top: 20px;">
-          <h3>Total Expenses: ₹<span id="analytics-total">0.00</span></h3>
-        </div>
-        <div style="margin-top: 20px; max-height: 300px; display: flex; justify-content: center;">
-          <canvas id="analyticsChart"></canvas>
-        </div>
-        <div style="margin-top: 20px;" id="analytics-category-bars"></div>
-      </div>
-    </div>
-
-    <!-- BUDGETS SECTION (Add, Modify, and Track Category-wise) -->
-    <div id="budgets-sec" class="section">
-      <div class="card">
-        <h2>Add / Modify Category Budget</h2>
-        <form onsubmit="saveBudget(event)">
-          <div class="grid">
-            <div>
-              <label>Category Name</label>
-              <input type="text" id="budget-category" placeholder="e.g., Groceries, Fuel" required />
-            </div>
-            <div>
-              <label>Budget Type</label>
-              <select id="budget-type" required onchange="toggleBudgetDatePicker()">
-                <option value="monthly">Monthly</option>
-                <option value="annual">Annual</option>
-              </select>
-            </div>
-            <div>
-              <label>Limit Amount (₹)</label>
-              <input type="number" id="budget-limit" step="0.01" required />
-            </div>
-            <div id="budget-period-container">
-              <label>Period (Month/Year)</label>
-              <input type="month" id="budget-period-month" />
-              <input type="number" id="budget-period-year" placeholder="YYYY" style="display:none;" />
-            </div>
-          </div>
-          <button type="submit" class="btn-primary">Save Budget</button>
-        </form>
-      </div>
-      <h2>Interactive Budget Tracker</h2>
-      <div class="card">
-        <div class="tab-group">
-          <button class="active" onclick="switchBudgetView('monthly', this)">Monthly Budgets</button>
-          <button onclick="switchBudgetView('annual', this)">Annual Budgets</button>
-        </div>
-        <div id="budget-tracker-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CREDIT CARD DUE SETTLEMENT MODAL -->
-  <div id="settle-modal" class="modal">
-    <div class="modal-content">
-      <h2>Settle Credit Card Due</h2>
-      <p id="settle-card-name" style="margin-bottom: 15px; font-weight: bold;"></p>
-      <input type="hidden" id="settle-card-id" />
-      <label>Select Bank Account to Pay From</label>
-      <select id="settle-bank-select" required></select>
-      <label>Amount to Settle (₹)</label>
-      <input type="number" id="settle-amount" step="0.01" required />
-      <div class="modal-actions">
-        <button class="btn-success" onclick="processSettlement()">Confirm Settlement</button>
-        <button class="btn-danger" onclick="closeSettleModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ---------------- FIREBASE CONFIGURATION ----------------
-    const firebaseConfig = {
-      apiKey: "AIzaSyDeV2ddLzeq4c4bDGKYrYVh5vqefMHKTtU",
-      authDomain: "passbook-229d7.firebaseapp.com",
-      databaseURL: "https://passbook-229d7-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "passbook-229d7",
-      storageBucket: "passbook-229d7.firebasestorage.app",
-      messagingSenderId: "1020688201249",
-      appId: "1:1020688201249:web:57d42542d59471f303d560"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // ---------------- GLOBAL STATE ----------------
-    let accountsData = {};
-    let creditCardsData = {};
-    let transactionsData = {};
-    let budgetsData = {};
-    let currentAnalyticsMode = 'daily';
-    let currentBudgetViewMode = 'monthly';
-    let chartInstance = null;
-
-    // Set today's date defaults
-    document.getElementById('tx-date').valueAsDate = new Date();
-    document.getElementById('analytics-date-picker').valueAsDate = new Date();
-    const currentYear = new Date().getFullYear();
-    const currentMonth = `${currentYear}-${String(new Date().getMonth()+1).padStart(2, '0')}`;
-    document.getElementById('budget-period-month').value = currentMonth;
-    document.getElementById('budget-period-year').value = currentYear;
-
-    // Populate Year and Month Selectors
-    const monthSelect = document.getElementById('analytics-month-picker');
-    const yearSelect = document.getElementById('analytics-year-picker');
-    for (let y = currentYear; y >= currentYear - 5; y--) {
-      yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-    }
-    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-    months.forEach((m, idx) => {
-      const val = `${currentYear}-${String(idx+1).padStart(2, '0')}`;
-      monthSelect.innerHTML += `<option value="${val}" ${val === currentMonth ? 'selected' : ''}>${m} ${currentYear}</option>`;
-    });
-
-    // ---------------- FIREBASE REALTIME LISTENERS ----------------
-    db.ref('accounts').on('value', snap => {
-      accountsData = snap.val() || {};
-      renderAccounts();
-      populateSourceSelects();
-    });
-
-    db.ref('creditCards').on('value', snap => {
-      creditCardsData = snap.val() || {};
-      renderCreditCards();
-      populateSourceSelects();
-    });
-
-    db.ref('transactions').on('value', snap => {
-      transactionsData = snap.val() || {};
-      renderTransactions();
-      renderAnalytics();
-      renderBudgets();
-    });
-
-    db.ref('budgets').on('value', snap => {
-      budgetsData = snap.val() || {};
-      renderBudgets();
-    });
-
-    // ---------------- NAVIGATION ----------------
-    function showSection(id, elem) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      elem.classList.add('active');
-    }
-
-    // ---------------- BANK ACCOUNTS ----------------
-    function addAccount(e) {
-      e.preventDefault();
-      const bank = document.getElementById('acc-bank').value;
-      const number = document.getElementById('acc-num').value;
-      const balance = parseFloat(document.getElementById('acc-bal').value);
-      db.ref('accounts').push({ bank, number, balance });
-      e.target.reset();
-    }
-
-    function renderAccounts() {
-      const list = document.getElementById('accounts-list');
-      list.innerHTML = '';
-      for (const key in accountsData) {
-        const acc = accountsData[key];
-        list.innerHTML += `
-          <div class="card">
-            <h3>${acc.bank}</h3>
-            <p>Account ending: ****${acc.number}</p>
-            <p style="font-size: 1.3rem; font-weight: bold; margin-top: 10px; color: var(--success);">
-              ₹${parseFloat(acc.balance).toFixed(2)}
-            </p>
-          </div>
-        `;
-      }
-    }
-
-    // ---------------- CREDIT CARDS & DUE SETTLEMENT ----------------
-    function addCreditCard(e) {
-      e.preventDefault();
-      const name = document.getElementById('cc-name').value;
-      const limit = parseFloat(document.getElementById('cc-limit').value);
-      const due = parseFloat(document.getElementById('cc-due').value);
-      db.ref('creditCards').push({ name, limit, due });
-      e.target.reset();
-    }
-
-    function renderCreditCards() {
-      const list = document.getElementById('cc-list');
-      list.innerHTML = '';
-      for (const key in creditCardsData) {
-        const cc = creditCardsData[key];
-        const available = cc.limit - cc.due;
-        list.innerHTML += `
-          <div class="card">
-            <h3>${cc.name}</h3>
-            <p>Limit: ₹${cc.limit.toFixed(2)} | Available: ₹${available.toFixed(2)}</p>
-            <p style="font-size: 1.2rem; font-weight: bold; margin-top: 10px; color: var(--danger);">
-              Due: ₹${cc.due.toFixed(2)}
-            </p>
-            <button class="btn-success" style="margin-top: 15px;" 
-              onclick="openSettleModal('${key}', '${cc.name}', ${cc.due})">
-              Settle Due from Bank Account
-            </button>
-          </div>
-        `;
-      }
-    }
-
-    function openSettleModal(id, name, due) {
-      document.getElementById('settle-card-id').value = id;
-      document.getElementById('settle-card-name').innerText = `${name} (Current Due: ₹${due.toFixed(2)})`;
-      document.getElementById('settle-amount').value = due;
-      const bankSelect = document.getElementById('settle-bank-select');
-      bankSelect.innerHTML = '';
-      for (const key in accountsData) {
-        const acc = accountsData[key];
-        bankSelect.innerHTML += `<option value="${key}">${acc.bank} (****${acc.number}) - Bal: ₹${acc.balance}</option>`;
-      }
-      document.getElementById('settle-modal').style.display = 'flex';
-    }
-
-    function closeSettleModal() {
-      document.getElementById('settle-modal').style.display = 'none';
-    }
-
-    function processSettlement() {
-      const cardId = document.getElementById('settle-card-id').value;
-      const accId = document.getElementById('settle-bank-select').value;
-      const amount = parseFloat(document.getElementById('settle-amount').value);
-
-      if (!accId || !accountsData[accId]) return alert("Please select a bank account.");
-      if (amount <= 0) return alert("Enter a valid amount.");
-      if (accountsData[accId].balance < amount) return alert("Insufficient balance in selected bank account.");
-
-      const card = creditCardsData[cardId];
-      const account = accountsData[accId];
-
-      // Update balances
-      db.ref(`accounts/${accId}/balance`).set(account.balance - amount);
-      db.ref(`creditCards/${cardId}/due`).set(Math.max(0, card.due - amount));
-
-      // Record settlement transaction
-      db.ref('transactions').push({
-        type: 'Expense',
-        category: 'Credit Card Settlement',
-        amount: amount,
-        source: `${account.bank} (****${account.number})`,
-        date: new Date().toISOString().split('T')[0],
-        desc: `Settled due for ${card.name}`
-      });
-
-      closeSettleModal();
-    }
-
-    // ---------------- TRANSACTIONS ----------------
-    function populateSourceSelects() {
-      const select = document.getElementById('tx-source');
-      select.innerHTML = '<optgroup label="Bank Accounts">';
-      for (const k in accountsData) {
-        select.innerHTML += `<option value="ACC_${k}">${accountsData[k].bank} (****${accountsData[k].number})</option>`;
-      }
-      select.innerHTML += '</optgroup><optgroup label="Credit Cards">';
-      for (const k in creditCardsData) {
-        select.innerHTML += `<option value="CC_${k}">${creditCardsData[k].name}</option>`;
-      }
-      select.innerHTML += '</optgroup>';
-    }
-
-    function addTransaction(e) {
-      e.preventDefault();
-      const type = document.getElementById('tx-type').value;
-      const category = document.getElementById('tx-category').value.trim();
-      const amount = parseFloat(document.getElementById('tx-amount').value);
-      const sourceVal = document.getElementById('tx-source').value;
-      const date = document.getElementById('tx-date').value;
-      const desc = document.getElementById('tx-desc').value.trim();
-
-      const [srcType, srcId] = sourceVal.split('_');
-      let sourceName = '';
-
-      // Automatically update source balances
-      if (srcType === 'ACC' && accountsData[srcId]) {
-        const acc = accountsData[srcId];
-        sourceName = `${acc.bank} (****${acc.number})`;
-        const newBal = type === 'Expense' ? acc.balance - amount : acc.balance + amount;
-        db.ref(`accounts/${srcId}/balance`).set(newBal);
-      } else if (srcType === 'CC' && creditCardsData[srcId]) {
-        const cc = creditCardsData[srcId];
-        sourceName = cc.name;
-        const newDue = type === 'Expense' ? cc.due + amount : Math.max(0, cc.due - amount);
-        db.ref(`creditCards/${srcId}/due`).set(newDue);
-      }
-
-      db.ref('transactions').push({ type, category, amount, source: sourceName, date, desc });
-      e.target.reset();
-      document.getElementById('tx-date').valueAsDate = new Date();
-    }
-
-    function renderTransactions() {
-      const tbody = document.getElementById('tx-table-body');
-      tbody.innerHTML = '';
-      const keys = Object.keys(transactionsData).reverse();
-      keys.forEach(key => {
-        const tx = transactionsData[key];
-        const badgeClass = tx.category === 'Credit Card Settlement' ? 'badge-settled' : (tx.type === 'Expense' ? 'badge-expense' : 'badge-income');
-        tbody.innerHTML += `
-          <tr>
-            <td>${tx.date}</td>
-            <td><span class="badge ${badgeClass}">${tx.type}</span></td>
-            <td>${tx.category}</td>
-            <td>${tx.source}</td>
-            <td>${tx.desc || '-'}</td>
-            <td>₹${parseFloat(tx.amount).toFixed(2)}</td>
-          </tr>
-        `;
-      });
-    }
-
-    // ---------------- INTERACTIVE ANALYTICS ----------------
-    function switchAnalytics(mode, elem) {
-      currentAnalyticsMode = mode;
-      document.querySelectorAll('#analytics-sec .tab-group button').forEach(b => b.classList.remove('active'));
-      elem.classList.add('active');
-
-      document.getElementById('analytics-date-picker').style.display = mode === 'daily' ? 'block' : 'none';
-      document.getElementById('analytics-month-picker').style.display = mode === 'monthly' ? 'block' : 'none';
-      document.getElementById('analytics-year-picker').style.display = mode === 'annual' ? 'block' : 'none';
-      renderAnalytics();
-    }
-
-    function renderAnalytics() {
-      const totals = {};
-      let totalExpense = 0;
-
-      const dateFilter = document.getElementById('analytics-date-picker').value;
-      const monthFilter = document.getElementById('analytics-month-picker').value;
-      const yearFilter = document.getElementById('analytics-year-picker').value;
-
-      for (const k in transactionsData) {
-        const tx = transactionsData[k];
-        if (tx.type !== 'Expense') continue;
-
-        let matches = false;
-        if (currentAnalyticsMode === 'daily' && tx.date === dateFilter) matches = true;
-        if (currentAnalyticsMode === 'monthly' && tx.date.startsWith(monthFilter)) matches = true;
-        if (currentAnalyticsMode === 'annual' && tx.date.startsWith(yearFilter)) matches = true;
-
-        if (matches) {
-          totals[tx.category] = (totals[tx.category] || 0) + parseFloat(tx.amount);
-          totalExpense += parseFloat(tx.amount);
-        }
-      }
-
-      document.getElementById('analytics-total').innerText = totalExpense.toFixed(2);
-
-      // Render Visual Progress Bars
-      const barsDiv = document.getElementById('analytics-category-bars');
-      barsDiv.innerHTML = '<h3>Category Breakdown</h3>';
-      for (const cat in totals) {
-        const pct = totalExpense > 0 ? ((totals[cat] / totalExpense) * 100).toFixed(1) : 0;
-        barsDiv.innerHTML += `
-          <div style="margin: 10px 0;">
-            <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:600;">
-              <span>${cat}</span>
-              <span>₹${totals[cat].toFixed(2)} (${pct}%)</span>
-            </div>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" style="width: ${pct}%; background: var(--primary);"></div>
-            </div>
-          </div>
-        `;
-      }
-
-      // Render Chart.js Pie Chart
-      const ctx = document.getElementById('analyticsChart').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-      chartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: Object.keys(totals),
-          datasets: [{
-            data: Object.values(totals),
-            backgroundColor: ['#2563eb', '#16a34a', '#dc2626', '#ca8a04', '#9333ea', '#0891b2', '#ea580c']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
-    // ---------------- INTERACTIVE BUDGETS SECTION ----------------
-    function toggleBudgetDatePicker() {
-      const type = document.getElementById('budget-type').value;
-      document.getElementById('budget-period-month').style.display = type === 'monthly' ? 'block' : 'none';
-      document.getElementById('budget-period-year').style.display = type === 'annual' ? 'block' : 'none';
-    }
-
-    function saveBudget(e) {
-      e.preventDefault();
-      const category = document.getElementById('budget-category').value.trim();
-      const type = document.getElementById('budget-type').value;
-      const limit = parseFloat(document.getElementById('budget-limit').value);
-      const period = type === 'monthly' ? 
-        document.getElementById('budget-period-month').value : 
-        document.getElementById('budget-period-year').value;
-
-      db.ref('budgets').push({ category, type, limit, period });
-      e.target.reset();
-    }
-
-    function switchBudgetView(mode, elem) {
-      currentBudgetViewMode = mode;
-      document.querySelectorAll('#budgets-sec .tab-group button').forEach(b => b.classList.remove('active'));
-      elem.classList.add('active');
-      renderBudgets();
-    }
-
-    function renderBudgets() {
-      const container = document.getElementById('budget-tracker-list');
-      container.innerHTML = '';
-
-      // Calculate actual spending against categories per period
-      for (const id in budgetsData) {
-        const b = budgetsData[id];
-        if (b.type !== currentBudgetViewMode) continue;
-
-        let spent = 0;
-        for (const tk in transactionsData) {
-          const tx = transactionsData[tk];
-          if (tx.type === 'Expense' && tx.category.toLowerCase() === b.category.toLowerCase()) {
-            if (b.type === 'monthly' && tx.date.startsWith(b.period)) spent += parseFloat(tx.amount);
-            if (b.type === 'annual' && tx.date.startsWith(b.period)) spent += parseFloat(tx.amount);
-          }
-        }
-
-        const pct = Math.min(100, ((spent / b.limit) * 100)).toFixed(1);
-        let color = 'var(--success)';
-        if (pct >= 80) color = 'var(--warning)';
-        if (pct >= 100) color = 'var(--danger)';
-
-        container.innerHTML += `
-          <div style="margin-bottom: 20px; padding: 15px; border: 1px solid var(--border); border-radius: 8px;">
-            <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom: 5px;">
-              <span>${b.category} (${b.period})</span>
-              <span>Spent: ₹${spent.toFixed(2)} / ₹${b.limit.toFixed(2)}</span>
-            </div>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" style="width: ${pct}%; background: ${color};"></div>
-            </div>
-            <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; font-weight: 600; color: ${color};">
-              ${pct}% of limit used
-            </div>
-          </div>
-        `;
-      }
-    }
-  </script>
-</body>
-</html>
+            <!-- EDIT BANK ACCOUNT MODAL -->
+            <div class="custom-modal-overlay" id="edit-bank-modal">
+                <div class="custom-modal-content">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h5 cl
